@@ -1,0 +1,30 @@
+[
+  {
+    "caseId": "CHK-001",
+    "description": "Checkout page should open when cart has product",
+    "priority": "P0",
+    "technique": "state-transition",
+    "testType": "smoke",
+    "testLevel": "acceptance-test",
+    "standard": "ISTQB",
+    "reference": "https://www.istqb.org",
+    "requireProductInCart": true,
+    "productNameContains": "iMac",
+    "expectCheckoutAccessible": true,
+    "expectedBodyContains": "checkout"
+  },
+  {
+    "caseId": "CHK-002",
+    "description": "Checkout should be blocked when cart is empty",
+    "priority": "P0",
+    "technique": "negative-test",
+    "testType": "regression",
+    "testLevel": "acceptance-test",
+    "standard": "ISTQB",
+    "reference": "https://www.istqb.org",
+    "requireProductInCart": false,
+    "productNameContains": "",
+    "expectCheckoutAccessible": false,
+    "expectedBodyContains": "shopping cart"
+  }
+]

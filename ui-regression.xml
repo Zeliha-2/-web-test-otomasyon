@@ -1,0 +1,34 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<!-- parallel="classes": each test class on its own thread (safe with ThreadLocal driver + per-thread My Account user). -->
+<suite name="UI-Regression-Suite" verbose="1" parallel="classes" thread-count="4">
+    <listeners>
+        <listener class-name="com.automation.listeners.TestListener"/>
+    </listeners>
+
+    <!-- 1) Public account flows (login / register / forgot password) -->
+    <test name="01-Public-Account-Flows">
+        <classes>
+            <class name="com.automation.tests.LoginUiTest"/>
+            <class name="com.automation.tests.RegisterUiTest"/>
+            <class name="com.automation.tests.ForgotPasswordUiTest"/>
+        </classes>
+    </test>
+
+    <!-- 2) My Account: sidebar navigation + edit profile / address book / change password -->
+    <test name="02-My-Account">
+        <classes>
+            <class name="com.automation.tests.MyAccountUiTest"/>
+            <class name="com.automation.tests.MyAccountSettingsUiTest"/>
+            <class name="com.automation.tests.NewsletterUiTest"/>
+        </classes>
+    </test>
+
+    <!-- 3) Storefront functional modules -->
+    <test name="03-Storefront">
+        <classes>
+            <class name="com.automation.tests.WishListUiTest"/>
+            <class name="com.automation.tests.SearchUiTest"/>
+            <class name="com.automation.tests.CartUiTest"/>
+        </classes>
+    </test>
+</suite>

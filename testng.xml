@@ -1,0 +1,12 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="UI-Regression-Suite" verbose="1" parallel="false">
+    <listeners>
+        <listener class-name="com.automation.listeners.TestListener"/>
+    </listeners>
+
+    <test name="Login-Regression">
+        <classes>
+            <class name="com.automation.tests.LoginUiTest"/>
+        </classes>
+    </test>
+</suite>

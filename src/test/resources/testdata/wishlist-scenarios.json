@@ -1,0 +1,28 @@
+[
+  {
+    "caseId": "WLS-001",
+    "description": "Add visible home product to wish list and verify page",
+    "priority": "P0",
+    "technique": "state-transition",
+    "testType": "smoke",
+    "testLevel": "acceptance-test",
+    "standard": "ISTQB",
+    "reference": "https://www.istqb.org",
+    "productNameContains": "iMac",
+    "expectedAlertContains": "wish",
+    "expectedWishListPageContains": "iMac"
+  },
+  {
+    "caseId": "WLS-002",
+    "description": "Second product family from home grid",
+    "priority": "P1",
+    "technique": "equivalence-partitioning",
+    "testType": "regression",
+    "testLevel": "acceptance-test",
+    "standard": "ISTQB",
+    "reference": "https://www.istqb.org",
+    "productNameContains": "HTC",
+    "expectedAlertContains": "wish",
+    "expectedWishListPageContains": "HTC"
+  }
+]

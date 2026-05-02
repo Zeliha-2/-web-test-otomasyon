@@ -1,0 +1,41 @@
+[
+  {
+    "caseId": "CRT-001",
+    "description": "Add iMac to cart from home grid",
+    "priority": "P0",
+    "technique": "state-transition",
+    "testType": "smoke",
+    "testLevel": "system-test",
+    "standard": "ISTQB",
+    "reference": "https://www.istqb.org",
+    "productNameContains": "iMac",
+    "expectAddSuccess": true,
+    "expectedCartContains": "iMac"
+  },
+  {
+    "caseId": "CRT-002",
+    "description": "Add HTC product to cart from home grid",
+    "priority": "P1",
+    "technique": "equivalence-partitioning",
+    "testType": "regression",
+    "testLevel": "system-test",
+    "standard": "ISTQB",
+    "reference": "https://www.istqb.org",
+    "productNameContains": "HTC",
+    "expectAddSuccess": true,
+    "expectedCartContains": "HTC"
+  },
+  {
+    "caseId": "CRT-003",
+    "description": "No matching product should not be added",
+    "priority": "P1",
+    "technique": "negative-test",
+    "testType": "regression",
+    "testLevel": "system-test",
+    "standard": "OWASP",
+    "reference": "https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html",
+    "productNameContains": "zzzznonexistentproduct999",
+    "expectAddSuccess": false,
+    "expectedCartContains": ""
+  }
+]

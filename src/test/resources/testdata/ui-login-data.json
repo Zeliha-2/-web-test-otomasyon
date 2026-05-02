@@ -1,0 +1,8 @@
+﻿[
+  {
+    "scenarioName": "standardUserLogin",
+    "username": "standard_user",
+    "password": "secret_sauce",
+    "expectedTitle": "Swag Labs"
+  }
+]

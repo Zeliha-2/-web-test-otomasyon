@@ -1,0 +1,63 @@
+[
+  {
+    "caseId": "MAC-SET-01",
+    "description": "Edit your account information (name / phone)",
+    "priority": "P0",
+    "technique": "state-transition",
+    "testType": "smoke",
+    "testLevel": "acceptance-test",
+    "standard": "ISTQB",
+    "reference": "https://www.istqb.org",
+    "flow": "edit-information",
+    "firstName": "Edited",
+    "lastName": "Customer",
+    "telephone": "+15550001111"
+  },
+  {
+    "caseId": "MAC-SET-02",
+    "description": "Address form validation: country must be selected",
+    "priority": "P0",
+    "technique": "state-transition",
+    "testType": "regression",
+    "testLevel": "acceptance-test",
+    "standard": "OWASP",
+    "reference": "https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html",
+    "flow": "address-book",
+    "addressFirstName": "Addr",
+    "addressLastName": "One",
+    "addressLine1": "100 Test Street",
+    "city": "Istanbul",
+    "postcode": "34000",
+    "expectSuccess": false,
+    "expectedMessageContains": "please select"
+  },
+  {
+    "caseId": "MAC-SET-03",
+    "description": "Change your password (must be last — updates session password)",
+    "priority": "P0",
+    "technique": "state-transition",
+    "testType": "regression",
+    "testLevel": "acceptance-test",
+    "standard": "OWASP",
+    "reference": "https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html",
+    "flow": "change-password",
+    "newPassword": "Test5678!",
+    "confirmNewPassword": "Test5678!"
+  },
+  {
+  "caseId": "MAC-NEG-01",
+  "description": "Edit info with empty first name",
+  "priority": "P1",
+  "technique": "boundary-value",
+  "testType": "regression",
+  "testLevel": "system-test",
+  "standard": "ISTQB",
+  "reference": "https://www.istqb.org",
+  "flow": "edit-information",
+  "firstName": "",
+  "lastName": "Customer",
+  "telephone": "+15550001111",
+  "expectSuccess": false,
+  "expectedMessageContains": "First Name"
+}
+]

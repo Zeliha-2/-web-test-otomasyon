@@ -1,0 +1,26 @@
+[
+  {
+    "caseId": "NWS-001",
+    "description": "Subscribe newsletter = Yes",
+    "priority": "P0",
+    "technique": "state-transition",
+    "testType": "smoke",
+    "testLevel": "acceptance-test",
+    "standard": "ISTQB",
+    "reference": "https://www.istqb.org",
+    "subscribe": true,
+    "expectedSuccessContains": "success"
+  },
+  {
+    "caseId": "NWS-002",
+    "description": "Subscribe newsletter = No",
+    "priority": "P0",
+    "technique": "state-transition",
+    "testType": "regression",
+    "testLevel": "acceptance-test",
+    "standard": "ISTQB",
+    "reference": "https://www.istqb.org",
+    "subscribe": false,
+    "expectedSuccessContains": "success"
+  }
+]

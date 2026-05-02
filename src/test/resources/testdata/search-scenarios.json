@@ -1,0 +1,58 @@
+[
+  {
+    "caseId": "SCH-001",
+    "description": "Known product keyword returns results",
+    "priority": "P0",
+    "technique": "equivalence-partitioning",
+    "testType": "smoke",
+    "testLevel": "system-test",
+    "standard": "ISTQB",
+    "reference": "https://www.istqb.org",
+    "query": "iMac",
+    "expectSearchRoute": true,
+    "expectProductResults": true,
+    "expectedBodyContains": "iMac"
+  },
+  {
+    "caseId": "SCH-002",
+    "description": "Another valid keyword",
+    "priority": "P1",
+    "technique": "equivalence-partitioning",
+    "testType": "regression",
+    "testLevel": "system-test",
+    "standard": "ISTQB",
+    "reference": "https://www.istqb.org",
+    "query": "HTC",
+    "expectSearchRoute": true,
+    "expectProductResults": true,
+    "expectedBodyContains": "HTC"
+  },
+  {
+    "caseId": "SCH-003",
+    "description": "No-match query (boundary / negative)",
+    "priority": "P1",
+    "technique": "negative-test",
+    "testType": "regression",
+    "testLevel": "system-test",
+    "standard": "ISTQB",
+    "reference": "https://www.istqb.org",
+    "query": "zzzznonexistentproduct999",
+    "expectSearchRoute": true,
+    "expectProductResults": false,
+    "expectedBodyContains": ""
+  },
+  {
+    "caseId": "SCH-004",
+    "description": "Empty search — may stay on home or show search with no criteria",
+    "priority": "P2",
+    "technique": "boundary-value",
+    "testType": "regression",
+    "testLevel": "system-test",
+    "standard": "OWASP",
+    "reference": "https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html",
+    "query": "",
+    "expectSearchRoute": false,
+    "expectProductResults": false,
+    "expectedBodyContains": ""
+  }
+]

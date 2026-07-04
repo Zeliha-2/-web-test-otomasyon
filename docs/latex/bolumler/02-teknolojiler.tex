@@ -1,0 +1,30 @@
+\chapter{Kullanılan Teknolojiler}
+
+\section{Java 17 ve Maven}
+Proje JDK 17 ile geliştirilmiştir. Maven bağımlılık yönetimi, derleme ve TestNG suite koşumları için kullanılır. Ana artefakt: \texttt{ai-3layer-test-framework}.
+
+\section{Selenium WebDriver 4}
+UI otomasyonunun temelini Selenium 4 oluşturur. WebDriverManager sürücü indirmesini otomatikleştirir. Page Object Model (POM) ile sayfa sınıfları ayrıştırılmıştır.
+
+\section{TestNG ve ExtentReports}
+TestNG paralel sınıf koşumu (\texttt{parallel="classes"}, \texttt{thread-count="4"}) ve data provider desteği sağlar. ExtentReports HTML raporu \texttt{target/reports/extent-report.html} konumuna yazılır.
+
+\section{RestAssured (API Katmanı)}
+API testleri RestAssured kütüphanesi ile \texttt{reqres.in} üzerinde yürütülür. JSON path doğrulama, HTTP durum kodu ve yanıt süresi kontrolleri yapılır.
+
+\section{JDBC — H2 ve Microsoft SQL Server}
+\begin{itemize}
+  \item \textbf{H2:} Bellek içi veritabanı; hızlı DB senaryoları ve CI uyumluluğu.
+  \item \textbf{SQL Server:} Gerçek ortam simülasyonu; sipariş doğrulama ve E2E akışı.
+\end{itemize}
+
+\section{Jackson (JSON Data-Driven)}
+Test senaryoları \texttt{src/test/resources/testdata/*-scenarios.json} dosyalarında tutulur. \texttt{JsonDataLoader} ile TestNG data provider'a aktarılır.
+
+\section{Groq LLM ve Flask ML Servisi}
+\begin{itemize}
+  \item \textbf{Groq API:} Fail anında Türkçe kök neden analizi (\texttt{AiFailureAnalyzer}).
+  \item \textbf{Flask (\texttt{ai-analysis/}):} Opsiyonel ML modeli; flaky/stabil tahmin (\texttt{qa\_model.pkl}).
+\end{itemize}
+
+% TODO: Teknoloji seçim gerekçelerini tablo halinde genişlet.

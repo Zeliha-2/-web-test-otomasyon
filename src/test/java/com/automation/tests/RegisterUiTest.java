@@ -31,12 +31,12 @@ public class RegisterUiTest extends BaseTest {
 
     @Test(dataProvider = "registerScenarios", description = "Data-driven register scenarios")
     public void runRegisterScenario(RegisterScenario scenario) {
-        // Driver is reused across scenarios, so force navigation to login page each run.
+        // Driver is reused; önceki senaryo kayıt sonrası account/success'te kalabilir.
+        resetSessionToLogin();
         String loginUrl = ConfigManager.get("base.url");
         if (loginUrl == null || loginUrl.isBlank()) {
             loginUrl = "https://ecommerce-playground.lambdatest.io/index.php?route=account/login";
         }
-        DriverFactory.getDriver().get(loginUrl);
 
         // Start from login page, then navigate to register.
         Assert.assertTrue(

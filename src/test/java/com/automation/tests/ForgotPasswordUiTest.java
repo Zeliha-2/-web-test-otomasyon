@@ -6,8 +6,11 @@ import com.automation.config.ConfigManager;
 import com.automation.models.ForgotPasswordScenario;
 import com.automation.pages.ForgotPasswordPage;
 import com.automation.utils.JsonDataLoader;
+import com.automation.utils.UiEvidence;
 import java.lang.reflect.Method;
 import org.testng.Assert;
+import org.testng.ITestResult;
+import org.testng.Reporter;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -39,8 +42,15 @@ public class ForgotPasswordUiTest extends BaseTest {
         forgotPage.openFromLogin();
 
         forgotPage.requestReset(scenario.getEmail());
-        String msg = forgotPage.getMessage().toLowerCase();
+        String msgRaw = forgotPage.getMessage().trim();
+        String msg = msgRaw.toLowerCase();
         String expected = scenario.getExpectedMessageContains().toLowerCase();
+
+        ITestResult current = Reporter.getCurrentTestResult();
+        UiEvidence.recordVisibleMessage(
+                current,
+                msgRaw,
+                DriverFactory.getDriver().getCurrentUrl());
 
         if (scenario.isExpectSuccess()) {
             Assert.assertTrue(msg.contains(expected),

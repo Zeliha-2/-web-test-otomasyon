@@ -11,6 +11,10 @@ public class NewsletterScenario { // JSON'dan okunacak senaryo nesnesi
     private String reference;
     private Boolean subscribe; // true -> Yes, false -> No seçimi
     private String expectedSuccessContains; // Başarı mesajında beklenen parça
+    /** true: oturumu kapatıp newsletter route'una misafir olarak git (OWASP erişim kontrolü). */
+    private Boolean unauthenticatedAccess;
+    /** true: abonelik Yes/No ardışık iki kez değiştirilir (boundary / durum geçişi). */
+    private Boolean toggleSubscriptionTwice;
 
     public String getCaseId() { // caseId alanını dışarıya okumak için getter
         return caseId; // caseId değerini döndürür
@@ -50,5 +54,26 @@ public class NewsletterScenario { // JSON'dan okunacak senaryo nesnesi
 
     public String getExpectedSuccessContains() { // beklenen mesaj parçası getter
         return expectedSuccessContains; // mesaj parçasını döndürür
+    }
+
+    public Boolean getUnauthenticatedAccess() {
+        return unauthenticatedAccess;
+    }
+
+    public Boolean getToggleSubscriptionTwice() {
+        return toggleSubscriptionTwice;
+    }
+
+    /**
+     * NWS-NEG-01 gibi: negative-test + subscribe hayır + beklenen metinde login (misafir yönlendirme senaryosu).
+     */
+    public boolean isGuestLoginRedirectNewsletterScenario() {
+        if (Boolean.TRUE.equals(unauthenticatedAccess)) {
+            return true;
+        }
+        String exp = expectedSuccessContains == null ? "" : expectedSuccessContains.toLowerCase();
+        return "negative-test".equalsIgnoreCase(technique)
+                && Boolean.FALSE.equals(subscribe)
+                && exp.contains("login");
     }
 }

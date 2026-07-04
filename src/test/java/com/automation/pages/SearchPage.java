@@ -2,6 +2,7 @@ package com.automation.pages;
 
 import com.automation.base.DriverFactory;
 import com.automation.config.ConfigManager;
+import com.automation.utils.SelfHealingElementFinder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -21,10 +22,6 @@ public class SearchPage {
         this.driver = DriverFactory.getDriver();
     }
 
-    /**
-     * Header araması bu temada güvenilir URL değişimi üretmeyebiliyor; önce kutuya yazar,
-     * ardından aynı oturumda sonuç sayfasına doğrudan gider (OpenCart route=product/search).
-     */
     public void searchFromHeader(String query) {
         int sec = ConfigManager.getInt("explicit.wait.seconds", 8);
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(sec));
@@ -34,12 +31,25 @@ public class SearchPage {
         try {
             WebElement input = wait.until(ExpectedConditions.elementToBeClickable(
                     By.cssSelector("#search input[name='search'], #search input[type='text'], header input[name='search']")));
+            try {
+                input = SelfHealingElementFinder.find(driver, List.of(
+                        By.cssSelector("#search input[name='search']"),
+                        By.cssSelector("#search input[type='text']"),
+                        By.cssSelector("header input[name='search']"),
+                        By.xpath("//input[@name='search' or @placeholder='Search']")));
+            } catch (Exception ignored) {
+                // keep wait result
+            }
             ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block:'center'});", input);
             input.click();
             input.clear();
             input.sendKeys(q);
             try {
-                WebElement go = driver.findElement(By.cssSelector("#search button, #search .btn-default, #search .btn-primary"));
+                WebElement go = SelfHealingElementFinder.find(driver, List.of(
+                        By.cssSelector("#search button"),
+                        By.cssSelector("#search .btn-default"),
+                        By.cssSelector("#search .btn-primary"),
+                        By.xpath("//button[contains(@class,'btn') and ancestor::*[@id='search']]")));
                 ((JavascriptExecutor) driver).executeScript("arguments[0].click();", go);
             } catch (Exception ignored) {
                 input.sendKeys(Keys.ENTER);

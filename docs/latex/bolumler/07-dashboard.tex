@@ -1,0 +1,24 @@
+\chapter{QA Command Center Dashboard}
+
+\section{Dashboard Mimarisi (Tek HTML + Chart.js)}
+Dashboard tek dosya olarak \texttt{dashboard.html} içinde geliştirilmiştir. Chart.js grafikleri, Lucide ikonları ve \texttt{results.json} fetch ile çalışır. Serve kökü: \texttt{target/test-history/}.
+
+\section{Genel Bakış ve Metrik Kartları}
+Ana sayfada toplam test, geçen, kalan ve başarı oranı kartları bulunur. Her kart drill-down popup açarak ilgili test listesini gösterir.
+
+\section{Test Geçmişi ve Modül Trendi}
+``Genel Koşumlar'' ve ``Modül Bazlı'' sekmeleri ile geçmiş koşumlar timeline'da listelenir. Modül trendi grouped bar chart ile modül bazlı pass/fail eğilimini gösterir.
+
+\section{Hata Analizi ve AI Notları}
+Fail olan testler katman filtresine göre (UI / API / DB) listelenir. Her kartta hata mesajı, ekran görüntüsü, AI analiz notu ve ``Hatayı Raporla'' butonu yer alır.
+
+\section{Modül Kapsamı ve OWASP Haritası}
+Modül kontrol listesi risk tier rozetleri ve dairesel ilerleme halkaları ile gösterilir. OWASP test kategorileri modüllere eşlenmiştir.
+
+\section{Raporlanan Hatalar (Master-Detail)}
+Jira tarzı master-detail düzen: sol listede raporlanan hatalar, sağda detay paneli. Ekler bölümünde ekran görüntüsü ve hata logu indirme desteklenir. Kayıtlar \texttt{localStorage} ile persist edilir.
+
+\section{results.json Veri Şeması}
+Her koşum \texttt{runs[]} dizisinde; testler \texttt{caseId}, \texttt{status}, \texttt{module}, \texttt{screenshotPath}, \texttt{errorLogPath}, \texttt{aiAnalysis} alanlarıyla saklanır.
+
+% TODO: Dashboard ekran görüntüsü ekle (Genel Bakış, Hata Analizi).

@@ -1,0 +1,37 @@
+\chapter{Giriş ve Motivasyon}
+
+\section{Problemin Tanımı}
+Modern web uygulamalarında kullanıcı arayüzü, REST API ve veritabanı katmanları birbirine sıkı bağımlılık içindedir. Manuel regresyon testleri tekrarlanabilir, ölçeklenebilir ve hızlı geri bildirim sağlayamaz. Ayrıca DOM değişiklikleri, kırılgan locator'lar ve flaky testler otomasyon projelerinin sürdürülebilirliğini zorlaştırır.
+
+Bu proje, LambdaTest E-Commerce Playground üzerinde çalışan ve \textbf{UI · API · DB · E2E} katmanlarını tek çatı altında toplayan bir test otomasyon framework'ü geliştirmeyi hedefler.
+
+\section{Projenin Amacı ve Kapsamı}
+Projenin temel amacı:
+\begin{itemize}
+  \item Data-driven JSON senaryoları ile modüler UI testleri yazmak,
+  \item API ve veritabanı katmanlarında bağımsız doğrulama yapmak,
+  \item Self-healing locator ile DOM değişikliklerine dayanıklılık sağlamak,
+  \item Groq LLM ve opsiyonel ML modeli ile hata kök neden analizi üretmek,
+  \item QA Command Center dashboard ile test geçmişini görselleştirmek.
+\end{itemize}
+
+\section{Hedeflenen Katmanlar}
+\begin{table}[H]
+  \centering
+  \caption{Proje katmanları ve teknolojiler}
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    \textbf{Katman} & \textbf{Araç} & \textbf{Hedef} \\
+    \midrule
+    UI & Selenium 4 + TestNG & 10 modül, ~202 senaryo \\
+    API & RestAssured & reqres.in, 32 senaryo \\
+    DB & JDBC (H2 + SQL Server) & 35 senaryo \\
+    E2E & UI + API + DB & Sipariş akışı, 4 senaryo \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\section{Raporun Organizasyonu}
+Bu rapor; teknoloji seçimleri, sistem mimarisi, test yaklaşımı, self-healing, AI analiz, dashboard, Jira raporlama, sonuçlar ve gelecek planları bölümlerinden oluşmaktadır.
+
+% TODO: Üniversite önsözü, teşekkür ve kısaltmalar bölümünü şablona göre ekle.

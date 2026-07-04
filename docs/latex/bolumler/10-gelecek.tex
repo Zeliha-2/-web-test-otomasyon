@@ -1,0 +1,15 @@
+\chapter{Gelecek Planlar}
+
+\section{CI/CD (GitHub Actions)}
+GitHub Actions workflow ile her push'ta \texttt{mvn test} koşturulması, artefakt olarak ExtentReports ve \texttt{results.json} yüklenmesi planlanmaktadır.
+
+\section{Jira REST API Entegrasyonu}
+Dashboard formundan doğrudan Jira issue açma: \texttt{jira.enabled=true}, API token ve \texttt{JiraDashboardConfig} ile REST çağrısı.
+
+\section{Dashboard Dağıtım Otomasyonu}
+\texttt{dashboard.html} kopyalama ve \texttt{npx serve} adımlarını tek npm script veya Maven exec plugin ile otomatikleştirme.
+
+\section{Test Verisi ve Flaky Test Yönetimi}
+ML modelinin geçmiş koşum verisiyle periyodik yeniden eğitimi; flaky testlerin otomatik etiketlenmesi ve quarantine mekanizması.
+
+% TODO: Zaman çizelgesi (Gantt) veya milestone tablosu ekle.

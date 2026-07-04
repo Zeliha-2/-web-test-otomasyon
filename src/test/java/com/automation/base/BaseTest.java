@@ -1,12 +1,16 @@
 package com.automation.base;
 
 import com.automation.config.ConfigManager;
+import com.automation.dashboard.DashboardResultsListener;
+import com.automation.listeners.TestListener;
 import java.lang.reflect.Method;
 import org.openqa.selenium.WebDriverException;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Listeners;
 
+@Listeners({TestListener.class, DashboardResultsListener.class})
 public abstract class BaseTest {
     @BeforeClass(alwaysRun = true)
     public void createDriverOnce() {

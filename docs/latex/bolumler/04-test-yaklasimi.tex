@@ -1,0 +1,59 @@
+\chapter{Uygulanan Test Yaklaşımı}
+
+\section{Data-Driven Test Tasarımı (JSON Senaryolar)}
+Her modül için JSON dosyasında senaryo tanımları bulunur. Örnek alanlar: \texttt{caseId}, \texttt{description}, \texttt{technique}, \texttt{standard}, \texttt{testType}, \texttt{expectedOutcome}.
+
+\begin{lstlisting}[caption={Örnek senaryo alanları (login-scenarios.json)}]
+{
+  "caseId": "LGN-001",
+  "description": "Gecersiz sifre ile giris",
+  "technique": "negative-test",
+  "standard": "OWASP",
+  "testType": "regression",
+  "testLevel": "system-test"
+}
+\end{lstlisting}
+
+\section{Risk Bazlı Senaryo Hedefleri}
+Modül karmaşıklığı ve iş kritikliğine göre hedef senaryo sayıları belirlenmiştir:
+
+\begin{table}[H]
+  \centering
+  \caption{Risk bazlı modül hedefleri}
+  \begin{tabular}{@{}lr@{}}
+    \toprule
+    \textbf{Modül} & \textbf{Hedef} \\
+    \midrule
+    Checkout & 28 \\
+    Login / ForgotPassword & 24 \\
+    Register / Cart / MyAccountSettings & 22 \\
+    MyAccount & 20 \\
+    Search & 18 \\
+    WishList & 12 \\
+    Newsletter & 10 \\
+    Api & 32 \\
+    Db (H2 + SQL Server) & 35 \\
+    E2EOrderFlow & 4 \\
+    \midrule
+    \textbf{Toplam} & \textbf{$\sim$273} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\section{Test Teknikleri}
+Equivalence Partitioning (EP), Boundary Value Analysis (BVA), negatif/pozitif test, durum geçişi ve güvenlik odaklı senaryolar uygulanmıştır.
+
+\section{OWASP ve ISTQB Standart Eşlemesi}
+Dashboard Modül Kapsamı bölümünde OWASP test kategorileri modüllere eşlenmiştir. Senaryo metadata'sında \texttt{standard} alanı ile referans tutulur.
+
+\section{UI Modül Kapsamı}
+10 UI modülü: Login, Register, ForgotPassword, MyAccount, MyAccountSettings, Newsletter, WishList, Search, Cart, Checkout. Toplam $\sim$202 UI senaryosu.
+
+\section{API, DB ve E2E Senaryo Kapsamı}
+\begin{itemize}
+  \item \textbf{API:} GET/POST/PUT/DELETE, auth, pagination, hata kodları (32 senaryo).
+  \item \textbf{DB:} CRUD, constraint, transaction, SQL Server entegrasyon (35 senaryo).
+  \item \textbf{E2E:} UI checkout $\rightarrow$ API $\rightarrow$ DB doğrulama (4 senaryo).
+\end{itemize}
+
+% TODO: Modül başına pass/fail tablosu ekle (son koşum sonuçlarından).

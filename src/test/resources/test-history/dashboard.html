@@ -1,0 +1,2775 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>QA Komuta Merkezi | Test Paneli</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <style>
+    :root {
+      --bg-color: #F8F9FA;
+      --card-bg: #FFFFFF;
+      --primary: #6366F1;
+      --secondary: #0EA5E9;
+      --success: #10B981;
+      --error: #EF4444;
+      --warning: #F59E0B;
+      --text-main: #1E293B;
+      --text-muted: #64748B;
+      --border-color: #E2E8F0;
+      --shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.1);
+      --radius: 12px;
+      --ai-gradient: linear-gradient(135deg, #6366F1 0%, #a855f7 100%);
+      --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      --surface-muted: #F8FAFC;
+      --surface-hover: #F1F5F9;
+      --chip-bg: #F1F5F9;
+      --chip-text: #475569;
+      --chip-border: #E2E8F0;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+    body { background: var(--bg-color); color: var(--text-main); display: flex; min-height: 100vh; overflow-x: hidden; }
+    aside { width: 260px; background: #fff; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 100; }
+    .logo-area { padding: 24px; display: flex; align-items: center; gap: 12px; }
+    .logo-icon { width: 32px; height: 32px; background: var(--primary); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.75rem; }
+    .logo-text { font-weight: 700; font-size: 1.1rem; letter-spacing: -0.5px; }
+    .logo-sub { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
+    nav { flex: 1; padding: 0 12px; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; text-decoration: none; color: var(--text-muted); border-radius: 8px; font-size: 0.9rem; font-weight: 500; margin-bottom: 4px; transition: all 0.2s; cursor: pointer; border: none; background: transparent; width: 100%; text-align: left; }
+    .nav-item:hover { background: #f1f5f9; color: var(--text-main); }
+    .nav-item.active { background: #EEF2FF; color: var(--primary); }
+    .sidebar-footer { padding: 20px; border-top: 1px solid var(--border-color); font-size: 0.75rem; color: var(--text-muted); line-height: 1.5; }
+    main { margin-left: 260px; flex: 1; display: flex; flex-direction: column; min-width: 0; }
+    header { min-height: 64px; background: #fff; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 12px 32px; position: sticky; top: 0; z-index: 90; flex-wrap: wrap; gap: 12px; }
+    .breadcrumb { font-size: 0.85rem; color: var(--text-muted); }
+    .breadcrumb span { color: var(--text-main); font-weight: 500; }
+    .header-status { font-size: 0.8rem; color: var(--text-muted); }
+    .header-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .btn-outline, .input { padding: 6px 12px; border: 1px solid var(--border-color); background: white; border-radius: 6px; font-size: 0.85rem; color: var(--text-main); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: background 0.2s; height: 34px; }
+    .input { cursor: text; }
+    .btn-outline:hover { background: var(--bg-color); }
+    .btn-link { border: none; background: none; color: var(--primary); cursor: pointer; font-weight: 600; text-decoration: underline; }
+    .btn-link:hover { color: #1D4ED8; }
+    .btn-outline.primary { color: var(--primary); border-color: var(--primary); font-weight: 600; }
+    .run-label { font-size: 0.76rem; color: var(--text-muted); }
+    .content-area { padding: 32px; max-width: 1400px; margin: 0 auto; width: 100%; }
+    .page-section { display: none; }
+    .page-section.active { display: block; animation: fadeIn 0.3s ease-out forwards; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+    .page-header h2 { font-size: 1.25rem; }
+    .page-header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 4px; }
+    .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 32px; }
+    .metrics-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .metrics-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+    .card { background: var(--card-bg); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); border: 1px solid var(--border-color); }
+    .metric-card .label, .metric-label { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+    .metric-card .value, .metric-val { font-size: 1.75rem; font-weight: 700; color: var(--text-main); }
+    .metric-sub { margin-top: 6px; color: var(--text-muted); font-size: 0.75rem; }
+    .metric-delta { font-size: 0.75rem; font-weight: 600; margin-top: 6px; }
+    .trend { font-size: 0.75rem; font-weight: 600; }
+    .trend.up { color: var(--success); }
+    .trend.down { color: var(--error); }
+    .chart-row { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 20px; }
+    .chart-row.single { grid-template-columns: 1fr; }
+    .chart-box { position: relative; min-height: 240px; }
+    .chart-box.trend { height: 260px; }
+    .chart-box canvas { width: 100% !important; }
+    .section-title { font-size: 1rem; margin-bottom: 20px; font-weight: 600; }
+    .module-list { display: grid; gap: 10px; }
+    .module-row { border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; background: #f8fafc; }
+    .module-row.clickable, .timeline-item.clickable, .list-item.clickable, .metric-card.clickable, .cov-card.clickable, .cov-check-card.clickable, .cov-owasp-item.clickable { cursor: pointer; transition: border-color 0.15s, background 0.15s, box-shadow 0.15s; }
+    .module-row.clickable:hover { border-color: #A5B4FC; background: #EEF2FF; box-shadow: 0 2px 8px rgba(99,102,241,0.12); }
+    .timeline-item.clickable:hover .timeline-content { background: #F8FAFC; border-radius: 8px; padding: 4px 8px; margin: -4px -8px; }
+    .list-item.clickable:hover { background: #F8FAFC; margin: 0 -8px; padding-left: 8px; padding-right: 8px; border-radius: 6px; }
+    .metric-card.clickable:hover { border-color: #A5B4FC; box-shadow: 0 4px 12px rgba(99,102,241,0.1); }
+    .cov-card.clickable:hover { border-color: #A5B4FC; box-shadow: 0 4px 14px rgba(99,102,241,0.1); }
+    .cov-check-item.clickable:hover, .cov-owasp-item.clickable:hover { border-color: #A5B4FC; background: #EEF2FF; }
+    .drill-stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 16px 0; }
+    .drill-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+    .drill-hint { font-size: 0.78rem; color: var(--text-muted); margin-top: 8px; }
+    .drill-filter-banner { margin-bottom: 14px; padding: 10px 14px; border-radius: 8px; background: #EEF2FF; border: 1px solid #C7D2FE; font-size: 0.82rem; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+    @media (max-width: 700px) { .drill-stat-grid { grid-template-columns: repeat(2, 1fr); } }
+    .module-meta { display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 8px; }
+    .bar, .progress-bar-bg { height: 8px; background: #E2E8F0; border-radius: 4px; overflow: hidden; }
+    .bar > span { display: block; height: 100%; background: linear-gradient(90deg, var(--primary), #818cf8); border-radius: 4px; }
+    .list-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border-color); font-size: 0.85rem; }
+    .list-item:last-child { border-bottom: none; }
+    .date-separator { text-align: center; margin: 32px 0 20px; position: relative; }
+    .date-separator::before { content: ""; position: absolute; left: 0; top: 50%; width: 100%; height: 1px; background: var(--border-color); z-index: 1; }
+    .date-separator span { background: var(--bg-color); padding: 0 15px; position: relative; z-index: 2; color: var(--text-muted); font-size: 0.8rem; font-weight: 500; }
+    .fail-grid { display: grid; gap: 16px; }
+    .fail-card { margin-bottom: 0; border-left: 4px solid var(--error); position: relative; }
+    .fail-card-wrap.hidden { display: none; }
+    .fail-filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    .filter-chip { padding: 6px 16px; border-radius: 999px; border: 1.5px solid var(--border-color); background: #fff; color: var(--text-muted); font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s; line-height: 1.2; }
+    .filter-chip:hover { opacity: 0.92; transform: translateY(-1px); }
+    .filter-chip.filter-chip-ui { border-color: #93C5FD; color: #1D4ED8; }
+    .filter-chip.filter-chip-ui.active { background: #2563EB; border-color: #2563EB; color: #fff; }
+    .filter-chip.filter-chip-api { border-color: #FDBA74; color: #C2410C; }
+    .filter-chip.filter-chip-api.active { background: #EA580C; border-color: #EA580C; color: #fff; }
+    .filter-chip.filter-chip-db { border-color: #86EFAC; color: #15803D; }
+    .filter-chip.filter-chip-db.active { background: #16A34A; border-color: #16A34A; color: #fff; }
+    .filter-chip.filter-chip-e2e { border-color: #C4B5FD; color: #6D28D9; }
+    .filter-chip.filter-chip-e2e.active { background: #7C3AED; border-color: #7C3AED; color: #fff; }
+    .fail-card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+    .fail-card-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
+    .fail-card-date { font-size: 0.75rem; color: var(--text-muted); }
+    .layer-badge { font-size: 0.65rem; letter-spacing: 0.04em; padding: 3px 8px; border-radius: 6px; font-weight: 700; }
+    .layer-badge-ui { background: #DBEAFE; color: #1D4ED8; }
+    .layer-badge-api { background: #FFEDD5; color: #C2410C; }
+    .layer-badge-db { background: #DCFCE7; color: #15803D; }
+    .badge, .pill { padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 600; text-transform: none; display: inline-flex; align-items: center; white-space: nowrap; }
+    .badge-indigo, .pill.primary { background: #EEF2FF; color: var(--primary); }
+    .badge-blue { background: #E0F2FE; color: var(--secondary); }
+    .badge-orange, .pill.warning { background: #FFF7ED; color: var(--warning); }
+    .badge-red, .pill.danger { background: #FEF2F2; color: var(--error); }
+    .pill.success { background: #DCFCE7; color: #166534; }
+    .pill.violet { background: #f3e8ff; color: #7c3aed; }
+    .error-log, .fail-card pre { background: #1E293B; color: #FDA4AF; padding: 12px; border-radius: 6px; font-family: var(--mono); font-size: 0.85rem; margin: 12px 0; border-left: 4px solid var(--error); white-space: pre-wrap; word-break: break-word; }
+    .fail-card pre { display: none; max-height: 170px; overflow: auto; }
+    .fail-card pre.open { display: block; }
+    .thumb { max-width: 180px; max-height: 120px; border-radius: 8px; margin-top: 8px; cursor: pointer; border: 1px solid var(--border-color); }
+    .ai-engine-card, .ai-analysis-card { background: var(--ai-gradient); color: white; padding: 20px; border-radius: var(--radius); margin-top: 12px; }
+    .ai-header, .ai-analysis-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; gap: 10px; flex-wrap: wrap; }
+    .ai-chip, .ai-meta-chip { background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; backdrop-filter: blur(4px); display: inline-flex; align-items: center; }
+    .ai-meta-chip.risk-high { background: rgba(239,68,68,0.25); }
+    .ai-meta-chip.risk-mid { background: rgba(245,158,11,0.25); }
+    .ai-meta-chip.risk-low { background: rgba(16,185,129,0.25); }
+    .ai-analysis-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
+    .ai-grid, .ai-analysis-body { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; font-size: 0.8rem; }
+    .ai-section { background: rgba(255,255,255,0.08); border-radius: 8px; overflow: hidden; }
+    .ai-section-title { font-weight: 700; font-size: 0.65rem; text-transform: uppercase; opacity: 0.85; margin-bottom: 0; padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,0.12); }
+    .ai-section-body { padding: 10px; line-height: 1.55; }
+    .ai-section-body code { font-family: var(--mono); background: rgba(0,0,0,0.2); padding: 2px 5px; border-radius: 4px; }
+    .ai-section-body ul { margin: 6px 0 0 16px; }
+    .ai-brand-title { font-weight: 700; font-size: 0.9rem; }
+    .ai-brand-sub { font-size: 0.72rem; opacity: 0.85; margin-top: 2px; }
+    .ai-live-badge { background: rgba(16,185,129,0.25); padding: 4px 10px; border-radius: 999px; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; }
+    .table-wrap { overflow: auto; border: 1px solid var(--border-color); border-radius: var(--radius); background: white; }
+    table { width: 100%; border-collapse: collapse; min-width: 800px; }
+    th { text-align: left; padding: 12px; font-size: 0.75rem; color: var(--text-muted); border-bottom: 1px solid var(--border-color); text-transform: uppercase; background: #f8fafc; position: sticky; top: 0; z-index: 1; }
+    td { padding: 14px 12px; font-size: 0.85rem; border-bottom: 1px solid var(--border-color); vertical-align: top; }
+    tbody tr.clickable { cursor: pointer; }
+    tbody tr.clickable:hover { background: #f8fafc; }
+    .status-pill { display: inline-flex; align-items: center; gap: 5px; padding: 2px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 500; }
+    .status-pill.passed, .passed { background: #DCFCE7; color: #166534; }
+    .status-pill.failed, .failed { background: #FEE2E2; color: #991B1B; }
+    .toolbar { display: grid; grid-template-columns: 1.4fr repeat(5, minmax(110px, 1fr)); gap: 10px; margin-bottom: 16px; }
+    .mini-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px; }
+    .mini { background: white; border: 1px solid var(--border-color); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); }
+    .mini span { color: var(--text-muted); font-size: 0.77rem; }
+    .mini b { display: block; font-size: 1.2rem; margin-top: 4px; }
+    .timeline-item { display: flex; gap: 20px; padding: 15px 0; border-bottom: 1px solid var(--border-color); align-items: flex-start; }
+    .timeline-item:last-child { border-bottom: none; }
+    .timeline-date { width: 130px; font-size: 0.85rem; color: var(--text-muted); flex-shrink: 0; }
+    .timeline-content { flex: 1; min-width: 0; }
+    .history-timeline-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+    .history-tab { padding: 8px 16px; border-radius: 999px; border: 1.5px solid var(--border-color); background: var(--card-bg); color: var(--text-muted); font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+    .history-tab:hover { border-color: #A5B4FC; color: var(--text-main); }
+    .history-tab.active { background: #EEF2FF; border-color: var(--primary); color: var(--primary); }
+    .history-timeline-panel { display: none; }
+    .history-timeline-panel.active { display: block; }
+    .run-timeline-card { border: 1px solid var(--border-color); border-radius: 10px; margin-bottom: 12px; background: var(--card-bg); overflow: hidden; }
+    .run-timeline-header { display: flex; gap: 16px; padding: 14px 16px; align-items: flex-start; cursor: pointer; transition: background 0.15s; }
+    .run-timeline-header:hover { background: var(--surface-hover); }
+    .run-timeline-header.open { border-bottom: 1px solid var(--border-color); background: var(--surface-muted); }
+    .run-timeline-date { width: 130px; font-size: 0.82rem; color: var(--text-muted); flex-shrink: 0; line-height: 1.45; }
+    .run-timeline-main { flex: 1; min-width: 0; }
+    .run-timeline-top { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: center; }
+    .run-timeline-title { font-size: 0.92rem; font-weight: 700; }
+    .run-timeline-stats { font-size: 0.82rem; }
+    .run-timeline-stats b.pass { color: var(--success); }
+    .run-timeline-stats b.fail { color: var(--error); }
+    .run-mod-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .run-mod-chip { font-size: 0.68rem; font-weight: 700; padding: 3px 8px; border-radius: 6px; background: var(--chip-bg); color: var(--chip-text); border: 1px solid var(--chip-border); letter-spacing: 0.02em; }
+    .run-mod-chip.all { background: #EEF2FF; color: var(--primary); border-color: #C7D2FE; }
+    .run-timeline-chevron { color: var(--text-muted); flex-shrink: 0; margin-top: 2px; transition: transform 0.2s; }
+    .run-timeline-header.open .run-timeline-chevron { transform: rotate(180deg); }
+    .run-timeline-accordion { display: none; padding: 14px 16px 16px; background: var(--surface-muted); border-top: 1px solid var(--border-color); }
+    .run-timeline-accordion.open { display: block; }
+    .run-acc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 12px; }
+    .run-acc-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+    .history-module-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    .history-mod-pill { padding: 6px 12px; border-radius: 999px; border: 1.5px solid var(--border-color); background: var(--card-bg); color: var(--text-muted); font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+    .history-mod-pill:hover { border-color: #A5B4FC; color: var(--text-main); }
+    .history-mod-pill.active { background: #EEF2FF; border-color: var(--primary); color: var(--primary); }
+    .module-run-row { display: flex; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--border-color); align-items: flex-start; }
+    .module-run-row:last-child { border-bottom: none; }
+    .module-run-date { width: 130px; font-size: 0.82rem; color: var(--text-muted); flex-shrink: 0; }
+    .module-run-body { flex: 1; min-width: 0; }
+    .accordion { padding: 12px; background: #f8fafc; display: none; border-top: 1px solid var(--border-color); }
+    .accordion.open { display: block; }
+    .cov-grid { display: grid; gap: 16px; grid-template-columns: repeat(2, 1fr); }
+    .cov-insights-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    .cov-full-width { margin-bottom: 16px; }
+    .cov-section { margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--border-color); }
+    .cov-section-head { font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .cov-owasp-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 10px; }
+    .cov-owasp-item { text-align: center; padding: 10px 6px; border-radius: 8px; font-size: 0.75rem; border: 1px solid var(--border-color); }
+    .cov-owasp-item.yes { background: #FFF7ED; border-color: #FDBA74; color: #9A3412; }
+    .cov-owasp-item.no { background: var(--surface-muted); color: var(--text-muted); }
+    .cov-owasp-split { display: flex; gap: 12px; align-items: stretch; }
+    .cov-owasp-modules { flex: 0 0 228px; width: 228px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; align-content: start; }
+    .cov-owasp-mod-card { padding: 8px 6px; border-radius: 8px; border: 1.5px solid var(--border-color); cursor: pointer; text-align: center; font-size: 0.72rem; background: var(--surface-muted); transition: border-color 0.15s, background 0.15s, box-shadow 0.15s; min-width: 0; }
+    .cov-owasp-mod-card:hover { border-color: #A5B4FC; box-shadow: 0 2px 8px rgba(99,102,241,0.1); }
+    .cov-owasp-mod-card.active { border-color: var(--primary); background: #EEF2FF; box-shadow: 0 0 0 2px rgba(99,102,241,0.15); }
+    .cov-owasp-mod-card.has-owasp { border-color: #FDBA74; }
+    .cov-owasp-mod-card.no-owasp { opacity: 0.72; }
+    .cov-owasp-mod-card strong { display: block; margin-top: 3px; font-size: 0.74rem; line-height: 1.2; }
+    .cov-owasp-detail-panel { flex: 1; min-width: 0; border: 1px solid var(--border-color); border-radius: 10px; padding: 14px; background: var(--surface-muted); overflow-y: auto; max-height: 420px; }
+    .cov-owasp-detail-head { margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); }
+    .cov-owasp-detail-head h4 { font-size: 1rem; margin-bottom: 4px; }
+    .cov-owasp-scenario-row { padding: 10px 0; border-bottom: 1px solid var(--border-color); }
+    .cov-owasp-scenario-row:last-child { border-bottom: none; }
+    .cov-owasp-scenario-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
+    .cov-owasp-scenario-id { font-family: var(--mono); font-size: 0.78rem; font-weight: 700; color: var(--primary); }
+    .cov-owasp-cat-chip { font-size: 0.65rem; font-weight: 700; padding: 3px 8px; border-radius: 999px; background: #FFF7ED; color: #9A3412; border: 1px solid #FDBA74; white-space: nowrap; }
+    .cov-owasp-scenario-desc { font-size: 0.8rem; color: var(--text-muted); line-height: 1.45; }
+    .cov-owasp-security-alert { background: #FEF2F2; border: 1px solid #FECACA; color: #991B1B; padding: 12px 14px; border-radius: 8px; margin-top: 14px; font-size: 0.82rem; line-height: 1.5; }
+    .cov-target-cards-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .cov-target-card { border-radius: 10px; padding: 14px; border: 1.5px solid var(--border-color); background: var(--card-bg); transition: transform 0.15s, box-shadow 0.15s; }
+    .cov-target-card:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+    .cov-target-card--green { background: linear-gradient(180deg, rgba(16,185,129,0.12), var(--card-bg)); border-color: #86EFAC; }
+    .cov-target-card--blue { background: linear-gradient(180deg, rgba(59,130,246,0.1), var(--card-bg)); border-color: #93C5FD; }
+    .cov-target-card--orange { background: linear-gradient(180deg, rgba(245,158,11,0.12), var(--card-bg)); border-color: #FDBA74; }
+    .cov-target-card--red { background: linear-gradient(180deg, rgba(239,68,68,0.1), var(--card-bg)); border-color: #FECACA; }
+    .cov-target-card-name { font-size: 0.82rem; font-weight: 700; color: var(--text-muted); }
+    .cov-target-big { font-size: 1.85rem; font-weight: 800; line-height: 1.1; margin: 8px 0 6px; letter-spacing: -0.02em; }
+    .cov-target-stats { font-size: 0.78rem; color: var(--text-muted); }
+    .cov-target-stats b.pass { color: var(--success); }
+    .cov-target-stats b.fail { color: var(--error); }
+    .cov-tech-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+    .cov-tech-chip { font-size: 0.65rem; font-weight: 700; padding: 3px 7px; border-radius: 5px; background: var(--chip-bg); color: var(--chip-text); border: 1px solid var(--chip-border); font-family: var(--mono); }
+    .cov-target-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--border-color); font-size: 0.82rem; }
+    .cov-target-row:last-child { border-bottom: none; }
+    .cov-target-bar { flex: 1; height: 8px; background: #E2E8F0; border-radius: 4px; overflow: hidden; max-width: 140px; }
+    .cov-target-bar > span { display: block; height: 100%; background: linear-gradient(90deg, #6366F1, #818cf8); border-radius: 4px; }
+    .cov-alert-panel { border: 1px solid #FDBA74; background: #FFFBEB; margin-bottom: 16px; }
+    .cov-alert-panel.ok { border-color: #86EFAC; background: #F0FDF4; }
+    .cov-trend-box { position: relative; height: 320px; margin-top: 10px; }
+    .cov-trend-note { font-size: 0.78rem; color: var(--text-muted); margin-top: 10px; line-height: 1.45; }
+    .cov-trend-warn { margin-top: 10px; padding: 10px 12px; border-radius: 8px; border: 1px solid #FDBA74; background: #FFFBEB; color: #9A3412; font-size: 0.78rem; line-height: 1.45; }
+    .cov-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 16px; }
+    @media (max-width: 1100px) { .cov-summary { grid-template-columns: repeat(2, 1fr); } }
+    .cov-legend { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 16px; line-height: 1.5; }
+    .cov-checklist { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 12px; }
+    @media (max-width: 1100px) { .cov-checklist { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 640px) { .cov-checklist { grid-template-columns: 1fr; } }
+    .cov-check-card { display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 12px; border: 2px solid var(--border-color); background: var(--card-bg); transition: box-shadow 0.2s, transform 0.15s, border-color 0.15s; min-width: 0; }
+    .cov-check-card:hover { box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08); transform: translateY(-1px); }
+    .cov-check-card.clickable:hover { border-color: #A5B4FC; }
+    .cov-check-card--green { border-color: #86EFAC; }
+    .cov-check-card--blue { border-color: #93C5FD; }
+    .cov-check-card--orange { border-color: #FDBA74; }
+    .cov-check-card--red { border-color: #FECACA; }
+    .cov-check-card.missing { border-color: #FECACA; opacity: 0.92; }
+    .cov-check-abbr { width: 46px; height: 46px; border-radius: 11px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.82rem; letter-spacing: -0.02em; flex-shrink: 0; }
+    .cov-check-card--green .cov-check-abbr { background: #DCFCE7; color: #166534; }
+    .cov-check-card--blue .cov-check-abbr { background: #DBEAFE; color: #1D4ED8; }
+    .cov-check-card--orange .cov-check-abbr { background: #FFEDD5; color: #C2410C; }
+    .cov-check-card--red .cov-check-abbr, .cov-check-card.missing .cov-check-abbr { background: #FEE2E2; color: #991B1B; }
+    .cov-check-body { flex: 1; min-width: 0; }
+    .cov-check-body strong { display: block; font-size: 0.9rem; margin-bottom: 5px; }
+    .cov-check-stats { font-size: 0.74rem; color: var(--text-muted); line-height: 1.45; }
+    .cov-check-stats b.pass { color: var(--success); font-weight: 700; }
+    .cov-check-stats b.fail { color: var(--error); font-weight: 700; }
+    .cov-check-stats b.skip { color: var(--warning); font-weight: 700; }
+    .cov-check-ring { --ring-color: #6366F1; --pct: 0; width: 52px; height: 52px; border-radius: 50%; flex-shrink: 0; background: conic-gradient(var(--ring-color) calc(var(--pct) * 1%), var(--ring-track, #E2E8F0) 0); display: grid; place-items: center; position: relative; }
+    .cov-check-ring::after { content: ''; position: absolute; inset: 5px; border-radius: 50%; background: var(--card-bg); }
+    .cov-check-ring span { position: relative; z-index: 1; font-size: 0.68rem; font-weight: 800; color: var(--text-main); }
+    .cov-check-ring--green { --ring-color: #10B981; }
+    .cov-check-ring--blue { --ring-color: #3B82F6; }
+    .cov-check-ring--orange { --ring-color: #F59E0B; }
+    .cov-check-ring--red { --ring-color: #EF4444; }
+    .cov-check-item { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; padding: 8px 10px; border: 1px solid var(--border-color); border-radius: 8px; background: #f8fafc; }
+    .cov-check-item.missing { border-color: #FDBA74; background: #FFF7ED; }
+    .cov-check-item.ok { border-color: #86EFAC; background: #F0FDF4; }
+    .cov-filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    .db-cov-panel { margin-bottom: 20px; border: 1px solid #86EFAC; background: linear-gradient(180deg, #f0fdf4 0%, #fff 100%); }
+    .db-cov-panel h3 { font-size: 0.95rem; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+    .db-cov-meta { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 12px; }
+    .db-cov-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 12px; }
+    .db-mod-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border-color); font-size: 0.82rem; }
+    .db-mod-row:last-child { border-bottom: none; }
+    .cov-card h3 { font-size: 1rem; margin-bottom: 12px; }
+    .cov-card .section { margin-bottom: 12px; }
+    .cov-card .section h4 { font-size: 0.76rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; }
+    .warn-banner { margin-top: 10px; padding: 8px 10px; border-radius: 8px; border: 1px solid rgba(245,158,11,0.35); background: #FFFBEB; color: #B45309; font-size: 0.76rem; font-weight: 600; }
+    .empty { text-align: center; border: 1px dashed var(--border-color); border-radius: var(--radius); padding: 40px 16px; background: white; color: var(--text-muted); }
+    .empty .ok-icon { font-size: 2rem; display: block; margin-bottom: 10px; }
+    .loading { display: grid; gap: 10px; margin-bottom: 20px; }
+    .skeleton { height: 78px; border-radius: var(--radius); background: linear-gradient(90deg, #eef2f7 0%, #e2e8f0 40%, #eef2f7 100%); background-size: 220% 100%; animation: shimmer 1.15s infinite linear; border: 1px solid var(--border-color); }
+    @keyframes shimmer { to { background-position-x: -220%; } }
+    #banner { margin-bottom: 16px; border-color: rgba(245,158,11,0.35); color: #B45309; background: #FFFBEB; }
+    .case-link { color: var(--primary); font-weight: 700; }
+    .drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.28); display: none; z-index: 200; }
+    .drawer { position: fixed; right: 0; top: 0; bottom: 0; width: min(480px, 100vw); background: white; border-left: 1px solid var(--border-color); box-shadow: var(--shadow); transform: translateX(100%); transition: transform 0.2s; z-index: 210; display: flex; flex-direction: column; }
+    .drawer.open { transform: translateX(0); }
+    .drawer-overlay.open { display: block; }
+    .jira-modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.45); display: none; z-index: 300; align-items: flex-start; justify-content: center; padding: 24px; overflow-y: auto; }
+    .jira-modal-overlay.open { display: flex; }
+    .jira-modal { width: min(920px, 100%); background: #fff; border-radius: 12px; box-shadow: 0 20px 50px rgba(0,0,0,0.18); border: 1px solid var(--border-color); margin: auto; }
+    .jira-modal-head { padding: 18px 22px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .jira-modal-head h3 { font-size: 1.05rem; }
+    .jira-modal-body { padding: 20px 22px 24px; max-height: calc(100vh - 120px); overflow-y: auto; }
+    .jira-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .jira-field { display: flex; flex-direction: column; gap: 6px; }
+    .jira-field.full { grid-column: 1 / -1; }
+    .jira-field label { font-size: 0.78rem; font-weight: 600; color: var(--text-muted); }
+    .jira-field input, .jira-field select, .jira-field textarea { border: 1px solid var(--border-color); border-radius: 8px; padding: 8px 10px; font-size: 0.86rem; width: 100%; }
+    .jira-field textarea { min-height: 110px; resize: vertical; font-family: inherit; }
+    .jira-attach-box { border: 1px dashed #94A3B8; border-radius: 10px; padding: 16px; background: #F8FAFC; font-size: 0.82rem; color: var(--text-muted); }
+    .jira-actions { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; margin-top: 18px; }
+    .btn-jira { background: #2563EB; color: #fff; border: none; border-radius: 8px; padding: 8px 14px; font-weight: 600; cursor: pointer; }
+    .btn-jira.secondary { background: #fff; color: var(--text-main); border: 1px solid var(--border-color); }
+    .jira-dup-banner { background: #FFF7ED; border: 1px solid #FDBA74; color: #9A3412; border-radius: 10px; padding: 14px; margin-bottom: 14px; font-size: 0.86rem; }
+    .jira-dup-link { color: #1D4ED8; font-weight: 600; cursor: pointer; text-decoration: underline; }
+    .nav-badge { margin-left: auto; font-size: 0.68rem; font-weight: 700; padding: 2px 7px; border-radius: 999px; background: #EEF2FF; color: var(--primary); min-width: 20px; text-align: center; }
+    .reported-layout { display: grid; grid-template-columns: 320px 1fr; gap: 0; min-height: calc(100vh - 180px); border: 1px solid var(--border-color); border-radius: var(--radius); overflow: hidden; background: var(--card-bg); }
+    .reported-list-pane { border-right: 1px solid var(--border-color); display: flex; flex-direction: column; min-height: 0; background: var(--surface-muted); }
+    .reported-list-head { padding: 14px 14px 10px; border-bottom: 1px solid var(--border-color); }
+    .reported-list-head input { width: 100%; border: 1px solid var(--border-color); border-radius: 8px; padding: 8px 10px; font-size: 0.84rem; background: var(--card-bg); }
+    .reported-list-scroll { overflow-y: auto; flex: 1; padding: 8px; }
+    .reported-list-item { display: flex; gap: 10px; padding: 10px 10px 10px 12px; border-radius: 8px; cursor: pointer; border: 1px solid transparent; margin-bottom: 4px; transition: background 0.15s, border-color 0.15s; }
+    .reported-list-item:hover { background: var(--surface-hover); }
+    .reported-list-item.active { background: #EEF2FF; border-color: #C7D2FE; box-shadow: inset 3px 0 0 var(--primary); }
+    .reported-list-icon { width: 18px; height: 18px; border-radius: 4px; background: #FEE2E2; color: #991B1B; display: grid; place-items: center; font-size: 0.62rem; font-weight: 800; flex-shrink: 0; margin-top: 2px; }
+    .reported-list-main { min-width: 0; flex: 1; }
+    .reported-list-id { font-family: var(--mono); font-size: 0.72rem; font-weight: 700; color: var(--primary); }
+    .reported-list-title { font-size: 0.8rem; font-weight: 600; line-height: 1.35; margin-top: 2px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .reported-list-meta { font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; }
+    .reported-detail-pane { overflow-y: auto; padding: 0; min-height: 0; }
+    .reported-detail-empty { display: grid; place-items: center; min-height: 360px; color: var(--text-muted); font-size: 0.9rem; padding: 24px; text-align: center; }
+    .reported-detail-head { padding: 20px 24px 16px; border-bottom: 1px solid var(--border-color); }
+    .reported-detail-head h3 { font-size: 1.15rem; line-height: 1.4; margin-bottom: 10px; }
+    .reported-detail-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
+    .reported-status-select { border: 1px solid var(--border-color); border-radius: 8px; padding: 6px 10px; font-size: 0.82rem; background: var(--card-bg); }
+    .reported-status-pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; }
+    .reported-status-pill.draft { background: #FEF3C7; color: #92400E; }
+    .reported-status-pill.reported { background: #DBEAFE; color: #1D4ED8; }
+    .reported-status-pill.jira_open { background: #EDE9FE; color: #6D28D9; }
+    .reported-status-pill.resolved { background: #DCFCE7; color: #166534; }
+    .reported-detail-body { display: grid; grid-template-columns: 1fr 280px; gap: 0; }
+    .reported-detail-main { padding: 20px 24px; border-right: 1px solid var(--border-color); min-width: 0; }
+    .reported-detail-side { padding: 20px 18px; background: var(--surface-muted); font-size: 0.82rem; }
+    .reported-meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 20px; margin-bottom: 20px; }
+    .reported-meta-item label { display: block; font-size: 0.72rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
+    .reported-meta-item span { font-size: 0.84rem; }
+    .reported-section { margin-bottom: 18px; }
+    .reported-section h4 { font-size: 0.76rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; }
+    .reported-section pre, .reported-section p { font-size: 0.86rem; line-height: 1.55; white-space: pre-wrap; word-break: break-word; }
+    .reported-side-row { margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--border-color); }
+    .reported-side-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .reported-side-row label { display: block; font-size: 0.72rem; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; }
+    @media (max-width: 1100px) {
+      .reported-layout { grid-template-columns: 1fr; min-height: auto; }
+      .reported-list-pane { max-height: 280px; border-right: none; border-bottom: 1px solid var(--border-color); }
+      .reported-detail-body { grid-template-columns: 1fr; }
+      .reported-detail-main { border-right: none; border-bottom: 1px solid var(--border-color); }
+    }
+    .drawer-head { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--border-color); }
+    .drawer-body { padding: 20px; overflow: auto; font-size: 0.85rem; line-height: 1.6; }
+    .timeline { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+    .palette { position: fixed; inset: 0; display: none; place-items: start center; padding-top: 10vh; background: rgba(0,0,0,0.33); z-index: 300; }
+    .palette.open { display: grid; }
+    .palette-box { width: min(620px, 92vw); background: white; border: 1px solid var(--border-color); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+    .palette-box input { width: 100%; border: 0; border-bottom: 1px solid var(--border-color); height: 44px; padding: 0 14px; font-size: 0.9rem; }
+    .palette-results { max-height: 300px; overflow: auto; }
+    .palette-item { padding: 10px 14px; border-bottom: 1px solid var(--border-color); cursor: pointer; font-size: 0.85rem; }
+    .palette-item:hover { background: #f8fafc; }
+    @media (max-width: 1100px) {
+      .metrics-grid, .chart-row, .ai-grid, .ai-analysis-body, .cov-grid, .cov-insights-row { grid-template-columns: 1fr; }
+      .toolbar { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 900px) {
+      aside { width: 72px; }
+      aside .logo-text, aside .logo-sub, aside .nav-item span, aside .sidebar-footer { display: none; }
+      main { margin-left: 72px; }
+      .content-area { padding: 20px; }
+      .run-acc-grid { grid-template-columns: repeat(2, 1fr); }
+      .run-timeline-date, .module-run-date { width: 100%; }
+      .run-timeline-header, .module-run-row { flex-direction: column; gap: 8px; }
+      .cov-owasp-split { flex-direction: column; }
+      .cov-owasp-modules { flex: none; width: 100%; }
+      .cov-target-cards-grid { grid-template-columns: 1fr; }
+    }
+    [data-theme="dark"] {
+      --bg-color: #0F172A;
+      --card-bg: #1E293B;
+      --text-main: #F1F5F9;
+      --text-muted: #94A3B8;
+      --border-color: #334155;
+      --shadow: 0 1px 3px rgba(0,0,0,0.35);
+      --surface-muted: #172033;
+      --surface-hover: #243044;
+      --chip-bg: #243044;
+      --chip-text: #CBD5E1;
+      --chip-border: #475569;
+    }
+    [data-theme="dark"] aside,
+    [data-theme="dark"] header,
+    [data-theme="dark"] .mini,
+    [data-theme="dark"] .drawer,
+    [data-theme="dark"] .jira-modal,
+    [data-theme="dark"] .palette-box { background: var(--card-bg); }
+    [data-theme="dark"] .table-wrap,
+    [data-theme="dark"] .empty { background: var(--card-bg); color: var(--text-muted); }
+    [data-theme="dark"] th { background: var(--surface-muted); }
+    [data-theme="dark"] .history-tab.active,
+    [data-theme="dark"] .history-mod-pill.active { background: #312E81; border-color: #6366F1; color: #E0E7FF; }
+    [data-theme="dark"] .run-mod-chip.all { background: #312E81; color: #E0E7FF; border-color: #6366F1; }
+    [data-theme="dark"] .module-row,
+    [data-theme="dark"] .cov-check-item,
+    [data-theme="dark"] .cov-check-card { background: var(--card-bg); }
+    [data-theme="dark"] .cov-check-card:hover { box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35); }
+    [data-theme="dark"] { --ring-track: #334155; }
+    [data-theme="dark"] .cov-owasp-mod-card.active { background: #312E81; border-color: #6366F1; }
+    [data-theme="dark"] .reported-list-item.active { background: #312E81; border-color: #6366F1; }
+    [data-theme="dark"] .nav-badge { background: #312E81; color: #E0E7FF; }
+    [data-theme="dark"] .cov-trend-warn { background: #422006; border-color: #92400E; color: #FDBA74; }
+    [data-theme="dark"] .cov-owasp-cat-chip { background: #422006; color: #FDBA74; border-color: #92400E; }
+    [data-theme="dark"] .cov-owasp-security-alert { background: #450A0A; border-color: #991B1B; color: #FECACA; }
+    [data-theme="dark"] .cov-target-card--green { background: linear-gradient(180deg, rgba(16,185,129,0.18), var(--card-bg)); }
+    [data-theme="dark"] .cov-target-card--blue { background: linear-gradient(180deg, rgba(59,130,246,0.15), var(--card-bg)); }
+    [data-theme="dark"] .cov-target-card--orange { background: linear-gradient(180deg, rgba(245,158,11,0.15), var(--card-bg)); }
+    [data-theme="dark"] .cov-target-card--red { background: linear-gradient(180deg, rgba(239,68,68,0.15), var(--card-bg)); }
+  </style>
+</head>
+<body>
+
+  <aside>
+    <div class="logo-area">
+      <div class="logo-icon">QA</div>
+      <div>
+        <div class="logo-text">Komuta Merkezi</div>
+        <div class="logo-sub">Test Yönetim Paneli</div>
+      </div>
+    </div>
+    <nav id="nav">
+      <button class="nav-item active" data-view="home"><i data-lucide="layout-dashboard" size="18"></i><span>Genel Bakış</span></button>
+      <button class="nav-item" data-view="fails"><i data-lucide="alert-circle" size="18"></i><span>Hata Analizi</span></button>
+      <button class="nav-item" data-view="reported"><i data-lucide="clipboard-list" size="18"></i><span>Raporlanan Hatalar</span><span class="nav-badge" id="nav-reported-count">0</span></button>
+      <button class="nav-item" data-view="history"><i data-lucide="history" size="18"></i><span>Test Geçmişi</span></button>
+      <button class="nav-item" data-view="scenarios"><i data-lucide="file-text" size="18"></i><span>Test Senaryoları</span></button>
+      <button class="nav-item" data-view="selfheal"><i data-lucide="zap" size="18"></i><span>Otomatik Onarım</span></button>
+      <button class="nav-item" data-view="coverage"><i data-lucide="pie-chart" size="18"></i><span>Modül Kapsamı</span></button>
+    </nav>
+    <div class="sidebar-footer">v2.4.0<br>© 2026 Test Otomasyon</div>
+  </aside>
+
+  <main>
+    <header>
+      <div class="breadcrumb">Test Paneli &gt; <span id="crumb-page">Genel Bakış</span></div>
+      <div class="header-status" id="loaded-at">Yükleniyor...</div>
+      <div class="header-actions">
+        <span class="run-label">Koşum</span>
+        <select id="run-select" class="input"></select>
+        <button id="btn-search" class="btn-outline" title="Ctrl+K"><i data-lucide="search" size="16"></i></button>
+        <button id="btn-csv" class="btn-outline"><i data-lucide="download" size="16"></i> Dışa Aktar</button>
+        <button id="btn-refresh" class="btn-outline primary"><i data-lucide="refresh-cw" size="16"></i> Yenile</button>
+        <button id="btn-theme" class="btn-outline" title="Tema değiştir">Tema</button>
+      </div>
+    </header>
+
+    <div class="content-area">
+      <div id="loading" class="loading"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div>
+      <div id="banner" class="card" style="display:none"></div>
+
+      <section id="view-home" class="page-section active">
+        <div class="page-header">
+          <div><h2>Genel Bakış</h2><p>Test koşumu özeti ve kalite göstergeleri</p></div>
+        </div>
+        <div class="metrics-grid" id="home-metrics"></div>
+        <div class="chart-row">
+          <div class="card">
+            <div class="section-title">Son 10 Koşum Trendi</div>
+            <div class="chart-box trend"><canvas id="chart-home-trend"></canvas></div>
+          </div>
+          <div class="card">
+            <div class="section-title">Test Teknikleri Dağılımı</div>
+            <div class="chart-box"><canvas id="chart-home-tech"></canvas></div>
+          </div>
+        </div>
+        <div class="chart-row">
+          <div class="card">
+            <div class="section-title">Modül Bazlı Başarı <span style="font-size:0.72rem;color:var(--text-muted);font-weight:400">· modüle tıkla</span></div>
+            <div class="module-list" id="home-modules"></div>
+          </div>
+          <div class="card">
+            <div class="section-title">En Yavaş 5 Test</div>
+            <div id="home-slowest"></div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:20px">
+          <div class="section-title">Modül Başarı Grafiği</div>
+          <div class="chart-box"><canvas id="chart-home-modules"></canvas></div>
+        </div>
+      </section>
+
+      <section id="view-fails" class="page-section">
+        <div class="page-header">
+          <div><h2>Hata Analizi</h2><p>Başarısız testler, kök neden ve yapay zeka yorumları</p></div>
+        </div>
+        <div id="fails-root"></div>
+      </section>
+
+      <section id="view-reported" class="page-section">
+        <div class="page-header">
+          <div><h2>Raporlanan Hatalar</h2><p>Hata Analizi'nden raporlanan kayıtlar · Jira tarzı liste ve detay görünümü</p></div>
+        </div>
+        <div id="reported-root"></div>
+      </section>
+
+      <section id="view-history" class="page-section">
+        <div class="page-header">
+          <div><h2>Test Geçmişi</h2><p>Koşum karşılaştırması ve trendler</p></div>
+        </div>
+        <div class="mini-stats" id="history-summary"></div>
+        <div class="card" style="margin-bottom:20px">
+          <div class="section-title">Koşum Zaman Çizelgesi</div>
+          <div class="history-timeline-tabs">
+            <button type="button" class="history-tab active" data-history-tab="general">Genel Koşumlar</button>
+            <button type="button" class="history-tab" data-history-tab="module">Modül Bazlı</button>
+          </div>
+          <div id="history-panel-general" class="history-timeline-panel active">
+            <div id="history-timeline-general"></div>
+          </div>
+          <div id="history-panel-module" class="history-timeline-panel">
+            <div class="history-module-pills" id="history-module-pills"></div>
+            <div id="history-timeline-module"></div>
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:20px">
+          <div class="section-title">Koşum Listesi</div>
+          <div class="table-wrap"><table id="history-table"></table></div>
+        </div>
+        <div class="chart-row">
+          <div class="card">
+            <div class="section-title">Başarı Oranı Trendi</div>
+            <div class="chart-box trend"><canvas id="chart-history-area"></canvas></div>
+          </div>
+          <div class="card">
+            <div class="section-title">En Sık Başarısız Olan Testler</div>
+            <div id="history-worst"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-scenarios" class="page-section">
+        <div class="page-header">
+          <div><h2>Test Senaryoları</h2><p>Filtrele, incele, detay panelinden geçmişe bak</p></div>
+        </div>
+        <div class="toolbar">
+          <input id="sc-search" class="input" placeholder="Ara: senaryo kodu, test adı, açıklama..." />
+          <select id="sc-module" class="input"><option value="">Modül (tümü)</option></select>
+          <select id="sc-type" class="input"><option value="">Test türü (tümü)</option></select>
+          <select id="sc-level" class="input"><option value="">Test seviyesi (tümü)</option></select>
+          <select id="sc-standard" class="input"><option value="">Standart (tümü)</option></select>
+          <select id="sc-status" class="input"><option value="">Sonuç (tümü)</option><option value="passed">Geçti</option><option value="failed">Başarısız</option><option value="skipped">Atlandı</option></select>
+        </div>
+        <div class="card" style="padding:0; overflow:hidden">
+          <div class="table-wrap" style="border:none; border-radius:var(--radius)"><table id="scenario-table"></table></div>
+        </div>
+      </section>
+
+      <section id="view-selfheal" class="page-section">
+        <div class="page-header">
+          <div><h2>Otomatik Onarım</h2><p>Element bulucu kırıldığında devreye giren yedek adresleme kayıtları</p></div>
+        </div>
+        <div class="metrics-grid cols-3" id="sh-metrics"></div>
+        <div class="chart-row">
+          <div class="card">
+            <div class="section-title">En Sık Kullanılan Yedek Bulucu</div>
+            <div class="chart-box"><canvas id="chart-sh-loc"></canvas></div>
+          </div>
+          <div class="card">
+            <div class="section-title">Modüle Göre Otomatik Onarım</div>
+            <div class="chart-box"><canvas id="chart-sh-mod"></canvas></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="section-title">Kırılan Element Bulucu Listesi</div>
+          <div class="table-wrap"><table id="sh-table"></table></div>
+        </div>
+      </section>
+
+      <section id="view-coverage" class="page-section">
+        <div class="page-header">
+          <div><h2>Modül Kapsamı</h2><p>Hangi modüller test edildi, kaç senaryo var ve hangi test teknikleri kullanıldı</p></div>
+        </div>
+        <div id="cov-root"></div>
+      </section>
+    </div>
+  </main>
+
+  <div id="drawer-overlay" class="drawer-overlay"></div>
+  <div id="jira-modal-overlay" class="jira-modal-overlay">
+    <div class="jira-modal">
+      <div class="jira-modal-head">
+        <div><h3>Hata Raporlama</h3></div>
+        <button type="button" id="jira-modal-close" class="btn-outline">Kapat</button>
+      </div>
+      <div class="jira-modal-body">
+        <div id="jira-dup-banner" style="display:none"></div>
+        <div id="jira-status" style="display:none;margin-bottom:12px"></div>
+        <div class="jira-form-grid">
+          <div class="jira-field"><label>Proje *</label><select id="jf-project"></select></div>
+          <div class="jira-field"><label>Kayıt Türü *</label><select id="jf-type"><option value="Bug" selected>Hata (Bug)</option><option value="Task">Görev (Task)</option><option value="Story">Hikaye (Story)</option></select></div>
+          <div class="jira-field"><label>Öncelik</label><select id="jf-priority"><option value="Highest">En Yüksek</option><option value="High">Yüksek</option><option value="Medium" selected>Orta</option><option value="Low">Düşük</option><option value="Lowest">En Düşük</option></select></div>
+          <div class="jira-field"><label>Önem Derecesi *</label><select id="jf-severity"><option value="Critical">Kritik</option><option value="Major">Önemli</option><option value="Minor" selected>Küçük</option><option value="Trivial">Önemsiz</option></select></div>
+          <div class="jira-field full"><label>Özet * <span style="font-weight:400;color:var(--text-muted)">(Türkçe, kısa)</span></label><input id="jf-summary" /></div>
+          <div class="jira-field"><label>QA Kaynağı *</label><input id="jf-qa-origin" /></div>
+          <div class="jira-field"><label>QA Süreci *</label><input id="jf-qa-process" /></div>
+          <div class="jira-field"><label>Kanal</label><select id="jf-channel"><option value="Web" selected>Web</option><option value="Mobil Web">Mobil Web</option><option value="Android Application">Android Uygulaması</option><option value="IOS Application">iOS Uygulaması</option></select></div>
+          <div class="jira-field"><label>Tekrar Sıklığı</label><select id="jf-frequency"><option value="Always" selected>Her zaman</option><option value="Intermittent">Ara sıra</option><option value="Once">Bir kez</option></select></div>
+          <div class="jira-field full"><label>Hata Alındığı Tarih</label><input id="jf-detected-at" readonly /></div>
+          <div class="jira-field full"><label>Test Adımları <span style="font-weight:400;color:var(--text-muted)">(adım adım, anlaşılır)</span></label><textarea id="jf-steps" style="min-height:160px"></textarea></div>
+          <div class="jira-field full"><label>Beklenen Sonuç</label><textarea id="jf-expected" style="min-height:100px"></textarea></div>
+          <div class="jira-field full"><label>Gerçekleşen Sonuç</label><textarea id="jf-actual" style="min-height:100px"></textarea></div>
+          <div class="jira-field full"><label>Jira Açıklama <span style="font-weight:400;color:var(--text-muted)">(meta bilgi — adımları tekrar etmez)</span></label><textarea id="jf-description" style="min-height:120px"></textarea></div>
+          <div class="jira-field full"><label>Ekler (Jira Attachment alanına eklenecek)</label><div class="jira-attach-box" id="jf-attachment">Ek dosyalar hazırlanıyor…</div></div>
+        </div>
+        <div class="jira-actions">
+          <button type="button" class="btn-jira" id="jf-save-reported">✓ Raporu Kaydet</button>
+          <button type="button" class="btn-jira secondary" id="jf-copy">Metni Kopyala</button>
+          <button type="button" class="btn-jira secondary" id="jf-download-log">Log İndir (.txt)</button>
+          <button type="button" class="btn-jira secondary" id="jf-download-zip">Ekleri İndir (.zip)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="drill-modal-overlay" class="jira-modal-overlay">
+    <div class="jira-modal drill-modal">
+      <div class="jira-modal-head">
+        <div><h3 id="drill-modal-title">Detay</h3></div>
+        <button type="button" id="drill-modal-close" class="btn-outline">Kapat</button>
+      </div>
+      <div class="jira-modal-body" id="drill-modal-body"></div>
+    </div>
+  </div>
+  <aside id="drawer" class="drawer">
+    <div class="drawer-head"><strong id="drawer-title">Senaryo Detayı</strong><button class="btn-outline" id="drawer-close">Kapat</button></div>
+    <div class="drawer-body" id="drawer-body"></div>
+  </aside>
+  <div id="palette" class="palette"><div class="palette-box"><input id="palette-input" placeholder="Genel ara: senaryo kodu, test adı, modül..." /><div id="palette-results" class="palette-results"></div></div></div>
+
+  <script>
+(() => {
+  const EXPECTED_UI_MODULES = ['Login', 'Register', 'ForgotPassword', 'MyAccount', 'MyAccountSettings', 'Newsletter', 'WishList', 'Search', 'Cart', 'Checkout'];
+  const EXPECTED_API_MODULES = ['Api'];
+  const EXPECTED_DB_MODULES = ['Db'];
+  const EXPECTED_E2E_MODULES = ['E2EOrderFlow'];
+  const LAYER_LABELS = { ui: 'Arayüz Katmanı', api: 'API Katmanı', db: 'Veritabanı Katmanı', e2e: 'Uçtan Uca Katmanı' };
+  const MODULE_TR = {
+    Login: 'Giriş', Register: 'Kayıt', ForgotPassword: 'Şifremi Unuttum', MyAccount: 'Hesabım',
+    MyAccountSettings: 'Hesap Ayarları', Newsletter: 'Bülten', WishList: 'İstek Listesi', Search: 'Arama',
+    Cart: 'Sepet', Checkout: 'Ödeme', Api: 'API Servisleri', Db: 'Veritabanı', E2EOrderFlow: 'Uçtan Uca Sipariş', Unknown: 'Bilinmeyen'
+  };
+  const TECHNIQUE_TR = {
+    'equivalence-partitioning': 'Eşdeğer Sınıflar', 'boundary-value': 'Sınır Değer', 'negative-test': 'Olumsuz Test',
+    'positive-test': 'Olumlu Test', 'state-transition': 'Durum Geçişi', 'security': 'Güvenlik Testi',
+    'decision-table': 'Karar Tablosu', 'use-case': 'Kullanım Senaryosu', 'other': 'Diğer'
+  };
+  const TECHNIQUE_DESC = {
+    'equivalence-partitioning': 'Girdiler mantıksal gruplara ayrılarak test edilir.',
+    'boundary-value': 'Sınır değerler ve kenar durumları kontrol edilir.',
+    'negative-test': 'Hatalı veya geçersiz veriyle yapılan test.',
+    'positive-test': 'Geçerli veriyle beklenen davranışın doğrulanması.',
+    'state-transition': 'Sistem durumları arası geçişler test edilir.',
+    'security': 'Yetkilendirme, erişim ve güvenlik açıkları kontrol edilir.'
+  };
+  const TEST_TYPE_TR = { smoke: 'Duman Testi', regression: 'Regresyon Testi' };
+  const TEST_LEVEL_TR = { 'system-test': 'Sistem Testi', 'integration-test': 'Entegrasyon Testi', 'unit-test': 'Birim Testi' };
+  const ML_PRED_TR = { flaky: 'Kararsız', stable: 'Stabil' };
+  function trModule(m) { return MODULE_TR[m] || m || '—'; }
+  function trTechnique(t) { return TECHNIQUE_TR[t] || (t ? String(t).replace(/-/g, ' ') : '—'); }
+  function techHelp(t) { return TECHNIQUE_DESC[t] || ('Test tekniği: ' + trTechnique(t)); }
+  function trTestType(t) { return TEST_TYPE_TR[String(t || '').toLowerCase()] || t || '—'; }
+  function trTestLevel(t) { return TEST_LEVEL_TR[String(t || '').toLowerCase()] || t || '—'; }
+  function trMlPred(w) { return ML_PRED_TR[String(w || '').toLowerCase()] || w || ''; }
+  function trModulesList(arr) { return (arr || []).map(trModule).join(', '); }
+  /** Risk bazlı senaryo hedefleri — modül karmaşıklığı ve iş kritikliğine göre */
+  const MODULE_SCENARIO_TARGETS = {
+    Checkout: 28,
+    Login: 24,
+    ForgotPassword: 24,
+    Register: 22,
+    Cart: 22,
+    MyAccountSettings: 22,
+    MyAccount: 20,
+    Search: 18,
+    WishList: 12,
+    Newsletter: 10,
+    Api: 32,
+    Db: 36,
+    E2EOrderFlow: 4
+  };
+  const MODULE_RISK_TIER = {
+    Checkout: 'yüksek', Login: 'yüksek', ForgotPassword: 'yüksek',
+    Register: 'orta-yüksek', Cart: 'orta-yüksek', MyAccountSettings: 'orta-yüksek',
+    MyAccount: 'orta', Search: 'orta',
+    WishList: 'düşük', Newsletter: 'düşük',
+    Api: 'yüksek', Db: 'yüksek', E2EOrderFlow: 'kritik'
+  };
+  let covFilter = 'ui';
+  const SAMPLE = { runs: [{ date: '2026-05-07 12:50', duration: '5:12', total: 4, passed: 3, failed: 1, skipped: 0, tests: [{ caseId: 'LGN-001', name: 'runLoginScenario', description: 'Geçersiz şifre kontrolü', module: 'Login', status: 'passed', technique: 'negative-test', testType: 'regression', testLevel: 'system-test', standard: 'OWASP', reference: 'https://owasp.org', duration: '1.3s', errorMessage: '', screenshotPath: '', aiAnalysis: '', selfHealUsed: true, selfHealLocator: 'By.id: password', selfHealLocators: ['By.css: #password', 'By.id: password'] }, { caseId: 'CRT-002', name: 'runCartScenario', description: 'Sepete ürün ekleme', module: 'Cart', status: 'failed', technique: 'state-transition', testType: 'smoke', testLevel: 'system-test', standard: 'ISTQB', reference: 'https://istqb.org', duration: '2.8s', errorMessage: 'AssertionError: cart total mismatch', screenshotPath: '', aiAnalysis: '[AI-SKIPPED]', selfHealUsed: false, selfHealLocator: '', selfHealLocators: [] }, { caseId: 'REG-001', name: 'runRegisterScenario', description: 'Başarılı kayıt', module: 'Register', status: 'passed', technique: 'equivalence-partitioning', testType: 'regression', testLevel: 'system-test', standard: 'ISTQB', reference: 'https://istqb.org', duration: '1.6s', errorMessage: '', screenshotPath: '', aiAnalysis: '', selfHealUsed: false, selfHealLocator: '', selfHealLocators: [] }, { caseId: 'SEA-003', name: 'runSearchScenario', description: 'Sonuç filtreleme', module: 'Search', status: 'passed', technique: 'boundary-value', testType: 'regression', testLevel: 'system-test', standard: 'OWASP', reference: 'https://owasp.org', duration: '1.5s', errorMessage: '', screenshotPath: '', aiAnalysis: '', selfHealUsed: true, selfHealLocator: 'By.xpath: //input[@name="q"]', selfHealLocators: ['By.xpath: //input[@name="q"]'] }] }] };
+  const HISTORY_MODULE_OPTIONS = [
+    { key: 'Login', chip: 'Login' }, { key: 'Register', chip: 'Register' }, { key: 'Cart', chip: 'Cart' },
+    { key: 'Checkout', chip: 'Checkout' }, { key: 'Search', chip: 'Search' }, { key: 'WishList', chip: 'WishList' },
+    { key: 'Newsletter', chip: 'Newsletter' }, { key: 'ForgotPassword', chip: 'ForgotPassword' },
+    { key: 'MyAccount', chip: 'MyAccount' }, { key: 'MyAccountSettings', chip: 'MyAccountSettings' },
+    { key: 'Api', chip: 'API' }, { key: 'Db', chip: 'DB' }, { key: 'E2EOrderFlow', chip: 'E2E' }
+  ];
+  const FULL_SUITE_MODULES = [...EXPECTED_UI_MODULES, 'Api', 'Db', 'E2EOrderFlow'];
+  const MODULE_CHIP = {
+    Login: 'Login', Register: 'Register', ForgotPassword: 'ForgotPassword', MyAccount: 'MyAccount',
+    MyAccountSettings: 'MyAccountSettings', Newsletter: 'Newsletter', WishList: 'WishList', Search: 'Search',
+    Cart: 'Cart', Checkout: 'Checkout', Api: 'API', Db: 'DB', E2EOrderFlow: 'E2E'
+  };
+  let data = { runs: [] }, dbSnapshot = null, jiraConfig = null, jiraReports = [], reportedErrors = [], selectedReportedId = null, reportedSearch = '', activeJiraReport = null, selectedRun = 'all', chartMap = {}, filteredScenarios = [], failFilter = 'ui', failModuleFilter = '', homeChartModules = [], historyTab = 'general', historyModule = 'Login', openRunAccordion = null, selectedOwaspModule = 'Login';
+  const REPORTED_STORAGE_KEY = 'qa-dashboard-reported-errors';
+  const REPORTED_STATUS_LABELS = { draft: 'Taslak', reported: 'Raporlandı', jira_open: "Jira'da Açık", resolved: 'Çözüldü' };
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const pct = (x, y) => y ? ((x / y) * 100).toFixed(1) : '0.0';
+  const toSec = (d) => { const m = String(d || '').match(/([\d.]+)/); return m ? Number(m[1]) : 0; };
+  function refreshIcons() { if (window.lucide) lucide.createIcons(); }
+  function applyTheme() {
+    const theme = localStorage.getItem('qa_theme') || 'light';
+    document.documentElement.setAttribute('data-theme', theme);
+    const btn = $('btn-theme');
+    if (btn) btn.textContent = theme === 'dark' ? '☀ Açık Tema' : '🌙 Koyu Tema';
+  }
+  function saveTheme(next) {
+    const theme = next || (localStorage.getItem('qa_theme') === 'dark' ? 'light' : 'dark');
+    localStorage.setItem('qa_theme', theme);
+    applyTheme();
+    renderAll();
+  }
+  function isAllRunsView() { return selectedRun === 'all'; }
+  function testKey(t) { const c = String(t.caseId || '').trim(); return c || String(t.name || '').trim(); }
+  function buildAggregatedRun() {
+    const runs = data.runs || [], map = new Map();
+    runs.forEach((r) => (r.tests || []).forEach((t) => {
+      const key = testKey(t);
+      if (!key || map.has(key)) return;
+      map.set(key, Object.assign({}, t, { _lastRunDate: r.date || '—' }));
+    }));
+    const tests = Array.from(map.values());
+    return { date: 'Tüm Zamanlar', duration: runs.length + ' koşum', total: tests.length, passed: tests.filter(t => t.status === 'passed').length, failed: tests.filter(t => t.status === 'failed').length, skipped: tests.filter(t => t.status === 'skipped').length, tests, aggregated: true, sourceRuns: runs.length };
+  }
+  function currentRun() { if (isAllRunsView()) return buildAggregatedRun(); const idx = Number(selectedRun); return (data.runs || [])[idx] || null; }
+  function showView(view) {
+    document.querySelectorAll('.page-section').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('.nav-item[data-view]').forEach(b => b.classList.remove('active'));
+    const el = $('view-' + view), btn = document.querySelector('.nav-item[data-view="' + view + '"]');
+    if (el) el.classList.add('active');
+    if (btn) btn.classList.add('active');
+    const crumbSpan = btn ? btn.querySelector('span:not(.nav-badge)') : null;
+    $('crumb-page').textContent = crumbSpan ? crumbSpan.textContent.trim() : 'Genel Bakış';
+    if (view === 'reported') renderReportedErrors();
+    refreshIcons();
+  }
+  function closeDrillModal() { $('drill-modal-overlay').classList.remove('open'); }
+  function findTestByCaseId(caseId) {
+    const id = String(caseId || '').trim();
+    if (!id) return null;
+    const run = currentRun();
+    if (run && run.tests) { const hit = run.tests.find(t => t.caseId === id); if (hit) return hit; }
+    for (const r of (data.runs || [])) { const hit = (r.tests || []).find(t => t.caseId === id); if (hit) return hit; }
+    return null;
+  }
+  /** Dashboard serve kökü (target/test-history) için göreli URL üretir */
+  function resolveDashboardAsset(path) {
+    if (!path || !String(path).trim()) return '';
+    let p = String(path).trim().replace(/\\/g, '/');
+    if (/^file:/i.test(p)) {
+      const m = p.match(/test-history\/(.+)$/i);
+      return m ? m[1] : '';
+    }
+    if (/^[a-zA-Z]:\//.test(p)) {
+      const m = p.match(/test-history\/(.+)$/i);
+      return m ? m[1] : '';
+    }
+    p = p.replace(/^\.?\//, '');
+    p = p.replace(/^(target\/)?test-history\//, '');
+    if (p.startsWith('screenshots/') || p.startsWith('logs/')) return p;
+    const si = p.indexOf('screenshots/');
+    if (si >= 0) return p.slice(si);
+    const li = p.indexOf('logs/');
+    if (li >= 0) return p.slice(li);
+    return p;
+  }
+  /** En güncel koşumdan ek dosyaları olan test kaydını bul */
+  function findLatestTestForCase(caseId) {
+    const id = String(caseId || '').trim();
+    if (!id) return null;
+    const runs = data.runs || [];
+    let fallback = null;
+    for (let i = runs.length - 1; i >= 0; i--) {
+      const hit = (runs[i].tests || []).find((t) => t.caseId === id);
+      if (!hit) continue;
+      if (!fallback) fallback = hit;
+      if (resolveDashboardAsset(hit.screenshotPath) || resolveDashboardAsset(hit.errorLogPath)) return hit;
+    }
+    return fallback;
+  }
+  function enrichReportedEntry(entry) {
+    if (!entry) return entry;
+    const latest = findLatestTestForCase(entry.caseId);
+    const src = latest || {};
+    return Object.assign({}, entry, {
+      screenshotPath: resolveDashboardAsset(entry.screenshotPath || src.screenshotPath || ''),
+      errorLogPath: resolveDashboardAsset(entry.errorLogPath || src.errorLogPath || ''),
+      errorMessage: entry.errorMessage || src.errorMessage || '',
+      aiAnalysis: entry.aiAnalysis || src.aiAnalysis || ''
+    });
+  }
+  function syncReportedEntryAssets(entry) {
+    if (!entry || !entry.id) return;
+    const enriched = enrichReportedEntry(entry);
+    const idx = reportedErrors.findIndex((r) => r.id === entry.id);
+    if (idx < 0) return;
+    const prev = reportedErrors[idx];
+    if (prev.screenshotPath === enriched.screenshotPath && prev.errorLogPath === enriched.errorLogPath) return;
+    reportedErrors[idx] = Object.assign({}, prev, {
+      screenshotPath: enriched.screenshotPath,
+      errorLogPath: enriched.errorLogPath
+    });
+    persistReportedErrors();
+  }
+  function testsForModule(moduleKey, runOptional) {
+    const mod = normalizeModuleName(moduleKey);
+    const run = runOptional || currentRun();
+    return (run && run.tests ? run.tests : []).filter(t => normalizeModuleName(t.module) === mod);
+  }
+  function buildDrillActionsHtml(actions) {
+    return '<div class="drill-actions">' + actions.map((a) =>
+      '<button type="button" class="btn-jira' + (a.secondary ? ' secondary' : '') + '" data-drill-action="' + esc(a.action) + '" data-module="' + esc(a.module || '') + '" data-run="' + (a.runIdx != null ? a.runIdx : '') + '" data-test-name="' + esc(a.testName || '') + '">' + esc(a.label) + '</button>'
+    ).join('') + '</div>';
+  }
+  function openHomeMetricDrilldown(metricType) {
+    const run = currentRun();
+    if (!run) return;
+    const tests = run.tests || [];
+    const subLabel = run.aggregated ? 'Birleşik · ' + (run.sourceRuns || 0) + ' koşum' : 'Seçili koşum · ' + esc(run.date || '—');
+    if (metricType === 'total') {
+      const byLayer = { ui: 0, api: 0, db: 0, e2e: 0 };
+      const byMod = {};
+      tests.forEach((t) => {
+        const layer = failLayerType(t);
+        byLayer[layer] = (byLayer[layer] || 0) + 1;
+        const m = normalizeModuleName(t.module);
+        if (!byMod[m]) byMod[m] = 0;
+        byMod[m]++;
+      });
+      const modRows = Object.keys(byMod).sort((a, b) => byMod[b] - byMod[a]).slice(0, 10).map((m) =>
+        '<tr class="drill-test-row clickable drill-module" data-module="' + esc(m) + '"><td>' + esc(trModule(m)) + '</td><td><strong>' + byMod[m] + '</strong></td><td><span style="color:var(--text-muted);font-size:0.78rem">modül detayı</span></td></tr>'
+      ).join('');
+      const preview = tests.slice(0, 8).map((t) =>
+        '<tr class="drill-test-row clickable" data-case-id="' + esc(t.caseId || '') + '"><td>' + esc(t.caseId || '—') + '</td><td>' + esc(trModule(t.module)) + '</td><td>' + badgeStatus(t.status) + '</td></tr>'
+      ).join('');
+      const body = '<p style="color:var(--text-muted);font-size:0.85rem">' + subLabel + '</p>'
+        + '<div class="drill-stat-grid"><div class="mini"><span>Toplam</span><b style="color:var(--primary)">' + (run.total || tests.length) + '</b></div>'
+        + '<div class="mini"><span>Geçen</span><b style="color:var(--success)">' + (run.passed || 0) + '</b></div>'
+        + '<div class="mini"><span>Başarısız</span><b style="color:var(--error)">' + (run.failed || 0) + '</b></div>'
+        + '<div class="mini"><span>Atlanan</span><b>' + (run.skipped || 0) + '</b></div></div>'
+        + '<div style="margin-top:14px"><div class="section-title" style="font-size:0.85rem;margin-bottom:8px">Katman dağılımı</div>'
+        + '<div class="drill-stat-grid" style="grid-template-columns:repeat(4,1fr)">'
+        + '<div class="mini"><span>Arayüz</span><b>' + (byLayer.ui || 0) + '</b></div>'
+        + '<div class="mini"><span>API</span><b>' + (byLayer.api || 0) + '</b></div>'
+        + '<div class="mini"><span>Veritabanı</span><b>' + (byLayer.db || 0) + '</b></div>'
+        + '<div class="mini"><span>Uçtan uca</span><b>' + (byLayer.e2e || 0) + '</b></div></div></div>'
+        + (modRows ? '<div style="margin-top:14px"><div class="section-title" style="font-size:0.85rem;margin-bottom:8px">Modül bazlı test sayısı</div><div class="table-wrap"><table><thead><tr><th>Modül</th><th>Test</th><th></th></tr></thead><tbody>' + modRows + '</tbody></table></div></div>' : '')
+        + (preview ? '<div style="margin-top:14px"><div class="section-title" style="font-size:0.85rem;margin-bottom:8px">Örnek testler</div><div class="table-wrap"><table><thead><tr><th>Senaryo</th><th>Modül</th><th>Sonuç</th></tr></thead><tbody>' + preview + '</tbody></table></div>'
+          + (tests.length > 8 ? '<p class="drill-hint">+' + (tests.length - 8) + ' test daha</p>' : '') + '</div>' : '')
+        + buildDrillActionsHtml([
+          { label: 'Tüm senaryoları gör', action: 'view-scenarios' },
+          { label: 'Test geçmişi', action: 'view-history', secondary: true },
+          { label: 'Modül kapsamı', action: 'view-coverage', secondary: true }
+        ]);
+      openDrillModal('Toplam Test · ' + (run.total || tests.length), body);
+      bindDrillModalActions();
+      $('drill-modal-body').querySelectorAll('.drill-module[data-module]').forEach((el) => {
+        el.onclick = () => { closeDrillModal(); openModuleDrilldown(el.dataset.module); };
+      });
+      return;
+    }
+    if (metricType === 'pass') {
+      const passPct = pct(run.passed || 0, run.total || 0);
+      const byMod = {};
+      tests.forEach((t) => {
+        const m = normalizeModuleName(t.module);
+        if (!byMod[m]) byMod[m] = { total: 0, pass: 0 };
+        byMod[m].total++;
+        if (t.status === 'passed') byMod[m].pass++;
+      });
+      const modRows = Object.keys(byMod).sort((a, b) => {
+        const pa = Number(pct(byMod[a].pass, byMod[a].total));
+        const pb = Number(pct(byMod[b].pass, byMod[b].total));
+        return pa - pb;
+      }).map((m) => {
+        const p = Number(pct(byMod[m].pass, byMod[m].total));
+        const color = p >= 80 ? 'var(--success)' : p >= 60 ? 'var(--warning)' : 'var(--error)';
+        return '<tr class="drill-test-row clickable drill-module" data-module="' + esc(m) + '"><td>' + esc(trModule(m)) + '</td><td>' + byMod[m].pass + '/' + byMod[m].total + '</td><td><strong style="color:' + color + '">%' + p + '</strong></td></tr>';
+      }).join('');
+      const passedPreview = tests.filter((t) => t.status === 'passed').slice(0, 6).map((t) =>
+        '<tr class="drill-test-row clickable" data-case-id="' + esc(t.caseId || '') + '"><td>' + esc(t.caseId || '—') + '</td><td>' + esc(trModule(t.module)) + '</td><td>' + esc(t.duration || '—') + '</td></tr>'
+      ).join('');
+      const body = '<p style="color:var(--text-muted);font-size:0.85rem">' + subLabel + '</p>'
+        + '<div class="drill-stat-grid"><div class="mini"><span>Başarı oranı</span><b style="color:var(--success)">%' + passPct + '</b></div>'
+        + '<div class="mini"><span>Geçen</span><b style="color:var(--success)">' + (run.passed || 0) + '</b></div>'
+        + '<div class="mini"><span>Başarısız</span><b style="color:var(--error)">' + (run.failed || 0) + '</b></div>'
+        + '<div class="mini"><span>Atlanan</span><b>' + (run.skipped || 0) + '</b></div></div>'
+        + '<div style="margin-top:10px"><div class="progress-bar-bg" style="height:10px"><div style="width:' + passPct + '%;height:100%;background:var(--success);border-radius:4px"></div></div></div>'
+        + (modRows ? '<div style="margin-top:14px"><div class="section-title" style="font-size:0.85rem;margin-bottom:8px">Modül başarı oranları</div><div class="table-wrap"><table><thead><tr><th>Modül</th><th>Geçen/Toplam</th><th>Oran</th></tr></thead><tbody>' + modRows + '</tbody></table></div><p class="drill-hint">Modüle tıklayarak detay aç</p></div>' : '')
+        + (passedPreview ? '<div style="margin-top:14px"><div class="section-title" style="font-size:0.85rem;margin-bottom:8px">Son geçen testler</div><div class="table-wrap"><table><thead><tr><th>Senaryo</th><th>Modül</th><th>Süre</th></tr></thead><tbody>' + passedPreview + '</tbody></table></div></div>' : '')
+        + buildDrillActionsHtml([
+          { label: 'Modül kapsamına git', action: 'view-coverage' },
+          { label: 'Başarısız testler', action: 'view-fails', secondary: true },
+          { label: 'Tüm senaryolar', action: 'view-scenarios', secondary: true }
+        ]);
+      openDrillModal('Başarı Oranı · %' + passPct, body);
+      bindDrillModalActions();
+      $('drill-modal-body').querySelectorAll('.drill-module[data-module]').forEach((el) => {
+        el.onclick = () => { closeDrillModal(); openModuleDrilldown(el.dataset.module); };
+      });
+      return;
+    }
+    if (metricType === 'fail') {
+      const failed = tests.filter((t) => t.status === 'failed');
+      const byLayer = { ui: 0, api: 0, db: 0 };
+      failed.forEach((t) => { const l = failLayerType(t); if (byLayer[l] != null) byLayer[l]++; });
+      const failRows = failed.slice(0, 10).map((t) =>
+        '<tr class="drill-test-row clickable" data-case-id="' + esc(t.caseId || '') + '"><td>' + esc(t.caseId || '—') + '</td><td>' + esc(trModule(t.module)) + '</td><td>' + esc(short(t.name || '—', 40)) + '</td></tr>'
+      ).join('');
+      const body = '<p style="color:var(--text-muted);font-size:0.85rem">' + subLabel + ' · Başarısız oran: %' + pct(run.failed || 0, run.total || 0) + '</p>'
+        + '<div class="drill-stat-grid"><div class="mini"><span>Başarısız</span><b style="color:var(--error)">' + failed.length + '</b></div>'
+        + '<div class="mini"><span>Arayüz</span><b style="color:var(--error)">' + (byLayer.ui || 0) + '</b></div>'
+        + '<div class="mini"><span>API</span><b style="color:var(--error)">' + (byLayer.api || 0) + '</b></div>'
+        + '<div class="mini"><span>Veritabanı</span><b style="color:var(--error)">' + (byLayer.db || 0) + '</b></div></div>'
+        + (failRows ? '<div style="margin-top:14px"><div class="section-title" style="font-size:0.85rem;margin-bottom:8px">Başarısız testler</div><div class="table-wrap"><table><thead><tr><th>Senaryo</th><th>Modül</th><th>Test</th></tr></thead><tbody>' + failRows + '</tbody></table></div>'
+          + (failed.length > 10 ? '<p class="drill-hint">+' + (failed.length - 10) + ' başarısız test daha · satıra tıkla</p>' : '<p class="drill-hint">Satıra tıklayarak senaryo detayını aç</p>') + '</div>'
+        : '<div class="empty" style="padding:24px;margin-top:12px">Bu koşumda başarısız test yok ✅</div>')
+        + buildDrillActionsHtml([
+          { label: 'Hata analizine git', action: 'view-fails' },
+          { label: 'Raporlanan hatalar', action: 'view-reported', secondary: true },
+          { label: 'Başarısız senaryolar', action: 'scenarios-failed-all', secondary: true }
+        ]);
+      openDrillModal('Başarısız Test · ' + failed.length, body);
+      return;
+    }
+    if (metricType === 'selfheal') {
+      const healed = tests.filter((t) => t.selfHealUsed);
+      const byMod = {}, byLoc = {};
+      healed.forEach((t) => {
+        const m = normalizeModuleName(t.module);
+        byMod[m] = (byMod[m] || 0) + 1;
+        const loc = t.selfHealLocator || (t.selfHealLocators && t.selfHealLocators[0]) || '—';
+        byLoc[loc] = (byLoc[loc] || 0) + 1;
+      });
+      const modRows = Object.keys(byMod).sort((a, b) => byMod[b] - byMod[a]).slice(0, 8).map((m) =>
+        '<tr class="drill-test-row clickable drill-module" data-module="' + esc(m) + '"><td>' + esc(trModule(m)) + '</td><td><strong>' + byMod[m] + '</strong></td></tr>'
+      ).join('');
+      const eventRows = healed.slice(0, 8).map((t) =>
+        '<tr class="drill-test-row clickable" data-case-id="' + esc(t.caseId || '') + '"><td>' + esc(t.caseId || '—') + '</td><td>' + esc(trModule(t.module)) + '</td><td>' + esc(short(t.selfHealLocator || '—', 36)) + '</td></tr>'
+      ).join('');
+      const topLoc = Object.keys(byLoc).sort((a, b) => byLoc[b] - byLoc[a])[0] || '—';
+      const body = '<p style="color:var(--text-muted);font-size:0.85rem">' + subLabel + ' · Otomatik onarım devreye giren testler</p>'
+        + '<div class="drill-stat-grid"><div class="mini"><span>Onarım kullanan</span><b style="color:var(--warning)">' + healed.length + '</b></div>'
+        + '<div class="mini"><span>Toplam test</span><b>' + tests.length + '</b></div>'
+        + '<div class="mini"><span>Oran</span><b>%' + pct(healed.length, tests.length) + '</b></div>'
+        + '<div class="mini"><span>En sık bulucu</span><b style="font-size:0.72rem">' + esc(short(topLoc, 28)) + '</b></div></div>'
+        + (eventRows ? '<div style="margin-top:14px"><div class="section-title" style="font-size:0.85rem;margin-bottom:8px">Son onarım olayları</div><div class="table-wrap"><table><thead><tr><th>Senaryo</th><th>Modül</th><th>Yedek bulucu</th></tr></thead><tbody>' + eventRows + '</tbody></table></div></div>' : '<div class="empty" style="padding:24px;margin-top:12px">Bu koşumda otomatik onarım kaydı yok.</div>')
+        + (modRows ? '<div style="margin-top:14px"><div class="section-title" style="font-size:0.85rem;margin-bottom:8px">Modül bazlı</div><div class="table-wrap"><table><thead><tr><th>Modül</th><th>Olay</th></tr></thead><tbody>' + modRows + '</tbody></table></div></div>' : '')
+        + buildDrillActionsHtml([
+          { label: 'Otomatik onarım sayfası', action: 'view-selfheal' },
+          { label: 'Modül kapsamı', action: 'view-coverage', secondary: true }
+        ]);
+      openDrillModal('Otomatik Onarım · ' + healed.length, body);
+      bindDrillModalActions();
+      $('drill-modal-body').querySelectorAll('.drill-module[data-module]').forEach((el) => {
+        el.onclick = () => { closeDrillModal(); openModuleDrilldown(el.dataset.module); };
+      });
+    }
+  }
+  function handleDrillAction(action, ctx) {
+    if (action === 'scenarios-module') navigateToScenarios({ module: ctx.module });
+    else if (action === 'scenarios-failed') navigateToScenarios({ module: ctx.module, status: 'failed' });
+    else if (action === 'scenarios-passed') navigateToScenarios({ module: ctx.module, status: 'passed' });
+    else if (action === 'coverage-module') navigateToCoverage(ctx.module);
+    else if (action === 'fails-module') navigateToFails({ module: ctx.module });
+    else if (action === 'run-home') navigateToRun(ctx.runIdx, 'home');
+    else if (action === 'run-scenarios') navigateToRun(ctx.runIdx, 'scenarios');
+    else if (action === 'run-fails') navigateToRun(ctx.runIdx, 'fails');
+    else if (action === 'view-fails') { failModuleFilter = ''; showView('fails'); renderFails(); }
+    else if (action === 'view-selfheal') showView('selfheal');
+    else if (action === 'view-scenarios') { showView('scenarios'); renderScenarios(); }
+    else if (action === 'view-history') { showView('history'); renderHistory(); }
+    else if (action === 'view-coverage') { showView('coverage'); renderCoverage(); }
+    else if (action === 'view-reported') showView('reported');
+    else if (action === 'scenarios-failed-all') navigateToScenarios({ status: 'failed' });
+    else if (action === 'test-scenarios') navigateToScenarios({ search: ctx.testName });
+    else if (action === 'technique-scenarios') navigateToScenarios({ search: ctx.search || '' });
+  }
+  function bindDrillModalActions() {
+    $('drill-modal-body').querySelectorAll('[data-drill-action]').forEach((btn) => {
+      btn.onclick = () => {
+        handleDrillAction(btn.dataset.drillAction, {
+          module: btn.dataset.module || '',
+          runIdx: btn.dataset.run !== '' ? Number(btn.dataset.run) : null,
+          testName: btn.dataset.testName || '',
+          search: btn.dataset.search || ''
+        });
+        closeDrillModal();
+      };
+    });
+    $('drill-modal-body').querySelectorAll('.drill-test-row').forEach((row) => {
+      row.onclick = () => {
+        const t = findTestByCaseId(row.dataset.caseId);
+        if (t) { closeDrillModal(); openDrawer(t); }
+      };
+    });
+  }
+  function openDrillModal(title, bodyHtml) {
+    $('drill-modal-title').textContent = title;
+    $('drill-modal-body').innerHTML = bodyHtml;
+    $('drill-modal-overlay').classList.add('open');
+    bindDrillModalActions();
+    refreshIcons();
+  }
+  function openModuleDrilldown(moduleKey) {
+    const mod = normalizeModuleName(moduleKey);
+    const tests = testsForModule(mod);
+    const pass = tests.filter(t => t.status === 'passed').length;
+    const fail = tests.filter(t => t.status === 'failed').length;
+    const skip = tests.filter(t => t.status === 'skipped').length;
+    const layer = moduleLayerByName(mod);
+    const preview = tests.slice(0, 8).map((t) =>
+      '<tr class="drill-test-row clickable" data-case-id="' + esc(t.caseId || '') + '"><td>' + esc(t.caseId || '—') + '</td><td>' + esc(t.name || '—') + '</td><td>' + badgeStatus(t.status) + '</td><td>' + esc(t.duration || '—') + '</td></tr>'
+    ).join('');
+    const actions = [
+      { label: 'Tüm senaryoları gör', action: 'scenarios-module', module: mod },
+      { label: 'Başarısız senaryolar', action: 'scenarios-failed', module: mod, secondary: true },
+      { label: 'Modül kapsamına git', action: 'coverage-module', module: mod, secondary: true }
+    ];
+    if (fail > 0) actions.push({ label: 'Hata analizine git', action: 'fails-module', module: mod });
+    const body = '<p style="color:var(--text-muted);font-size:0.85rem">' + esc(LAYER_LABELS[layer]) + '</p>'
+      + '<div class="drill-stat-grid"><div class="mini"><span>Toplam</span><b>' + tests.length + '</b></div>'
+      + '<div class="mini"><span>Geçen</span><b style="color:var(--success)">' + pass + '</b></div>'
+      + '<div class="mini"><span>Başarısız</span><b style="color:var(--error)">' + fail + '</b></div>'
+      + '<div class="mini"><span>Atlanan</span><b>' + skip + '</b></div></div>'
+      + (preview ? '<div class="table-wrap" style="margin-top:12px"><table><thead><tr><th>Senaryo</th><th>Test</th><th>Sonuç</th><th>Süre</th></tr></thead><tbody>' + preview + '</tbody></table></div>'
+        + (tests.length > 8 ? '<p class="drill-hint">+' + (tests.length - 8) + ' senaryo daha · satıra tıklayarak detay aç</p>' : '<p class="drill-hint">Satıra tıklayarak senaryo detayını aç</p>')
+      : '<div class="empty" style="padding:20px">Bu modülde test yok.</div>')
+      + buildDrillActionsHtml(actions);
+    openDrillModal(trModule(mod), body);
+  }
+  function openRunDrilldown(runIndex) {
+    const runs = data.runs || [], r = runs[runIndex];
+    if (!r) return;
+    const passPct = pct(r.passed || 0, r.total || 0);
+    const failedTests = (r.tests || []).filter(t => t.status === 'failed').slice(0, 6);
+    const preview = failedTests.map((t) =>
+      '<tr class="drill-test-row clickable" data-case-id="' + esc(t.caseId || '') + '"><td>' + esc(t.caseId || '—') + '</td><td>' + esc(trModule(t.module)) + '</td><td>' + esc(t.name || '—') + '</td></tr>'
+    ).join('');
+    const actions = [
+      { label: 'Bu koşumu seç · Genel Bakış', action: 'run-home', runIdx: runIndex },
+      { label: 'Senaryoları gör', action: 'run-scenarios', runIdx: runIndex, secondary: true }
+    ];
+    if ((r.failed || 0) > 0) actions.push({ label: 'Hataları gör', action: 'run-fails', runIdx: runIndex });
+    const body = '<p style="color:var(--text-muted);font-size:0.85rem">' + esc(r.date || '—') + ' · Süre: ' + esc(r.duration || '—') + '</p>'
+      + '<div class="drill-stat-grid"><div class="mini"><span>Toplam</span><b>' + (r.total || 0) + '</b></div>'
+      + '<div class="mini"><span>Geçen</span><b style="color:var(--success)">' + (r.passed || 0) + '</b></div>'
+      + '<div class="mini"><span>Başarısız</span><b style="color:var(--error)">' + (r.failed || 0) + '</b></div>'
+      + '<div class="mini"><span>Başarı</span><b>%' + passPct + '</b></div></div>'
+      + (preview ? '<div style="margin-top:12px"><div class="section-title" style="font-size:0.9rem;margin-bottom:10px">Başarısız testler</div><div class="table-wrap"><table><thead><tr><th>Senaryo</th><th>Modül</th><th>Test</th></tr></thead><tbody>' + preview + '</tbody></table></div><p class="drill-hint">Satıra tıklayarak senaryo detayını aç</p></div>' : '')
+      + buildDrillActionsHtml(actions);
+    openDrillModal('Koşum #' + (runIndex + 1), body);
+  }
+  function navigateToScenarios(opts) {
+    showView('scenarios');
+    $('sc-search').value = opts.search || '';
+    $('sc-module').value = opts.module || '';
+    $('sc-type').value = opts.testType || '';
+    $('sc-level').value = opts.testLevel || '';
+    $('sc-standard').value = opts.standard || '';
+    $('sc-status').value = opts.status || '';
+    renderScenarios();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  function navigateToCoverage(moduleKey) {
+    covFilter = moduleLayerByName(moduleKey);
+    showView('coverage');
+    renderCoverage();
+    refreshIcons();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  function navigateToFails(opts) {
+    failModuleFilter = opts && opts.module ? normalizeModuleName(opts.module) : '';
+    if (failModuleFilter) failFilter = failLayerType({ module: failModuleFilter, caseId: '' });
+    showView('fails');
+    renderFails();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  function navigateToRun(runIndex, view) {
+    selectedRun = runIndex;
+    populateRunSelect();
+    showView(view || 'home');
+    renderAll();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  function bindDrillInteractions() {
+    document.querySelectorAll('.drill-module[data-module]').forEach((el) => { el.onclick = () => openModuleDrilldown(el.dataset.module); });
+    document.querySelectorAll('.drill-run[data-run]').forEach((el) => { el.onclick = () => openRunDrilldown(Number(el.dataset.run)); });
+    document.querySelectorAll('[data-nav-view]').forEach((el) => {
+      el.onclick = () => {
+        const v = el.dataset.navView;
+        if (v === 'fails') navigateToFails({});
+        else if (v === 'selfheal') showView('selfheal');
+        else showView(v);
+      };
+    });
+    document.querySelectorAll('[data-home-metric]').forEach((el) => {
+      el.onclick = () => openHomeMetricDrilldown(el.dataset.homeMetric);
+    });
+    document.querySelectorAll('.drill-test-item[data-case-id]').forEach((el) => {
+      el.onclick = () => { const t = findTestByCaseId(el.dataset.caseId); if (t) openDrawer(t); };
+    });
+    document.querySelectorAll('.drill-test-item[data-test-name]').forEach((el) => {
+      el.onclick = () => navigateToScenarios({ search: el.dataset.testName });
+    });
+    const clearFailFilter = $('clear-fail-module-filter');
+    if (clearFailFilter) clearFailFilter.onclick = () => { failModuleFilter = ''; renderFails(); bindDrillInteractions(); };
+    document.querySelectorAll('.drill-module-inline[data-module]').forEach((el) => {
+      el.onclick = (e) => { e.stopPropagation(); openModuleDrilldown(el.dataset.module); };
+    });
+  }
+  function destroyCharts() { Object.keys(chartMap).forEach((k) => chartMap[k] && chartMap[k].destroy()); chartMap = {}; }
+  function createChart(id, cfg) { const ctx = $(id); if (!ctx) return; if (chartMap[id]) chartMap[id].destroy(); chartMap[id] = new Chart(ctx, cfg); }
+  function runDelta(metric) {
+    if (isAllRunsView()) return '<span class="trend">birleşik</span>';
+    const idx = Number(selectedRun), cur = currentRun(), prev = (data.runs || [])[idx + 1];
+    if (!cur || !prev) return '—';
+    const c = metric(cur), p = metric(prev), d = c - p;
+    const cls = d > 0 ? 'up' : d < 0 ? 'down' : '';
+    const formatted = Number.isInteger(d) ? String(d) : d.toFixed(1);
+    return '<span class="trend ' + cls + '">' + (d > 0 ? '↑' : d < 0 ? '↓' : '■') + ' ' + (d > 0 ? '+' : '') + formatted + '</span>';
+  }
+  function badgeStatus(s) { const x = String(s || '').toLowerCase(); if (x === 'passed') return '<span class="status-pill passed">● Geçti</span>'; if (x === 'failed') return '<span class="status-pill failed">● Başarısız</span>'; return '<span class="status-pill" style="background:#FEF3C7;color:#92400E">● Atlandı</span>'; }
+  function badgeModule(m) { return '<span class="badge badge-blue drill-module-inline" data-module="' + esc(m || '') + '" title="' + esc(m || '') + ' · modül detayı">' + esc(trModule(m)) + '</span>'; }
+  function badgeType(t) { const key = String(t || '').toLowerCase(); if (key === 'smoke') return '<span class="badge badge-orange">Duman Testi</span>'; if (key === 'regression') return '<span class="badge badge-indigo">Regresyon Testi</span>'; return '<span class="badge">' + esc(trTestType(t)) + '</span>'; }
+  function badgeStandard(std, ref) { const s = String(std || '').toUpperCase(); if (s === 'OWASP') return '<span class="badge badge-orange" title="Web uygulama güvenlik testleri">OWASP Güvenlik</span>'; if (s === 'ISTQB') return '<span class="badge badge-indigo" title="Uluslararası yazılım test standardı">ISTQB Standardı</span>'; if (!std) return '—'; return '<a href="' + esc(ref || '#') + '" target="_blank" rel="noopener">' + esc(std) + '</a>'; }
+  function buildTimeline(name) { return (data.runs || []).slice(0, 5).map((r) => { const hit = (r.tests || []).find(t => t.name === name); if (!hit) return '<span class="badge">Yok</span>'; if (hit.status === 'passed') return '<span class="badge" style="background:#DCFCE7;color:#166534">Geçti</span>'; if (hit.status === 'failed') return '<span class="badge badge-red">Başarısız</span>'; return '<span class="badge badge-orange">Atlandı</span>'; }).join(''); }
+  function renderHome() {
+    const run = currentRun(), metrics = $('home-metrics');
+    if (!run) { metrics.innerHTML = '<div class="card metric-card"><div class="label">Veri yok</div></div>'; $('home-modules').innerHTML = ''; $('home-slowest').innerHTML = ''; return; }
+    const tests = run.tests || [], shCount = tests.filter(t => t.selfHealUsed).length;
+    const subLabel = run.aggregated ? 'Birleşik · ' + (run.sourceRuns || 0) + ' koşum' : 'Seçili koşum';
+    const passPct = pct(run.passed || 0, run.total || 0);
+    metrics.innerHTML =
+      '<div class="card metric-card clickable" data-home-metric="total" title="Toplam test detayı"><div class="label">Toplam Test<div class="metric-delta">' + runDelta(r => r.total || 0) + '</div></div><div class="value" style="color:var(--primary)">' + (run.total || tests.length) + '</div><div class="metric-sub">' + subLabel + ' · tıkla: detay</div></div>' +
+      '<div class="card metric-card clickable" data-home-metric="pass" title="Başarı oranı detayı"><div class="label">Başarı Oranı<div class="metric-delta">' + runDelta(r => Number(pct(r.passed || 0, r.total || 0))) + '</div></div><div class="value" style="color:var(--success)">%' + passPct + '</div><div class="metric-sub">' + (run.passed || 0) + ' geçti · tıkla: detay</div></div>' +
+      '<div class="card metric-card clickable" data-home-metric="fail" title="Başarısız test detayı"><div class="label">Başarısız Test<div class="metric-delta">' + runDelta(r => r.failed || 0) + '</div></div><div class="value" style="color:var(--error)">' + (run.failed || 0) + '</div><div class="metric-sub">%' + pct(run.failed || 0, run.total || 0) + ' · tıkla: detay</div></div>' +
+      '<div class="card metric-card clickable" data-home-metric="selfheal" title="Otomatik onarım detayı"><div class="label">Otomatik Onarım<div class="metric-delta">' + runDelta(r => (r.tests || []).filter(t => t.selfHealUsed).length) + '</div></div><div class="value" style="color:var(--warning)">' + shCount + '</div><div class="metric-sub">Devreye giren test · tıkla: detay</div></div>';
+    bindDrillInteractions();
+    const trendRuns = (data.runs || []).slice(0, 10).reverse();
+    createChart('chart-home-trend', { type: 'line', data: { labels: trendRuns.map((r, i) => { const d = String(r.date || '').trim(); return 'Koşum ' + (i + 1) + (d.slice(11, 16) ? ' · ' + d.slice(11, 16) : ''); }), datasets: [{ label: 'Başarı %', data: trendRuns.map(r => Number(pct(r.passed || 0, r.total || 0))), borderColor: '#6366F1', backgroundColor: 'rgba(99,102,241,0.1)', fill: true, tension: 0.4, borderWidth: 3, pointRadius: 4 }] }, options: { maintainAspectRatio: false, onClick: (_, els) => { if (els.length) { const n = Math.min(10, (data.runs || []).length); openRunDrilldown(n - 1 - els[0].index); } }, plugins: { legend: { display: false }, tooltip: { callbacks: { footer: () => 'Detay için tıkla' } } }, scales: { y: { min: 0, max: 100, grid: { color: '#f1f5f9' } }, x: { grid: { display: false } } } } });
+    const byTech = {}; const techKeys = []; tests.forEach(t => { const k = t.technique || 'other'; byTech[k] = (byTech[k] || 0) + 1; if (!techKeys.includes(k)) techKeys.push(k); });
+    createChart('chart-home-tech', { type: 'doughnut', data: { labels: techKeys.map(trTechnique), datasets: [{ data: techKeys.map(k => byTech[k]), backgroundColor: ['#6366F1', '#0EA5E9', '#10B981', '#F59E0B', '#EF4444', '#64748B'], borderWidth: 0 }] }, options: { maintainAspectRatio: false, cutout: '65%', onClick: (_, els) => { if (els.length) navigateToScenarios({ search: trTechnique(techKeys[els[0].index]) }); }, plugins: { legend: { position: 'bottom' }, tooltip: { callbacks: { footer: () => 'Senaryolara git' } } } } });
+    const byMod = {}; tests.forEach(t => { const k = t.module || 'Unknown'; if (!byMod[k]) byMod[k] = { total: 0, pass: 0 }; byMod[k].total++; if (t.status === 'passed') byMod[k].pass++; });
+    const modKeys = Object.keys(byMod).sort();
+    homeChartModules = modKeys;
+    $('home-modules').innerHTML = modKeys.map((m) => { const p = Number(pct(byMod[m].pass, byMod[m].total)); return '<div class="module-row clickable drill-module" data-module="' + esc(m) + '" title="Modül detayı için tıkla"><div class="module-meta"><strong>' + esc(trModule(m)) + '</strong><span>' + byMod[m].pass + '/' + byMod[m].total + ' · %' + p.toFixed(1) + '</span></div><div class="bar"><span style="width:' + p + '%"></span></div></div>'; }).join('') || '<div class="empty">Modül verisi yok.</div>';
+    createChart('chart-home-modules', { type: 'bar', data: { labels: modKeys.map(trModule), datasets: [{ label: 'Başarı %', data: modKeys.map(m => Number(pct(byMod[m].pass, byMod[m].total))), backgroundColor: '#6366F1', borderRadius: 6 }] }, options: { maintainAspectRatio: false, onClick: (_, els) => { if (els.length && homeChartModules[els[0].index]) openModuleDrilldown(homeChartModules[els[0].index]); }, plugins: { legend: { display: false }, tooltip: { callbacks: { footer: () => 'Modül detayı için tıkla' } } }, scales: { y: { max: 100, grid: { color: '#f1f5f9' } }, x: { grid: { display: false } } } } });
+    const slow = tests.slice().sort((a, b) => toSec(b.duration) - toSec(a.duration)).slice(0, 5);
+    $('home-slowest').innerHTML = slow.map(t => '<div class="list-item clickable drill-test-item" data-case-id="' + esc(t.caseId || '') + '" title="Senaryo detayı"><span>' + esc(t.name) + ' · ' + esc(trModule(t.module)) + '</span><strong>' + esc(t.duration || '0s') + '</strong></div>').join('') || '<div class="empty">Süre verisi yok.</div>';
+  }
+  function durationToSec(s) { const p = String(s || '').split(':'); if (p.length === 2) return Number(p[0]) * 60 + Number(p[1]); return toSec(s); }
+  function formatSec(sec) { const m = Math.floor(sec / 60), s = sec % 60; return m + ':' + String(s).padStart(2, '0'); }
+  function getRunModuleKeys(run) {
+    const set = new Set();
+    (run.tests || []).forEach((t) => { const m = normalizeModuleName(t.module); if (m) set.add(m); });
+    return Array.from(set).sort();
+  }
+  function isFullSuiteRun(run) {
+    const mods = getRunModuleKeys(run);
+    return FULL_SUITE_MODULES.every((m) => mods.includes(m));
+  }
+  function renderRunModuleChips(run) {
+    if (isFullSuiteRun(run)) return '<span class="run-mod-chip all">Tümü</span>';
+    return getRunModuleKeys(run).slice(0, 12).map((m) =>
+      '<span class="run-mod-chip">' + esc(MODULE_CHIP[m] || m) + '</span>'
+    ).join('') + (getRunModuleKeys(run).length > 12 ? '<span class="run-mod-chip">+' + (getRunModuleKeys(run).length - 12) + '</span>' : '');
+  }
+  function moduleStatsInRun(run, moduleKey) {
+    const mod = normalizeModuleName(moduleKey);
+    const tests = (run.tests || []).filter((t) => normalizeModuleName(t.module) === mod);
+    const passed = tests.filter((t) => t.status === 'passed').length;
+    const failed = tests.filter((t) => t.status === 'failed').length;
+    return { total: tests.length, passed, failed, skipped: tests.filter((t) => t.status === 'skipped').length, tests };
+  }
+  function buildRunAccordionBody(run, runIndex) {
+    const byMod = {};
+    (run.tests || []).forEach((t) => {
+      const m = normalizeModuleName(t.module);
+      if (!byMod[m]) byMod[m] = { total: 0, pass: 0, fail: 0 };
+      byMod[m].total++;
+      if (t.status === 'passed') byMod[m].pass++;
+      if (t.status === 'failed') byMod[m].fail++;
+    });
+    const modRows = Object.keys(byMod).sort().map((m) =>
+      '<div class="list-item" style="padding:6px 0"><span>' + esc(trModule(m)) + '</span><strong>' + byMod[m].pass + '/' + byMod[m].total + (byMod[m].fail ? ' · <span style="color:var(--error)">' + byMod[m].fail + ' fail</span>' : '') + '</strong></div>'
+    ).join('');
+    const failed = (run.tests || []).filter((t) => t.status === 'failed').slice(0, 6);
+    const failRows = failed.map((t) =>
+      '<div class="list-item drill-test-item clickable" data-case-id="' + esc(t.caseId || '') + '" style="padding:6px 0"><span>' + esc(t.caseId || '—') + ' · ' + esc(trModule(t.module)) + '</span><strong style="color:var(--error)">Başarısız</strong></div>'
+    ).join('');
+    return '<div class="run-acc-grid">'
+      + '<div class="mini"><span>Toplam test</span><b>' + (run.total || 0) + '</b></div>'
+      + '<div class="mini"><span>Geçen</span><b style="color:var(--success)">' + (run.passed || 0) + '</b></div>'
+      + '<div class="mini"><span>Başarısız</span><b style="color:var(--error)">' + (run.failed || 0) + '</b></div>'
+      + '<div class="mini"><span>Atlanan</span><b>' + (run.skipped || 0) + '</b></div></div>'
+      + (modRows ? '<div style="margin-top:8px"><div class="section-title" style="font-size:0.85rem;margin-bottom:8px">Modül dağılımı</div>' + modRows + '</div>' : '')
+      + (failRows ? '<div style="margin-top:10px"><div class="section-title" style="font-size:0.85rem;margin-bottom:8px">Başarısız testler</div>' + failRows + '</div>' : '')
+      + '<div class="run-acc-actions">'
+      + '<button type="button" class="btn-outline primary drill-run" data-run="' + runIndex + '">Koşum detayı</button>'
+      + '<button type="button" class="btn-outline drill-run-select" data-run="' + runIndex + '">Bu koşumu seç</button>'
+      + '</div>';
+  }
+  function renderGeneralRunTimeline(runs) {
+    if (!runs.length) return '<div class="empty">Koşum kaydı yok.</div>';
+    return runs.slice(0, 20).map((r, i) => {
+      const passPct = Number(pct(r.passed || 0, r.total || 0));
+      const isOpen = openRunAccordion === i;
+      return '<div class="run-timeline-card" data-run-card="' + i + '">'
+        + '<div class="run-timeline-header' + (isOpen ? ' open' : '') + '" data-run-toggle="' + i + '" title="Detayı aç/kapat">'
+        + '<div class="run-timeline-date">' + esc(r.date || '—') + '</div>'
+        + '<div class="run-timeline-main">'
+        + '<div class="run-timeline-top"><div class="run-timeline-title">Koşum #' + (i + 1) + ' · ' + esc(r.duration || '—') + '</div>'
+        + '<div class="run-timeline-stats"><b class="pass">' + (r.passed || 0) + ' geçti</b> · <b class="fail">' + (r.failed || 0) + ' başarısız</b> · ' + (r.total || 0) + ' test</div></div>'
+        + '<div class="progress-bar-bg" style="margin-top:10px;display:flex"><div style="width:' + passPct + '%;background:var(--success)"></div><div style="width:' + (100 - passPct) + '%;background:var(--error)"></div></div>'
+        + '<div class="run-mod-chips">' + renderRunModuleChips(r) + '</div>'
+        + '</div>'
+        + '<i data-lucide="chevron-down" class="run-timeline-chevron" size="18"></i>'
+        + '</div>'
+        + '<div class="run-timeline-accordion' + (isOpen ? ' open' : '') + '" id="run-acc-' + i + '">' + buildRunAccordionBody(r, i) + '</div>'
+        + '</div>';
+    }).join('');
+  }
+  function renderModuleRunTimeline(runs, moduleKey) {
+    const rows = runs.map((r, i) => ({ run: r, index: i, stats: moduleStatsInRun(r, moduleKey) })).filter((x) => x.stats.total > 0);
+    if (!rows.length) return '<div class="empty">«' + esc(trModule(moduleKey)) + '» modülü için koşum kaydı yok.</div>';
+    return rows.slice(0, 20).map(({ run, index, stats }) => {
+      const passPct = Number(pct(stats.passed, stats.total));
+      return '<div class="module-run-row">'
+        + '<div class="module-run-date">' + esc(run.date || '—') + '<br><span style="font-size:0.75rem">Koşum #' + (index + 1) + '</span></div>'
+        + '<div class="module-run-body">'
+        + '<div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center">'
+        + '<strong>' + esc(trModule(moduleKey)) + ' · ' + esc(run.duration || '—') + '</strong>'
+        + '<span style="font-size:0.82rem"><b style="color:var(--success)">' + stats.passed + ' geçti</b> · <b style="color:var(--error)">' + stats.failed + ' başarısız</b> · ' + stats.total + ' test</span></div>'
+        + '<div class="progress-bar-bg" style="margin-top:8px;display:flex"><div style="width:' + passPct + '%;background:var(--success)"></div><div style="width:' + (100 - passPct) + '%;background:var(--error)"></div></div>'
+        + '<div style="margin-top:8px"><button type="button" class="btn-outline drill-run" data-run="' + index + '" style="height:30px;font-size:0.78rem">Koşum detayı</button></div>'
+        + '</div></div>';
+    }).join('');
+  }
+  function bindHistoryTimelineInteractions() {
+    document.querySelectorAll('.history-tab[data-history-tab]').forEach((btn) => {
+      btn.onclick = () => {
+        historyTab = btn.dataset.historyTab;
+        document.querySelectorAll('.history-tab').forEach((b) => b.classList.toggle('active', b.dataset.historyTab === historyTab));
+        $('history-panel-general').classList.toggle('active', historyTab === 'general');
+        $('history-panel-module').classList.toggle('active', historyTab === 'module');
+        refreshIcons();
+      };
+    });
+    document.querySelectorAll('.history-mod-pill[data-history-module]').forEach((pill) => {
+      pill.onclick = () => {
+        historyModule = pill.dataset.historyModule;
+        renderHistoryModulePanel();
+        bindHistoryTimelineInteractions();
+        refreshIcons();
+      };
+    });
+    document.querySelectorAll('[data-run-toggle]').forEach((el) => {
+      el.onclick = (e) => {
+        if (e.target.closest('.drill-run, .drill-run-select, .drill-test-item')) return;
+        const idx = Number(el.dataset.runToggle);
+        openRunAccordion = openRunAccordion === idx ? null : idx;
+        renderHistoryGeneralPanel();
+        bindHistoryTimelineInteractions();
+        bindDrillInteractions();
+        refreshIcons();
+      };
+    });
+    document.querySelectorAll('.drill-run-select[data-run]').forEach((el) => {
+      el.onclick = (e) => { e.stopPropagation(); navigateToRun(Number(el.dataset.run), 'home'); };
+    });
+  }
+  function renderHistoryGeneralPanel() {
+    $('history-timeline-general').innerHTML = renderGeneralRunTimeline(data.runs || []);
+  }
+  function renderHistoryModulePanel() {
+    const pills = $('history-module-pills');
+    pills.innerHTML = HISTORY_MODULE_OPTIONS.map((opt) =>
+      '<button type="button" class="history-mod-pill' + (historyModule === opt.key ? ' active' : '') + '" data-history-module="' + esc(opt.key) + '">' + esc(opt.chip) + '</button>'
+    ).join('');
+    $('history-timeline-module').innerHTML = renderModuleRunTimeline(data.runs || [], historyModule);
+  }
+  function renderHistory() {
+    const runs = data.runs || [];
+    const avgPass = runs.length ? (runs.reduce((a, r) => a + Number(pct(r.passed || 0, r.total || 0)), 0) / runs.length).toFixed(1) : '0.0';
+    const totalSec = runs.reduce((a, r) => a + durationToSec(r.duration), 0);
+    $('history-summary').innerHTML = '<div class="mini"><span>Toplam koşum</span><b>' + runs.length + '</b></div><div class="mini"><span>Ortalama başarı</span><b>%' + avgPass + '</b></div><div class="mini"><span>Toplam süre</span><b>' + formatSec(totalSec) + '</b></div>';
+    document.querySelectorAll('.history-tab').forEach((b) => b.classList.toggle('active', b.dataset.historyTab === historyTab));
+    $('history-panel-general').classList.toggle('active', historyTab === 'general');
+    $('history-panel-module').classList.toggle('active', historyTab === 'module');
+    renderHistoryGeneralPanel();
+    renderHistoryModulePanel();
+    let html = '<thead><tr><th>Tarih</th><th>Süre</th><th>Toplam</th><th>Geçen</th><th>Başarısız</th><th>Atlanan</th><th>Başarı %</th></tr></thead><tbody>';
+    runs.forEach((r, i) => { html += '<tr class="clickable drill-run history-row" data-run="' + i + '" title="Koşum detayı"><td>' + esc(r.date || '—') + '</td><td>' + esc(r.duration || '—') + '</td><td>' + (r.total || 0) + '</td><td>' + (r.passed || 0) + '</td><td>' + (r.failed || 0) + '</td><td>' + (r.skipped || 0) + '</td><td>%' + pct(r.passed || 0, r.total || 0) + '</td></tr>'; });
+    $('history-table').innerHTML = html + '</tbody>';
+    createChart('chart-history-area', { type: 'line', data: { labels: runs.slice().reverse().map((r, i) => { const d = String(r.date || '').trim(); return 'Koşum ' + (i + 1) + (d.slice(11, 16) ? ' · ' + d.slice(11, 16) : ''); }), datasets: [{ label: 'Başarı %', data: runs.slice().reverse().map(r => Number(pct(r.passed || 0, r.total || 0))), borderColor: '#6366F1', backgroundColor: 'rgba(99,102,241,0.16)', fill: true, tension: 0.32 }] }, options: { maintainAspectRatio: false, onClick: (_, els) => { if (els.length) openRunDrilldown((data.runs || []).length - 1 - els[0].index); }, plugins: { tooltip: { callbacks: { footer: () => 'Koşum detayı için tıkla' } } }, scales: { y: { min: 0, max: 100 } } } });
+    const failMap = {}; runs.forEach(r => (r.tests || []).forEach(t => { if (t.status === 'failed') failMap[t.name] = (failMap[t.name] || 0) + 1; }));
+    $('history-worst').innerHTML = Object.keys(failMap).sort((a, b) => failMap[b] - failMap[a]).slice(0, 8).map(name => '<div class="list-item clickable drill-test-item" data-test-name="' + esc(name) + '" title="Bu testin senaryolarına git"><span>' + esc(name) + '</span><strong>' + failMap[name] + ' kez</strong></div>').join('') || '<div class="empty">Başarısız test kaydı yok.</div>';
+  }
+  function setSelect(id, vals) { const el = $(id), cur = el.value, uniq = Array.from(new Set(vals)).sort(), first = el.options[0].textContent; el.innerHTML = '<option value="">' + first + '</option>' + uniq.map(v => '<option value="' + esc(v) + '">' + esc(v) + '</option>').join(''); if (uniq.includes(cur)) el.value = cur; }
+  function setSelectTranslated(id, vals, translator) { const el = $(id), cur = el.value, uniq = Array.from(new Set(vals)).sort(), first = el.options[0].textContent; el.innerHTML = '<option value="">' + first + '</option>' + uniq.map(v => '<option value="' + esc(v) + '">' + esc(translator(v)) + '</option>').join(''); if (uniq.includes(cur)) el.value = cur; }
+  function fillScenarioFilters(tests) {
+    setSelectTranslated('sc-module', tests.map(t => t.module).filter(Boolean), trModule);
+    setSelectTranslated('sc-type', tests.map(t => t.testType).filter(Boolean), trTestType);
+    setSelectTranslated('sc-level', tests.map(t => t.testLevel).filter(Boolean), trTestLevel);
+    setSelectTranslated('sc-standard', tests.map(t => t.standard).filter(Boolean), (s) => { const u = String(s || '').toUpperCase(); return u === 'OWASP' ? 'OWASP Güvenlik' : u === 'ISTQB' ? 'ISTQB Standardı' : s; });
+  }
+  function normalizeAiText(raw) {
+    let s = String(raw == null ? '' : raw).trim();
+    if (!s || s === 'null') return '';
+    s = s.replace(/^\[ML-MODEL\][^\n]*\n?/i, '');
+    s = s.replace(/^\[QATest-AI[^\]]*\]\s*/i, '');
+    s = s.replace(/^\[AI-GROQ[^\]]*\]\s*/i, '');
+    s = s.replace(/^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})?\s*/, '');
+    return s.replace(/\\n/g, '\n').trim();
+  }
+  function hasAiAnalysis(raw) {
+    const original = String(raw == null ? '' : raw).trim();
+    if (!original || original === 'null') return false;
+    if (/^\[AI-SKIPPED\]/i.test(original)) return false;
+    return normalizeAiText(raw).length > 8;
+  }
+  function extractAiRisk(raw) {
+    const ml = String(raw || '').match(/^\[ML-MODEL\][^\n]*Risk:\s*([^\|]+)/i);
+    if (ml) {
+      const label = ml[1].trim();
+      if (/yüksek|yuksek|high/i.test(label)) return { label: 'Yüksek', cls: 'risk-high' };
+      if (/orta|medium/i.test(label)) return { label: 'Orta', cls: 'risk-mid' };
+      return { label: 'Düşük', cls: 'risk-low' };
+    }
+    const t = normalizeAiText(raw).toLowerCase();
+    if (t.includes('yüksek') || t.includes('yuksek') || t.includes('high')) return { label: 'Yüksek', cls: 'risk-high' };
+    if (t.includes('orta') || t.includes('medium')) return { label: 'Orta', cls: 'risk-mid' };
+    return { label: 'Düşük', cls: 'risk-low' };
+  }
+  function extractMlPrediction(raw) { const m = String(raw || '').match(/^\[ML-MODEL\]\s*Tahmin:\s*(\w+)/i); return m ? m[1] : ''; }
+  function extractAiTimestamp(raw) {
+    const m = String(raw || '').match(/\[QATest-AI[^\|]*\|([^\]]+)\]/i) || String(raw || '').match(/\[AI-GROQ\|([^\]]+)\]/i);
+    return m ? m[1].replace('T', ' ') : '—';
+  }
+  function inlineAiMarkdown(text) {
+    let out = esc(text);
+    out = out.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    out = out.replace(/`([^`]+)`/g, '<code>$1</code>');
+    out = out.replace(/^-\s+(.+)$/gm, '<li>$1</li>');
+    if (out.includes('<li>')) out = '<ul>' + out.replace(/<br\/>/g, '') + '</ul>';
+    else out = out.replace(/\n/g, '<br/>');
+    return out;
+  }
+  function aiSection(title, body) { return '<div class="ai-section"><div class="ai-section-title">' + esc(title) + '</div><div class="ai-section-body">' + inlineAiMarkdown(body) + '</div></div>'; }
+  function formatAiMarkdown(raw) {
+    let text = normalizeAiText(raw);
+    if (!text) return '';
+    if (/^##\s/m.test(text)) {
+      return text.split(/\n(?=##\s)/).map((block) => {
+        const cleaned = block.replace(/^##\s*/, '').trim();
+        const nl = cleaned.indexOf('\n');
+        if (nl === -1) return aiSection(cleaned, '');
+        return aiSection(cleaned.slice(0, nl).trim(), cleaned.slice(nl + 1).trim());
+      }).join('');
+    }
+    return aiSection('Model Çıkarımı', text);
+  }
+  function renderAiAnalysisCard(raw, test) {
+    if (!hasAiAnalysis(raw)) return '';
+    const risk = extractAiRisk(raw), mlPrediction = extractMlPrediction(raw);
+    const mod = test && test.module ? test.module : '—', caseId = test && test.caseId ? test.caseId : '—', ts = extractAiTimestamp(raw);
+    return '<div class="ai-engine-card"><div class="ai-header"><div style="display:flex;align-items:center;gap:8px"><i data-lucide="sparkles" size="18"></i><div><div class="ai-brand-title">QATest Akıllı Analiz</div><div class="ai-brand-sub">Eğitilmiş hata analizi modeli · v1.2 · otomatik kök neden çıkarımı</div></div></div><span class="ai-live-badge">Model Aktif</span></div><div class="ai-analysis-meta"><span class="ai-chip">Modül: ' + esc(trModule(mod)) + '</span><span class="ai-chip">Senaryo: ' + esc(caseId) + '</span>' + (mlPrediction ? '<span class="ai-chip">Tahmin: ' + esc(trMlPred(mlPrediction)) + '</span>' : '') + '<span class="ai-chip ' + risk.cls + '">Risk: ' + esc(risk.label) + '</span><span class="ai-chip">Zaman: ' + esc(ts) + '</span></div><div class="ai-grid">' + formatAiMarkdown(raw) + '</div></div>';
+  }
+  function failLayerType(t) {
+    const caseId = String(t && t.caseId ? t.caseId : '').trim().toUpperCase();
+    const module = String(t && t.module ? t.module : '').trim().toLowerCase();
+    if (caseId.startsWith('API-')) return 'api';
+    if (caseId.startsWith('DB-') || module === 'db') return 'db';
+    return 'ui';
+  }
+  function layerBadgeHtml(t) {
+    const layer = failLayerType(t);
+    if (layer === 'api') return '<span class="badge layer-badge layer-badge-api">API</span>';
+    if (layer === 'db') return '<span class="badge layer-badge layer-badge-db">Veritabanı</span>';
+    return '<span class="badge layer-badge layer-badge-ui">Arayüz</span>';
+  }
+  function renderFailFilterChips(fails) {
+    const counts = { ui: 0, api: 0, db: 0 };
+    fails.forEach((t) => { counts[failLayerType(t)]++; });
+    const chips = [
+      { id: 'ui', label: 'Arayüz Hataları' },
+      { id: 'api', label: 'API Hataları' },
+      { id: 'db', label: 'Veritabanı Hataları' }
+    ];
+    return '<div class="fail-filters" id="fail-filters">' + chips.map((c) =>
+      '<button type="button" class="filter-chip filter-chip-' + c.id + (failFilter === c.id ? ' active' : '') + '" data-fail-filter="' + c.id + '">'
+      + esc(c.label) + ' (' + counts[c.id] + ')</button>'
+    ).join('') + '</div>';
+  }
+  function renderFailCardHtml(t, i, run) {
+    const reported = t.jiraIssueKey ? '<span class="badge badge-blue">Jira: ' + esc(t.jiraIssueKey) + '</span>' : (isCaseReported(t.caseId) ? '<span class="badge badge-indigo">Raporlandı</span>' : '');
+    const shotUrl = resolveDashboardAsset(t.screenshotPath);
+    return '<div class="fail-card-wrap" data-layer="' + failLayerType(t) + '"><div class="card fail-card"><div class="fail-card-top"><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><span class="badge badge-indigo">' + esc(t.caseId || '—') + '</span>' + badgeModule(t.module) + (t.selfHealUsed ? '<span class="badge badge-orange">Otomatik Onarım Devrede</span>' : '') + reported + '</div><div class="fail-card-meta">' + layerBadgeHtml(t) + '<span class="fail-card-date">' + esc(run ? run.date : '—') + '</span></div></div><h4 style="margin:12px 0 8px;font-size:1rem">' + esc(t.name || 'Test Hatası') + '</h4><div class="error-log">' + esc(t.errorMessage || 'Hata detayı yok') + '</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0"><button type="button" class="btn-outline btn-jira-report" data-idx="' + i + '" style="border-color:#2563EB;color:#2563EB;font-weight:600">🐞 Hatayı Raporla</button><button class="btn-outline btn-toggle-detail" data-i="' + i + '">Hata Detayı</button></div><pre id="fail-pre-' + i + '">' + esc(t.errorMessage || '') + '</pre>' + (shotUrl ? '<img class="thumb" data-img="' + esc(shotUrl) + '" src="' + esc(shotUrl) + '" alt="ekran görüntüsü" />' : '') + renderAiAnalysisCard(t.aiAnalysis, t) + '</div></div>';
+  }
+  function renderFailCardsPanel(fails, run) {
+    const filtered = fails.filter((t) => failLayerType(t) === failFilter && (!failModuleFilter || normalizeModuleName(t.module) === failModuleFilter));
+    if (!filtered.length) {
+      const labels = { ui: 'Arayüz hataları', api: 'API hataları', db: 'Veritabanı hataları' };
+      return '<div class="empty"><strong>' + esc(labels[failFilter] || failFilter) + ' kategorisinde kayıt yok</strong><p style="margin-top:8px">Diğer sekmelere geçerek arayüz, API veya veritabanı hatalarına bakabilirsin.</p></div>';
+    }
+    return '<div class="fail-grid">' + filtered.map((t, i) => renderFailCardHtml(t, i, run)).join('') + '</div>';
+  }
+  function bindFailCardInteractions(fails) {
+    document.querySelectorAll('.btn-toggle-detail').forEach((b) => b.onclick = () => $('fail-pre-' + b.dataset.i).classList.toggle('open'));
+    document.querySelectorAll('.thumb').forEach((img) => img.onclick = () => window.open(img.dataset.img, '_blank'));
+    document.querySelectorAll('.btn-jira-report').forEach((btn) => {
+      btn.onclick = () => {
+        const idx = Number(btn.dataset.idx || 0);
+        if (fails && fails[idx]) startJiraReportFlow(fails[idx]);
+      };
+    });
+  }
+  function bindFailFilterChips(fails, run) {
+    document.querySelectorAll('[data-fail-filter]').forEach((btn) => {
+      btn.onclick = () => {
+        failFilter = btn.dataset.failFilter || 'ui';
+        document.querySelectorAll('[data-fail-filter]').forEach((b) => {
+          b.classList.toggle('active', b.dataset.failFilter === failFilter);
+        });
+        const host = $('fail-cards-host');
+        if (host) host.innerHTML = renderFailCardsPanel(fails, run);
+        bindFailCardInteractions(fails.filter((t) => failLayerType(t) === failFilter && (!failModuleFilter || normalizeModuleName(t.module) === failModuleFilter)));
+        refreshIcons();
+      };
+    });
+  }
+  function renderScenarios() {
+    const run = currentRun(), tests = (run && run.tests) ? run.tests : []; fillScenarioFilters(tests);
+    const q = $('sc-search').value.toLowerCase().trim(), f = { module: $('sc-module').value, testType: $('sc-type').value, testLevel: $('sc-level').value, standard: $('sc-standard').value, status: $('sc-status').value };
+    filteredScenarios = tests.filter(t => (!f.module || t.module === f.module) && (!f.testType || t.testType === f.testType) && (!f.testLevel || t.testLevel === f.testLevel) && (!f.standard || t.standard === f.standard) && (!f.status || t.status === f.status) && (!q || [t.caseId, t.name, t.description, t.errorMessage, t.module, t.technique].join(' ').toLowerCase().includes(q)));
+    let html = '<thead><tr><th>Senaryo Kodu</th><th>Test Adı</th><th>Açıklama</th><th>Modül</th><th>Test Tekniği</th><th>Test Türü</th><th>Seviye</th><th>Standart</th><th>Sonuç</th><th>Süre</th></tr></thead><tbody>';
+    filteredScenarios.forEach((t, idx) => { html += '<tr class="clickable scenario-row" data-idx="' + idx + '"><td><b>' + esc(t.caseId || '—') + '</b></td><td>' + esc(t.name || '—') + '</td><td>' + esc(t.description || '—') + '</td><td>' + badgeModule(t.module) + '</td><td><span class="badge badge-indigo" title="' + esc(techHelp(t.technique)) + '">' + esc(trTechnique(t.technique)) + '</span></td><td>' + badgeType(t.testType) + '</td><td><span class="badge">' + esc(trTestLevel(t.testLevel)) + '</span></td><td>' + badgeStandard(t.standard, t.reference) + '</td><td>' + badgeStatus(t.status) + '</td><td>' + esc(t.duration || '—') + '</td></tr>'; });
+    $('scenario-table').innerHTML = html + '</tbody>';
+    document.querySelectorAll('.scenario-row').forEach((row) => row.addEventListener('click', (e) => {
+      if (e.target.closest('.drill-module-inline')) return;
+      const t = filteredScenarios[Number(row.dataset.idx || 0)];
+      if (t) openDrawer(t);
+    }));
+  }
+  function normalizeErrKey(text) {
+    return String(text || '').toLowerCase().replace(/\s+/g, ' ').trim().slice(0, 120);
+  }
+  function findLocalJiraDuplicates(test) {
+    const out = [];
+    const caseId = String(test.caseId || '').trim();
+    const errKey = normalizeErrKey(test.errorMessage);
+    (jiraReports || []).forEach((r) => {
+      if (caseId && r.caseId === caseId) out.push(r);
+      else if (caseId && r.caseId === caseId && normalizeErrKey(r.errorMessage) === errKey) out.push(r);
+    });
+    (data.runs || []).forEach((run) => {
+      (run.tests || []).forEach((t) => {
+        if (t.jiraIssueKey && t.caseId === caseId) {
+          out.push({ issueKey: t.jiraIssueKey, url: t.jiraIssueUrl, summary: t.name, source: 'history' });
+        }
+      });
+    });
+    const seen = new Set();
+    return out.filter((x) => {
+      const k = x.issueKey || x.url || JSON.stringify(x);
+      if (seen.has(k)) return false;
+      seen.add(k);
+      return true;
+    });
+  }
+  function generateReportId() {
+    return 'RPT-' + Date.now().toString(36).toUpperCase();
+  }
+  function loadReportedErrorsFromStorage() {
+    try {
+      const raw = localStorage.getItem(REPORTED_STORAGE_KEY);
+      reportedErrors = raw ? JSON.parse(raw) : [];
+      if (!Array.isArray(reportedErrors)) reportedErrors = [];
+    } catch (e) {
+      reportedErrors = [];
+    }
+    reportedErrors.sort((a, b) => new Date(b.updatedAt || b.reportedAt || 0) - new Date(a.updatedAt || a.reportedAt || 0));
+  }
+  function mergeServerJiraReports() {
+    (jiraReports || []).forEach((r) => {
+      if (!r || !r.caseId) return;
+      const exists = reportedErrors.some((x) =>
+        (x.id && r.id && x.id === r.id) ||
+        (x.caseId === r.caseId && x.issueKey && r.issueKey && x.issueKey === r.issueKey)
+      );
+      if (!exists) {
+        reportedErrors.push(Object.assign({
+          id: r.id || generateReportId(),
+          status: r.issueKey ? 'jira_open' : 'reported',
+          reportedAt: r.reportedAt || r.detectedAt || new Date().toISOString(),
+          updatedAt: r.updatedAt || r.reportedAt || new Date().toISOString()
+        }, r));
+      }
+    });
+    reportedErrors.sort((a, b) => new Date(b.updatedAt || b.reportedAt || 0) - new Date(a.updatedAt || a.reportedAt || 0));
+    persistReportedErrors();
+  }
+  function persistReportedErrors() {
+    try { localStorage.setItem(REPORTED_STORAGE_KEY, JSON.stringify(reportedErrors)); } catch (e) { /* ignore quota */ }
+    updateReportedNavBadge();
+  }
+  function updateReportedNavBadge() {
+    const el = $('nav-reported-count');
+    if (!el) return;
+    const n = reportedErrors.length;
+    el.textContent = String(n);
+    el.style.display = n > 0 ? 'inline-flex' : 'none';
+  }
+  function isCaseReported(caseId) {
+    const id = String(caseId || '').trim();
+    return reportedErrors.some((r) => r.caseId === id);
+  }
+  function findReportedByCase(caseId) {
+    return reportedErrors.find((r) => r.caseId === caseId) || null;
+  }
+  function buildReportedEntry(report, test, status) {
+    const latest = findLatestTestForCase(report.caseId || (test && test.caseId));
+    const src = test || latest || (activeJiraReport && activeJiraReport._sourceTest) || {};
+    const now = new Date().toISOString();
+    return Object.assign({}, report, {
+      id: report._reportId || generateReportId(),
+      status: status || 'reported',
+      reportedAt: report.reportedAt || now,
+      updatedAt: now,
+      testName: src.name || report.testName || '',
+      errorMessage: src.errorMessage || report.errorMessage || '',
+      aiAnalysis: src.aiAnalysis || report.aiAnalysis || '',
+      technique: src.technique || report.technique || '',
+      standard: src.standard || report.standard || '',
+      runDate: src.runDate || report.runDate || '',
+      screenshotPath: resolveDashboardAsset(src.screenshotPath || report.screenshotPath || ''),
+      errorLogPath: resolveDashboardAsset(src.errorLogPath || report.errorLogPath || '')
+    });
+  }
+  function upsertReportedError(report, test, status) {
+    const entry = buildReportedEntry(report, test, status);
+    let idx = reportedErrors.findIndex((r) => r.id === entry.id);
+    if (idx < 0 && entry.caseId) idx = reportedErrors.findIndex((r) => r.caseId === entry.caseId);
+    if (idx >= 0) {
+      entry.id = reportedErrors[idx].id;
+      entry.reportedAt = reportedErrors[idx].reportedAt || entry.reportedAt;
+      reportedErrors[idx] = Object.assign({}, reportedErrors[idx], entry);
+    } else {
+      reportedErrors.unshift(entry);
+    }
+    selectedReportedId = entry.id;
+    persistReportedErrors();
+    return entry;
+  }
+  function saveActiveReportedError(status) {
+    if (!activeJiraReport) return null;
+    const report = readJiraForm();
+    report._reportId = activeJiraReport._reportId || generateReportId();
+    activeJiraReport._reportId = report._reportId;
+    const entry = upsertReportedError(report, activeJiraReport._sourceTest, status || 'reported');
+    return entry;
+  }
+  function formatReportDate(iso) {
+    if (!iso) return '—';
+    try { return new Date(iso).toLocaleString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }); }
+    catch (e) { return String(iso); }
+  }
+  function reportedStatusLabel(status) {
+    return REPORTED_STATUS_LABELS[status] || status || 'Raporlandı';
+  }
+  function priorityLabelTr(p) {
+    const map = { Highest: 'En Yüksek', High: 'Yüksek', Medium: 'Orta', Low: 'Düşük', Lowest: 'En Düşük' };
+    return map[p] || p || '—';
+  }
+  function severityLabelTr(s) {
+    const map = { Critical: 'Kritik', Major: 'Önemli', Minor: 'Küçük', Trivial: 'Önemsiz' };
+    return map[s] || s || '—';
+  }
+  function renderReportedDetail(entry) {
+    if (!entry) {
+      return '<div class="reported-detail-pane"><div class="reported-detail-empty"><div><strong>Kayıt seçilmedi</strong><p style="margin-top:8px">Soldan bir hata seç veya Hata Analizi\'nden «Hatayı Raporla» ile yeni kayıt oluştur.</p></div></div></div>';
+    }
+    entry = enrichReportedEntry(entry);
+    const statusOpts = Object.keys(REPORTED_STATUS_LABELS).map((k) =>
+      '<option value="' + k + '"' + (entry.status === k ? ' selected' : '') + '>' + esc(REPORTED_STATUS_LABELS[k]) + '</option>'
+    ).join('');
+    const screenshot = entry.screenshotPath
+      ? '<img class="thumb reported-screenshot" src="' + esc(entry.screenshotPath) + '" data-img="' + esc(entry.screenshotPath) + '" alt="ekran görüntüsü" style="max-width:100%;margin-top:8px;border-radius:8px;border:1px solid var(--border-color)" />'
+      : '<p style="color:var(--text-muted);font-size:0.82rem">Ekran görüntüsü yok — testi yeniden koşturup «Hatayı Raporla» ile güncelle.</p>';
+    const aiBlock = entry.aiAnalysis && !/^\[AI-SKIPPED\]/i.test(String(entry.aiAnalysis))
+      ? '<div class="reported-section"><h4>AI Analiz Notu</h4><pre style="background:var(--surface-muted);padding:12px;border-radius:8px;border:1px solid var(--border-color)">' + esc(String(entry.aiAnalysis).replace(/^\[ML-MODEL\][^\n]*\n?/i, '').replace(/^\[AI-GROQ[^\]]*\]\s*/i, '').replace(/^\[QATest-AI[^\]]*\]\s*/i, '')) + '</pre></div>'
+      : '';
+    return '<div class="reported-detail-pane">'
+      + '<div class="reported-detail-head">'
+      + '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:6px">'
+      + '<span class="reported-list-icon">🐞</span>'
+      + '<span class="reported-list-id">' + esc(entry.caseId || entry.id) + '</span>'
+      + '<span class="reported-status-pill ' + esc(entry.status || 'reported') + '">' + esc(reportedStatusLabel(entry.status)) + '</span>'
+      + (entry.issueKey ? '<a href="' + esc(entry.issueUrl || '#') + '" target="_blank" rel="noopener" class="badge badge-blue">' + esc(entry.issueKey) + '</a>' : '')
+      + '</div>'
+      + '<h3>' + esc(entry.summary || entry.testName || 'Hata raporu') + '</h3>'
+      + '<div class="reported-detail-actions">'
+      + '<select class="reported-status-select" id="reported-status-select">' + statusOpts + '</select>'
+      + '<button type="button" class="btn-outline" id="reported-edit-btn">Düzenle</button>'
+      + '<button type="button" class="btn-outline" id="reported-copy-btn">Metni Kopyala</button>'
+      + '<button type="button" class="btn-outline" id="reported-delete-btn" style="color:var(--error);border-color:#FECACA">Sil</button>'
+      + '</div></div>'
+      + '<div class="reported-detail-body">'
+      + '<div class="reported-detail-main">'
+      + '<div class="reported-meta-grid">'
+      + '<div class="reported-meta-item"><label>Tür</label><span>🐞 ' + esc(entry.issueType || 'Bug') + '</span></div>'
+      + '<div class="reported-meta-item"><label>Öncelik</label><span>' + esc(priorityLabelTr(entry.priority)) + '</span></div>'
+      + '<div class="reported-meta-item"><label>Önem</label><span>' + esc(severityLabelTr(entry.severity)) + '</span></div>'
+      + '<div class="reported-meta-item"><label>Modül</label><span>' + esc(trModule(entry.module)) + '</span></div>'
+      + '<div class="reported-meta-item"><label>Kanal</label><span>' + esc(entry.channel || 'Web') + '</span></div>'
+      + '<div class="reported-meta-item"><label>Tekrar</label><span>' + esc(entry.frequency === 'Always' ? 'Her zaman' : entry.frequency === 'Intermittent' ? 'Ara sıra' : entry.frequency || '—') + '</span></div>'
+      + '</div>'
+      + '<div class="reported-section"><h4>Test Adımları</h4><pre>' + esc(entry.testSteps || '—') + '</pre></div>'
+      + '<div class="reported-section"><h4>Beklenen Sonuç</h4><p>' + esc(entry.expectedResult || '—') + '</p></div>'
+      + '<div class="reported-section"><h4>Gerçekleşen Sonuç</h4><p>' + esc(entry.actualResult || '—') + '</p></div>'
+      + '<div class="reported-section"><h4>Açıklama</h4><pre>' + esc(entry.description || '—') + '</pre></div>'
+      + '<div class="reported-section"><h4>Teknik Hata</h4><pre style="background:#1E293B;color:#FDA4AF;padding:12px;border-radius:8px;font-family:var(--mono);font-size:0.82rem">' + esc(entry.errorMessage || '—') + '</pre></div>'
+      + aiBlock
+      + '<div class="reported-section"><h4>Ekler</h4>' + screenshot
+      + (entry.errorLogPath ? '<p style="margin-top:8px;font-size:0.82rem"><button type="button" class="btn-link" id="reported-log-download" style="padding:0;font-size:0.82rem">📄 Hata logu indir</button></p>' : '<p style="color:var(--text-muted);font-size:0.82rem;margin-top:8px">Hata logu yok — testi yeniden koşturup «Hatayı Raporla» ile güncelle.</p>')
+      + '</div></div>'
+      + '<div class="reported-detail-side">'
+      + '<div class="reported-side-row"><label>Proje</label><span>' + esc(projectLabel(entry.projectKey || '—')) + '</span></div>'
+      + '<div class="reported-side-row"><label>QA Kaynağı</label><span>' + esc(entry.qaOrigin || '—') + '</span></div>'
+      + '<div class="reported-side-row"><label>QA Süreci</label><span>' + esc(entry.qaProcess || '—') + '</span></div>'
+      + '<div class="reported-side-row"><label>Raporlandı</label><span>' + esc(formatReportDate(entry.reportedAt)) + '</span></div>'
+      + '<div class="reported-side-row"><label>Güncellendi</label><span>' + esc(formatReportDate(entry.updatedAt)) + '</span></div>'
+      + '<div class="reported-side-row"><label>Hata Tarihi</label><span>' + esc(entry.detectedAt || '—') + '</span></div>'
+      + '<div class="reported-side-row"><label>Test Adı</label><span style="word-break:break-word">' + esc(entry.testName || '—') + '</span></div>'
+      + '</div></div></div>';
+  }
+  function renderReportedListItems(filtered) {
+    if (!filtered.length) {
+      return '<div class="reported-detail-empty" style="min-height:120px;padding:20px"><strong>Kayıt yok</strong><p style="margin-top:6px;font-size:0.82rem">Hata Analizi sayfasından «Hatayı Raporla» ile kayıt oluştur.</p></div>';
+    }
+    return filtered.map((r) => {
+      const active = selectedReportedId === r.id ? ' active' : '';
+      return '<div class="reported-list-item' + active + '" data-reported-id="' + esc(r.id) + '">'
+        + '<div class="reported-list-icon">🐞</div>'
+        + '<div class="reported-list-main">'
+        + '<div class="reported-list-id">' + esc(r.caseId || r.id) + '</div>'
+        + '<div class="reported-list-title">' + esc(r.summary || r.testName || 'Hata') + '</div>'
+        + '<div class="reported-list-meta">' + esc(trModule(r.module)) + ' · ' + esc(reportedStatusLabel(r.status)) + ' · ' + esc(formatReportDate(r.reportedAt)) + '</div>'
+        + '</div></div>';
+    }).join('');
+  }
+  function bindReportedDetailActions(entry) {
+    if (!entry) return;
+    const statusSel = $('reported-status-select');
+    if (statusSel) {
+      statusSel.onchange = () => {
+        entry.status = statusSel.value;
+        entry.updatedAt = new Date().toISOString();
+        persistReportedErrors();
+        renderReportedErrors();
+      };
+    }
+    const editBtn = $('reported-edit-btn');
+    if (editBtn) {
+      editBtn.onclick = () => {
+        activeJiraReport = Object.assign({}, entry, { _reportId: entry.id, _sourceTest: {
+          name: entry.testName, caseId: entry.caseId, module: entry.module, errorMessage: entry.errorMessage,
+          aiAnalysis: entry.aiAnalysis, screenshotPath: entry.screenshotPath, errorLogPath: entry.errorLogPath,
+          technique: entry.technique, standard: entry.standard, scenarioContext: entry.scenarioContext || {}
+        }});
+        fillJiraForm(activeJiraReport);
+        openJiraModal();
+      };
+    }
+    const copyBtn = $('reported-copy-btn');
+    if (copyBtn) {
+      copyBtn.onclick = () => {
+        activeJiraReport = Object.assign({}, entry, { _sourceTest: { errorMessage: entry.errorMessage } });
+        fillJiraForm(activeJiraReport);
+        copyJiraReportText();
+      };
+    }
+    const delBtn = $('reported-delete-btn');
+    if (delBtn) {
+      delBtn.onclick = () => {
+        if (!confirm('Bu rapor kaydını silmek istediğine emin misin?')) return;
+        reportedErrors = reportedErrors.filter((r) => r.id !== entry.id);
+        selectedReportedId = reportedErrors[0] ? reportedErrors[0].id : null;
+        persistReportedErrors();
+        renderReportedErrors();
+      };
+    }
+    document.querySelectorAll('#reported-root .reported-screenshot').forEach((img) => {
+      img.onerror = () => {
+        img.replaceWith(Object.assign(document.createElement('p'), {
+          textContent: 'Ekran görüntüsü yüklenemedi — testi yeniden koşturup «Hatayı Raporla» ile güncelle.',
+          style: 'color:var(--text-muted);font-size:0.82rem;margin-top:8px'
+        }));
+      };
+      img.onclick = () => window.open(img.dataset.img || img.src, '_blank');
+    });
+    const logBtn = $('reported-log-download');
+    if (logBtn) logBtn.onclick = () => downloadReportedLogEntry(entry);
+  }
+  async function downloadReportedLogEntry(entry) {
+    const enriched = enrichReportedEntry(entry || {});
+    const fileName = 'hata-log-' + (enriched.caseId || 'rapor') + '.txt';
+    const url = resolveDashboardAsset(enriched.errorLogPath);
+    if (url) {
+      try {
+        const resp = await fetch(url, { cache: 'no-store' });
+        if (resp.ok) {
+          downloadTextFile(fileName, await resp.text());
+          return;
+        }
+      } catch (e) { /* fallback below */ }
+    }
+    downloadTextFile(fileName, buildLogText(enriched, {
+      name: enriched.testName,
+      caseId: enriched.caseId,
+      module: enriched.module,
+      errorMessage: enriched.errorMessage,
+      aiAnalysis: enriched.aiAnalysis
+    }));
+  }
+  function renderReportedErrors() {
+    const root = $('reported-root');
+    if (!root) return;
+    loadReportedErrorsFromStorage();
+    const q = reportedSearch.toLowerCase().trim();
+    const filtered = reportedErrors.filter((r) => {
+      if (!q) return true;
+      return [r.caseId, r.summary, r.testName, r.module, trModule(r.module), r.errorMessage].join(' ').toLowerCase().includes(q);
+    });
+    if (!selectedReportedId || !filtered.some((r) => r.id === selectedReportedId)) {
+      selectedReportedId = filtered[0] ? filtered[0].id : null;
+    }
+    let selected = filtered.find((r) => r.id === selectedReportedId) || null;
+    if (selected) syncReportedEntryAssets(selected);
+    if (selected) selected = reportedErrors.find((r) => r.id === selected.id) || enrichReportedEntry(selected);
+    root.innerHTML = '<div class="reported-layout">'
+      + '<div class="reported-list-pane"><div class="reported-list-head">'
+      + '<input id="reported-search" placeholder="Ara: senaryo kodu, özet, modül..." value="' + esc(reportedSearch) + '" />'
+      + '<p style="font-size:0.72rem;color:var(--text-muted);margin-top:8px">' + filtered.length + ' kayıt</p>'
+      + '</div><div class="reported-list-scroll">' + renderReportedListItems(filtered) + '</div></div>'
+      + renderReportedDetail(selected) + '</div>';
+    const searchInput = $('reported-search');
+    if (searchInput) searchInput.oninput = () => { reportedSearch = searchInput.value; renderReportedErrors(); };
+    root.querySelectorAll('.reported-list-item[data-reported-id]').forEach((el) => {
+      el.onclick = () => { selectedReportedId = el.dataset.reportedId; renderReportedErrors(); };
+    });
+    bindReportedDetailActions(selected);
+    updateReportedNavBadge();
+    refreshIcons();
+  }
+  function buildClientJiraReport(test) {
+    const base = (test.jiraReport && test.jiraReport.summary) ? Object.assign({}, test.jiraReport) : {};
+    const now = new Date();
+    const trDate = now.toLocaleString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    const report = Object.assign({
+      projectKey: (jiraConfig && jiraConfig.projectKey) || 'QA',
+      issueType: 'Bug',
+      summary: '',
+      priority: 'Medium',
+      severity: 'Minor',
+      detectedAt: trDate,
+      testSteps: '',
+      expectedResult: '',
+      actualResult: '',
+      channel: (jiraConfig && jiraConfig.channel) || 'Web',
+      qaOrigin: (jiraConfig && jiraConfig.qaOrigin) || 'Test Otomasyon',
+      qaProcess: (jiraConfig && jiraConfig.qaProcess) || 'Regression',
+      frequency: 'Always',
+      description: '',
+      caseId: test.caseId || '',
+      module: test.module || ''
+    }, base);
+    if (!report.summary) report.summary = humanSummary(test);
+    if (!report.testSteps) report.testSteps = buildPlainSteps(test);
+    if (!report.expectedResult) report.expectedResult = plainExpected(test);
+    if (!report.actualResult) report.actualResult = plainActual(test.errorMessage, test);
+    if (!report.description) report.description = buildReportMetaDescription(report, test);
+    const latest = findLatestTestForCase(test.caseId);
+    report.screenshotPath = resolveDashboardAsset(test.screenshotPath || (latest && latest.screenshotPath) || report.screenshotPath || '');
+    report.errorLogPath = resolveDashboardAsset(test.errorLogPath || (latest && latest.errorLogPath) || report.errorLogPath || '');
+    report.caseId = test.caseId || report.caseId || '';
+    report.module = test.module || report.module || '';
+    return report;
+  }
+  const PROJECT_LABELS = {
+    LTPLAY: 'LTPLAY — LambdaTest Playground',
+    ECOMQA: 'ECOMQA — E-Ticaret QA',
+    QA: 'QA — Genel Test'
+  };
+  function projectLabel(key) {
+    return PROJECT_LABELS[key] || key;
+  }
+  function populateProjectSelect(selectedKey) {
+    const sel = $('jf-project');
+    const keys = (jiraConfig && jiraConfig.projectKeys && jiraConfig.projectKeys.length)
+      ? jiraConfig.projectKeys
+      : [(jiraConfig && jiraConfig.projectKey) || 'LTPLAY', 'ECOMQA', 'QA'];
+    const uniq = Array.from(new Set(keys.filter(Boolean)));
+    sel.innerHTML = uniq.map(k => '<option value="' + esc(k) + '">' + esc(projectLabel(k)) + '</option>').join('');
+    sel.value = uniq.includes(selectedKey) ? selectedKey : uniq[0];
+  }
+  function buildReportMetaDescription(report, test) {
+    return [
+      'Senaryo Kodu: ' + (report.caseId || test.caseId || '—'),
+      'Modül: ' + trModule(report.module || test.module),
+      'Test Tekniği: ' + trTechnique(test.technique),
+      'Standart: ' + (test.standard || report.standard || '—'),
+      'Kanal: ' + (report.channel || 'Web') + ' · Süreç: ' + (report.qaProcess || 'Regression'),
+      'Hata Tarihi: ' + (report.detectedAt || '—')
+    ].join('\n');
+  }
+  function humanSummary(test) {
+    const msg = String(test.errorMessage || '').toLowerCase();
+    const mod = test.module || 'Uygulama';
+    if (mod === 'ForgotPassword' && (msg.includes('expected success info') || msg.includes('confirmation link'))) {
+      const email = (test.scenarioContext && test.scenarioContext.email) || 'e-posta';
+      return 'Şifremi unuttum: ' + email + ' için yanlış bilgilendirme mesajı gösteriliyor';
+    }
+    if (msg.includes('login gerektirmeden') || msg.includes('auth bypass')) return 'Giriş yapılmadan ' + trModule(mod) + ' sayfasına erişilebiliyor';
+    if (msg.includes('could not add product')) return trModule(mod) + ' akışında ürün sepete eklenemedi';
+    if (msg.includes('checkout')) return 'Ödeme adımında beklenen davranış oluşmadı';
+    if (test.description && /[ğüşıöçĞÜŞİÖÇ]/.test(test.description)) return short(test.description, 120);
+    if (test.description && /admin email|common admin/i.test(test.description)) return 'Şifremi unuttum: admin e-posta denemesinde güvenlik mesajı hatalı';
+    return trModule(mod) + ' testinde beklenmeyen bir hata oluştu';
+  }
+  function buildPlainSteps(test) {
+    const mod = test.module || '';
+    const ctx = test.scenarioContext || {};
+    if (mod === 'ForgotPassword') {
+      const email = ctx.email || '(senaryoda tanımlı e-posta)';
+      return '1. Uygulamanın giriş (Login) sayfası açılır.\n2. "Şifremi Unuttum" bağlantısına tıklanır.\n3. E-posta alanına "' + email + '" yazılır.\n4. Gönder / Continue butonuna basılır.\n5. Ekrandaki bilgilendirme mesajı okunur.\n6. Mesajın senaryo beklentisi ile uyumu kontrol edilir.';
+    }
+    if (mod === 'Login') {
+      const email = ctx.email || '(test e-postası)';
+      const pass = ctx.password || '(test şifresi)';
+      return '1. Giriş sayfası açılır.\n2. E-posta: "' + email + '" girilir.\n3. Şifre girilir.\n4. Giriş butonuna tıklanır.\n5. Uyarı veya yönlendirme kontrol edilir.';
+    }
+    const modLabel = trModule(mod || 'uygulama');
+    return '1. Test ortamı açılır.\n2. ' + modLabel + ' bölümüne gidilir.\n3. Senaryoda tanımlı adımlar uygulanır.\n4. Ekrandaki sonuç kontrol edilir.\n5. Sonuç beklenti ile karşılaştırılır.';
+  }
+  function plainExpected(test) {
+    const mod = test.module || '';
+    const ctx = test.scenarioContext || {};
+    if (mod === 'ForgotPassword') {
+      const email = ctx.email || '(test e-postası)';
+      const expected = ctx.expectedMessageContains || '';
+      if (ctx.expectSuccess === 'true' && /not found/i.test(expected)) {
+        return 'Güvenlik gereği, "' + email + '" girildiğinde sistem kayıtlı olup olmadığına bakılmaksızın aynı genel mesajı göstermeli: e-posta kayıtlarda bulunamadı ("' + expected + '" anlamına gelen ifade). «E-posta gönderildi» veya onay bağlantısı mesajı gösterilmemeli.';
+      }
+      if (expected) return 'Ekranda "' + expected + '" içeren beklenen mesaj görünmelidir.';
+    }
+    if (test.description && /[ğüşıöçĞÜŞİÖÇ]/.test(test.description)) {
+      return test.description.endsWith('.') ? test.description : test.description + '.';
+    }
+    return trModule(mod || 'İlgili') + ' bölümünde tanımlı senaryo sorunsuz tamamlanmalıdır.';
+  }
+  function toDativePageLabel(page) {
+    if (!page) return 'uygulama sayfasına';
+    if (page.endsWith('sayfası')) return page.slice(0, -7) + 'sayfasına';
+    return page + 'na';
+  }
+  function pageLabelDativeFromUrl(url) {
+    if (!url) return 'uygulama sayfasına';
+    if (url.includes('route=account/forgotten')) return 'Şifremi Unuttum sayfasına';
+    if (url.includes('route=account/login')) return 'Giriş (Login) sayfasına';
+    if (url.includes('route=account/register')) return 'Kayıt (Register) sayfasına';
+    if (url.includes('route=checkout')) return 'Ödeme (Checkout) sayfasına';
+    if (url.includes('route=account/')) return 'Hesabım sayfasına';
+    return 'uygulama sayfasına';
+  }
+  function plainActual(msg, test) {
+    const ctx = (test && test.scenarioContext) || {};
+    const visible = ctx.visibleUiMessage;
+    const page = ctx.failurePageUrl
+      ? pageLabelDativeFromUrl(ctx.failurePageUrl)
+      : toDativePageLabel(ctx.failurePageLabel || 'uygulama sayfası');
+    const email = ctx.email || '(girilen e-posta)';
+    if (visible && test && test.module === 'ForgotPassword') {
+      return [
+        '«' + email + '» adresi gönderildikten sonra ' + page + ' yönlendirildi.',
+        '',
+        'Sayfanın en üstündeki yeşil bilgilendirme kutusunda (ekran görüntüsüne bakın) şu metin görüntülendi:',
+        '«' + visible + '»'
+      ].join('\n');
+    }
+    const m = String(msg || '').toLowerCase();
+    if (m.includes('expected success info not found') || m.includes('confirmation link')) {
+      return 'Giriş (Login) sayfasının üstündeki yeşil kutuda e-posta gönderildi mesajı görüntülendi. Tam metin ekran görüntüsünde yer almaktadır.';
+    }
+    if (m.includes('auth bypass') || m.includes('login gerektirmeden')) return 'Kullanıcı giriş yapmadan korumalı sayfaya erişebildi.';
+    if (m.includes('could not add product')) return 'Ürün sepete eklenemediği için test tamamlanamadı.';
+    let t = String(msg || 'Test beklenen sonucu vermedi.');
+    t = t.replace(/^[^:]+:\s*/, '').replace(/for case [A-Z0-9_-]+/gi, '').replace(/msg=/gi, 'Ekranda görünen mesaj: ').replace(/url=\S+/gi, '').trim();
+    return short(t, 320);
+  }
+  function fillJiraForm(report) {
+    report = enrichReportedEntry(Object.assign({}, report, {
+      caseId: report.caseId,
+      screenshotPath: resolveDashboardAsset(report.screenshotPath || ''),
+      errorLogPath: resolveDashboardAsset(report.errorLogPath || '')
+    }));
+    populateProjectSelect(report.projectKey || (jiraConfig && jiraConfig.projectKey) || 'QA');
+    $('jf-type').value = report.issueType || 'Bug';
+    $('jf-priority').value = report.priority || 'Medium';
+    $('jf-severity').value = report.severity || 'Minor';
+    $('jf-summary').value = report.summary || '';
+    $('jf-qa-origin').value = report.qaOrigin || '';
+    $('jf-qa-process').value = report.qaProcess || '';
+    $('jf-channel').value = report.channel || 'Web';
+    $('jf-frequency').value = report.frequency || 'Always';
+    $('jf-detected-at').value = report.detectedAt || '';
+    $('jf-steps').value = report.testSteps || '';
+    $('jf-expected').value = report.expectedResult || '';
+    $('jf-actual').value = report.actualResult || '';
+    $('jf-description').value = report.description || '';
+    const attach = $('jf-attachment');
+    const parts = [];
+    if (report.errorLogPath) {
+      parts.push('<div style="margin-bottom:10px">📄 <strong>Hata logu:</strong> <a href="' + esc(report.errorLogPath) + '" download target="_blank" rel="noopener">' + esc(report.errorLogPath) + '</a></div>');
+    } else {
+      parts.push('<div style="margin-bottom:10px;color:var(--warning)">📄 Hata logu henüz yok — testi yeniden koşturduktan sonra otomatik oluşur.</div>');
+    }
+    if (report.screenshotPath) {
+      parts.push('<div style="margin-bottom:8px">🖼 <strong>Ekran görüntüsü (hata anı):</strong> <a href="' + esc(report.screenshotPath) + '" target="_blank" rel="noopener">' + esc(report.screenshotPath) + '</a></div><img class="thumb" src="' + esc(report.screenshotPath) + '" alt="hata ekran görüntüsü" style="margin-top:6px;max-width:100%" />');
+    } else {
+      parts.push('<div style="color:var(--text-muted)">🖼 Ekran görüntüsü henüz yok — test fail olduğunda otomatik alınır ve burada görünür.</div>');
+    }
+    parts.push('<p style="font-size:0.78rem;color:var(--text-muted);margin-top:10px">"Ekleri İndir (.zip)" ile log + ekran görüntüsünü birlikte indirebilirsin.</p>');
+    attach.innerHTML = parts.join('');
+  }
+  function readJiraForm() {
+    const base = activeJiraReport || {};
+    return Object.assign({}, base, {
+      projectKey: $('jf-project').value,
+      issueType: $('jf-type').value,
+      priority: $('jf-priority').value,
+      severity: $('jf-severity').value,
+      summary: $('jf-summary').value,
+      qaOrigin: $('jf-qa-origin').value,
+      qaProcess: $('jf-qa-process').value,
+      channel: $('jf-channel').value,
+      frequency: $('jf-frequency').value,
+      detectedAt: $('jf-detected-at').value,
+      testSteps: $('jf-steps').value,
+      expectedResult: $('jf-expected').value,
+      actualResult: $('jf-actual').value,
+      description: $('jf-description').value
+    });
+  }
+  function showJiraDuplicateBanner(matches) {
+    const box = $('jira-dup-banner');
+    if (!matches || !matches.length) { box.style.display = 'none'; box.innerHTML = ''; return; }
+    const links = matches.map((m) => '<a class="jira-dup-link" href="' + esc(m.url || '#') + '" target="_blank" rel="noopener">' + esc(m.issueKey || 'Kayıt') + '</a> — ' + esc(short(m.summary || m.caseId || '', 70))).join('<br/>');
+    box.innerHTML = '<strong>⚠ Benzer bir hata daha önce raporlanmış olabilir</strong><p style="margin-top:8px">' + links + '</p><p style="margin-top:8px">Aynı hatayı tekrar açmak yerine mevcut kaydı kontrol edebilirsin.</p>';
+    box.style.display = 'block';
+  }
+  function openJiraModal() {
+    $('jira-modal-overlay').classList.add('open');
+    $('jira-status').style.display = 'none';
+  }
+  function closeJiraModal() {
+    $('jira-modal-overlay').classList.remove('open');
+    activeJiraReport = null;
+  }
+  async function startJiraReportFlow(test) {
+    activeJiraReport = buildClientJiraReport(test);
+    activeJiraReport._sourceTest = test;
+    activeJiraReport._reportId = generateReportId();
+    fillJiraForm(activeJiraReport);
+    upsertReportedError(activeJiraReport, test, 'reported');
+    showJiraDuplicateBanner(findLocalJiraDuplicates(test));
+    openJiraModal();
+    $('jira-status').style.display = 'block';
+    $('jira-status').innerHTML = '<div class="card" style="border-color:#86EFAC;background:#F0FDF4">✓ Hata «Raporlanan Hatalar» listesine eklendi. Formu düzenleyip «Raporu Kaydet» ile güncelleyebilirsin.</div>';
+    updateReportedNavBadge();
+  }
+  function buildLogText(report, test) {
+    const t = test || {};
+    return [
+      'HATA RAPORU LOG DOSYASI',
+      '========================',
+      '',
+      'Tarih: ' + (report.detectedAt || ''),
+      'Test: ' + (t.name || report.caseId || '—'),
+      'Modül: ' + trModule(report.module || t.module),
+      'Senaryo Kodu: ' + (report.caseId || t.caseId || '—'),
+      '',
+      'ÖZET',
+      '----',
+      report.summary || '',
+      '',
+      'TEST ADIMLARI',
+      '-----------',
+      report.testSteps || '',
+      '',
+      'BEKLENEN SONUÇ',
+      '--------------',
+      report.expectedResult || '',
+      '',
+      'GERÇEKLEŞEN SONUÇ',
+      '----------------',
+      report.actualResult || '',
+      '',
+      'TEKNİK HATA DETAYI',
+      '------------------',
+      t.errorMessage || '',
+      '',
+      t.aiAnalysis ? ('AI ANALİZ NOTU\n--------------\n' + String(t.aiAnalysis).replace(/^\[ML-MODEL\][^\n]*\n?/i, '').replace(/^\[AI-GROQ[^\]]*\]\s*/i, '').replace(/^\[QATest-AI[^\]]*\]\s*/i, '') + '\n') : '',
+      report.screenshotPath ? ('EK: Ekran Görüntüsü\n-------------------\nDosya: ' + report.screenshotPath + '\n') : ''
+    ].join('\n');
+  }
+  function downloadTextFile(name, content) {
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 900);
+  }
+  async function fetchAttachmentBlob(path) {
+    const url = resolveDashboardAsset(path);
+    if (!url) return null;
+    const resp = await fetch(url, { cache: 'no-store' });
+    if (!resp.ok) return null;
+    return resp.blob();
+  }
+  async function downloadReportLog() {
+    const report = readJiraForm();
+    const fileName = 'hata-log-' + (report.caseId || 'rapor') + '.txt';
+    const logUrl = resolveDashboardAsset(report.errorLogPath);
+    if (logUrl) {
+      try {
+        const resp = await fetch(logUrl, { cache: 'no-store' });
+        if (resp.ok) {
+          downloadTextFile(fileName, await resp.text());
+          return;
+        }
+      } catch (e) { /* fallback below */ }
+    }
+    downloadTextFile(fileName, buildLogText(report, activeJiraReport && activeJiraReport._sourceTest));
+    $('jira-status').style.display = 'block';
+    $('jira-status').innerHTML = '<div class="card">📄 Log dosyası indirildi (yerel kopya).</div>';
+  }
+  async function downloadReportZip() {
+    const report = readJiraForm();
+    if (typeof JSZip === 'undefined') {
+      downloadReportLog();
+      return;
+    }
+    const zip = new JSZip();
+    let logText = buildLogText(report, activeJiraReport && activeJiraReport._sourceTest);
+    const logUrl = resolveDashboardAsset(report.errorLogPath);
+    if (logUrl) {
+      try {
+        const resp = await fetch(logUrl, { cache: 'no-store' });
+        if (resp.ok) logText = await resp.text();
+      } catch (e) { /* use built text */ }
+    }
+    zip.file('hata-log-' + (report.caseId || 'rapor') + '.txt', logText);
+    if (report.screenshotPath) {
+      const imgBlob = await fetchAttachmentBlob(report.screenshotPath);
+      if (imgBlob) {
+        const imgName = report.screenshotPath.split('/').pop() || 'screenshot.png';
+        zip.file(imgName, imgBlob);
+      }
+    }
+    const blob = await zip.generateAsync({ type: 'blob' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'hata-ekleri-' + (report.caseId || 'rapor') + '.zip';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 900);
+    $('jira-status').style.display = 'block';
+    $('jira-status').innerHTML = '<div class="card" style="border-color:#86EFAC;background:#F0FDF4">📦 Ekler ZIP olarak indirildi. Jira\'da Attachment alanına sürükleyip bırakabilirsin.</div>';
+  }
+  function saveReportedFromModal() {
+    const entry = saveActiveReportedError('reported');
+    if (!entry) return;
+    $('jira-status').style.display = 'block';
+    $('jira-status').innerHTML = '<div class="card" style="border-color:#86EFAC;background:#F0FDF4">✓ Rapor güncellendi · <a href="#" id="goto-reported-link" style="color:var(--primary);font-weight:600">Raporlanan Hatalar\'a git</a></div>';
+    const link = $('goto-reported-link');
+    if (link) link.onclick = (e) => { e.preventDefault(); closeJiraModal(); showView('reported'); };
+    updateReportedNavBadge();
+    renderReportedErrors();
+  }
+  function copyJiraReportText() {
+    const r = readJiraForm();
+    const text = [
+      'Özet: ' + r.summary,
+      'Öncelik: ' + r.priority,
+      'Önem: ' + r.severity,
+      'Tarih: ' + r.detectedAt,
+      '',
+      'Test Adımları:',
+      r.testSteps,
+      '',
+      'Beklenen Sonuç:',
+      r.expectedResult,
+      '',
+      'Gerçekleşen Sonuç:',
+      r.actualResult,
+      '',
+      r.description,
+      '',
+      'Not: Log (.txt) ve ekran görüntüsü için "Ekleri İndir (.zip)" kullan.'
+    ].join('\n');
+    navigator.clipboard.writeText(text);
+    $('jira-status').style.display = 'block';
+    $('jira-status').innerHTML = '<div class="card">📋 Rapor metni panoya kopyalandı.</div>';
+  }
+  function renderFails() {
+    const run = currentRun(), tests = run ? run.tests || [] : [], fails = tests.filter(t => t.status === 'failed');
+    if (!fails.length) {
+      $('fails-root').innerHTML = '<div class="empty"><span class="ok-icon">✅</span><strong>Tüm testler başarıyla geçti</strong><p style="margin-top:8px">Son koşum: ' + esc(run ? run.date : '—') + '</p></div>';
+      return;
+    }
+    const layers = ['ui', 'api', 'db'];
+    if (!fails.some((t) => failLayerType(t) === failFilter)) {
+      failFilter = layers.find((l) => fails.some((t) => failLayerType(t) === l)) || 'ui';
+    }
+    $('fails-root').innerHTML = (failModuleFilter ? '<div class="drill-filter-banner"><span>Filtre: <strong>' + esc(trModule(failModuleFilter)) + '</strong> modülü</span><button type="button" class="btn-outline" id="clear-fail-module-filter">Filtreyi kaldır</button></div>' : '')
+      + renderFailFilterChips(fails)
+      + '<div id="fail-cards-host">' + renderFailCardsPanel(fails, run) + '</div>';
+    bindFailFilterChips(fails, run);
+    bindFailCardInteractions(fails.filter((t) => failLayerType(t) === failFilter && (!failModuleFilter || normalizeModuleName(t.module) === failModuleFilter)));
+    bindDrillInteractions();
+    refreshIcons();
+  }
+  function short(s, n) { const x = String(s || ''); return x.length > n ? x.slice(0, n - 1) + '…' : x; }
+  function renderSelfHeal() {
+    const runs = data.runs || [], allEvents = [];
+    runs.forEach(r => (r.tests || []).forEach(t => { const locs = (t.selfHealLocators && t.selfHealLocators.length) ? t.selfHealLocators : (t.selfHealUsed && t.selfHealLocator ? [t.selfHealLocator] : []); locs.forEach(l => allEvents.push({ test: t.name, module: t.module || '—', original: 'Birincil element bulucu', fallback: l, date: r.date || '—' })); }));
+    const byLoc = {}, byMod = {}; allEvents.forEach(e => { byLoc[e.fallback] = (byLoc[e.fallback] || 0) + 1; byMod[e.module] = (byMod[e.module] || 0) + 1; });
+    const topLoc = Object.keys(byLoc).sort((a, b) => byLoc[b] - byLoc[a])[0] || '—', topMod = Object.keys(byMod).sort((a, b) => byMod[b] - byMod[a])[0] || '—';
+    $('sh-metrics').innerHTML = '<div class="card metric-card"><div class="label">Toplam Yedek Kullanım</div><div class="value" style="color:var(--warning)">' + allEvents.length + '</div><div class="metric-sub">Tüm geçmiş</div></div><div class="card metric-card"><div class="label">En Sık Kırılan Bulucu</div><div class="value" style="font-size:1rem;color:var(--error)">' + esc(short(topLoc, 36)) + '</div><div class="metric-sub">' + (byLoc[topLoc] || 0) + ' kez</div></div><div class="card metric-card"><div class="label">En Çok Etkilenen Modül</div><div class="value" style="color:var(--primary)">' + esc(trModule(topMod)) + '</div><div class="metric-sub">' + (byMod[topMod] || 0) + ' olay</div></div>';
+    const locLabels = Object.keys(byLoc).sort((a, b) => byLoc[b] - byLoc[a]).slice(0, 12);
+    createChart('chart-sh-loc', { type: 'bar', data: { labels: locLabels.map(x => short(x, 22)), datasets: [{ data: locLabels.map(x => byLoc[x]), backgroundColor: '#F59E0B', borderRadius: 6 }] }, options: { maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } } } });
+    const modLabels = Object.keys(byMod).sort((a, b) => byMod[b] - byMod[a]);
+    createChart('chart-sh-mod', { type: 'bar', data: { labels: modLabels.map(trModule), datasets: [{ data: modLabels.map(m => byMod[m]), backgroundColor: '#6366F1', borderRadius: 6 }] }, options: { maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+    $('sh-table').innerHTML = '<thead><tr><th>Test Adı</th><th>Modül</th><th>Birincil Bulucu</th><th>Yedek Bulucu</th><th>Tarih</th></tr></thead><tbody>' + allEvents.slice(0, 300).map(e => '<tr><td>' + esc(e.test) + '</td><td>' + esc(trModule(e.module)) + '</td><td>' + esc(e.original) + '</td><td>' + esc(e.fallback) + '</td><td>' + esc(e.date) + '</td></tr>').join('') + '</tbody>';
+  }
+  function moduleLayerFromTest(t) {
+    return failLayerType(t);
+  }
+  function normalizeModuleName(moduleName) {
+    const m = String(moduleName || '').trim();
+    if (m === 'SqlServerDb' || m === 'SqlServer') return 'Db';
+    return m || 'Unknown';
+  }
+  function moduleLayerByName(moduleName) {
+    const m = normalizeModuleName(moduleName);
+    if (m === 'Api') return 'api';
+    if (m === 'Db') return 'db';
+    if (m === 'E2EOrderFlow' || m.startsWith('E2E')) return 'e2e';
+    return 'ui';
+  }
+  function expectedModulesForLayer(layer) {
+    if (layer === 'api') return EXPECTED_API_MODULES;
+    if (layer === 'db') return EXPECTED_DB_MODULES;
+    if (layer === 'e2e') return EXPECTED_E2E_MODULES;
+    return EXPECTED_UI_MODULES;
+  }
+  function layerCoverageStats(byModule, layer) {
+    const expected = expectedModulesForLayer(layer);
+    const ran = expected.filter((m) => byModule[m]);
+    const missing = expected.filter((m) => !byModule[m]);
+    const extra = Object.keys(byModule).filter((m) => moduleLayerByName(m) === layer && !expected.includes(m));
+    let total = 0, pass = 0, fail = 0, skipped = 0;
+    Object.keys(byModule).forEach((m) => {
+      if (moduleLayerByName(m) !== layer) return;
+      total += byModule[m].total;
+      pass += byModule[m].pass;
+      fail += byModule[m].fail || 0;
+      skipped += byModule[m].skipped || 0;
+    });
+    return { expected, ran, missing, extra, total, pass, fail, skipped };
+  }
+  function countUniqueCaseIds(tests, moduleName) {
+    const ids = new Set();
+    (tests || []).forEach((t) => {
+      if (normalizeModuleName(t.module) !== moduleName) return;
+      const id = String(t.caseId || '').trim();
+      if (id) ids.add(id);
+    });
+    return ids.size;
+  }
+  function moduleHasOwasp(tests, moduleName, byModuleInfo) {
+    if (byModuleInfo && byModuleInfo.std && byModuleInfo.std.OWASP) return true;
+    return (tests || []).some((t) => normalizeModuleName(t.module) === moduleName
+      && String(t.standard || '').toUpperCase() === 'OWASP');
+  }
+  function getOwaspTestsForModule(tests, moduleName) {
+    const mod = normalizeModuleName(moduleName);
+    return (tests || []).filter((t) => normalizeModuleName(t.module) === mod
+      && String(t.standard || '').toUpperCase() === 'OWASP')
+      .sort((a, b) => String(a.caseId || '').localeCompare(String(b.caseId || '')));
+  }
+  function inferOwaspCategory(test) {
+    const ref = String(test.reference || '').toLowerCase();
+    const desc = String(test.description || '').toLowerCase();
+    if (ref.includes('authentication') || desc.includes('auth bypass') || desc.includes('login')) return 'Authentication';
+    if (ref.includes('cross_site_scripting') || ref.includes('xss') || desc.includes('xss')) return 'XSS';
+    if (ref.includes('injection') || desc.includes('sql injection') || desc.includes('sql')) return 'SQL Injection';
+    if (ref.includes('input_validation')) return 'Input Validation';
+    if (ref.includes('rest_security')) return 'REST Security';
+    if (ref.includes('session')) return 'Session Management';
+    if (String(test.technique || '').toLowerCase() === 'security') return 'Security';
+    return 'OWASP';
+  }
+  const TECH_CHIP_ABBR = {
+    'equivalence-partitioning': 'EP',
+    'boundary-value': 'BV',
+    'negative-test': 'NEG',
+    'positive-test': 'POS',
+    'security': 'SEC',
+    'error-guessing': 'EG',
+    'state-transition': 'ST',
+    'decision-table': 'DT',
+    'use-case': 'UC'
+  };
+  function techChipAbbr(technique) {
+    const key = String(technique || '').toLowerCase();
+    return TECH_CHIP_ABBR[key] || key.slice(0, 3).toUpperCase() || '—';
+  }
+  function targetCardTone(passPct) {
+    if (passPct >= 100) return 'green';
+    if (passPct >= 80) return 'blue';
+    if (passPct >= 60) return 'orange';
+    return 'red';
+  }
+  const MODULE_ABBR = {
+    Login: 'GR', Register: 'KY', ForgotPassword: 'Şİ', MyAccount: 'HS', MyAccountSettings: 'HA',
+    Newsletter: 'BL', WishList: 'İL', Search: 'AR', Cart: 'SP', Checkout: 'ÖD'
+  };
+  function moduleAbbr(moduleKey) {
+    return MODULE_ABBR[moduleKey] || String(moduleKey || '—').slice(0, 2).toUpperCase();
+  }
+  function renderCheckRing(passPct, tone) {
+    const p = Math.min(100, Math.max(0, passPct));
+    const label = p >= 100 ? '%100' : ('%' + Math.round(p));
+    return '<div class="cov-check-ring cov-check-ring--' + tone + '" style="--pct:' + p + '"><span>' + label + '</span></div>';
+  }
+  function renderCoverageChecklist(byModule, layer) {
+    const stats = layerCoverageStats(byModule, layer);
+    if (layer !== 'ui') return '';
+    const cards = stats.expected.map((m) => {
+      const info = byModule[m];
+      const ok = !!info;
+      const passPct = ok && info.total ? Number(pct(info.pass, info.total)) : 0;
+      const tone = ok ? targetCardTone(passPct) : 'red';
+      const statsHtml = ok
+        ? '<b class="pass">' + (info.pass || 0) + ' geçti</b> · <b class="fail">' + (info.fail || 0) + ' başarısız</b> · <b class="skip">' + (info.skipped || 0) + ' atlandı</b>'
+        : '<span style="color:var(--error);font-weight:600">Hiç koşmadı</span>';
+      return '<div class="cov-check-card cov-check-card--' + tone + (ok ? '' : ' missing') + ' clickable drill-module" data-module="' + esc(m) + '" title="' + esc(trModule(m)) + ' · modül detayı">'
+        + '<div class="cov-check-abbr">' + esc(moduleAbbr(m)) + '</div>'
+        + '<div class="cov-check-body"><strong>' + esc(trModule(m)) + '</strong><div class="cov-check-stats">' + statsHtml + '</div></div>'
+        + renderCheckRing(passPct, tone) + '</div>';
+    }).join('');
+    return '<div class="card cov-checklist-wrap"><div class="section-title">Arayüz Modül Kontrol Listesi</div>'
+      + '<p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:4px">Kenarlık rengi = başarı oranı · halka = geçme yüzdesi</p>'
+      + '<div class="cov-checklist">' + cards + '</div></div>';
+  }
+  function renderOwaspDetailPanel(moduleName, tests) {
+    const owaspTests = getOwaspTestsForModule(tests, moduleName);
+    const failed = owaspTests.filter((t) => t.status === 'failed');
+    if (!owaspTests.length) {
+      return '<div class="cov-owasp-detail-panel"><div class="empty" style="padding:24px;border:none;background:transparent">'
+        + esc(trModule(moduleName)) + ' modülünde OWASP senaryosu bulunamadı.</div></div>';
+    }
+    const rows = owaspTests.map((t) => {
+      const st = String(t.status || '').toLowerCase();
+      const chip = st === 'passed'
+        ? '<span class="status-pill passed">Geçti</span>'
+        : st === 'failed'
+          ? '<span class="status-pill failed">Başarısız</span>'
+          : '<span class="status-pill" style="background:#FEF3C7;color:#92400E">Atlandı</span>';
+      return '<div class="cov-owasp-scenario-row">'
+        + '<div class="cov-owasp-scenario-top"><span class="cov-owasp-scenario-id">' + esc(t.caseId || '—') + '</span>'
+        + chip + '<span class="cov-owasp-cat-chip">' + esc(inferOwaspCategory(t)) + '</span></div>'
+        + '<div class="cov-owasp-scenario-desc">' + esc(t.description || '—') + '</div></div>';
+    }).join('');
+    const alert = failed.length
+      ? '<div class="cov-owasp-security-alert"><strong>⚠️ Güvenlik bulguları</strong><br>'
+        + failed.map((t) => 'Güvenlik açığı tespit edildi: <strong>' + esc(t.caseId || '—') + '</strong>').join('<br>')
+        + '</div>'
+      : '<div style="margin-top:14px;padding:10px 12px;border-radius:8px;background:#F0FDF4;border:1px solid #86EFAC;color:#166534;font-size:0.8rem">✅ Bu modülde fail olan OWASP senaryosu yok.</div>';
+    return '<div class="cov-owasp-detail-panel">'
+      + '<div class="cov-owasp-detail-head"><h4>' + esc(trModule(moduleName)) + '</h4>'
+      + '<span style="font-size:0.8rem;color:var(--text-muted)">' + owaspTests.length + ' OWASP senaryosu</span></div>'
+      + rows + alert + '</div>';
+  }
+  function renderOwaspCoverageMap(byModule, tests) {
+    const covered = EXPECTED_UI_MODULES.filter((m) => moduleHasOwasp(tests, m, byModule[m])).length;
+    if (!moduleHasOwasp(tests, selectedOwaspModule, byModule[selectedOwaspModule])) {
+      const first = EXPECTED_UI_MODULES.find((m) => moduleHasOwasp(tests, m, byModule[m]));
+      selectedOwaspModule = first || EXPECTED_UI_MODULES[0];
+    }
+    const modulesHtml = EXPECTED_UI_MODULES.map((m) => {
+      const has = moduleHasOwasp(tests, m, byModule[m]);
+      const cnt = getOwaspTestsForModule(tests, m).length;
+      const active = selectedOwaspModule === m;
+      return '<div class="cov-owasp-mod-card ' + (has ? 'has-owasp' : 'no-owasp') + (active ? ' active' : '') + '" data-owasp-module="' + esc(m) + '" title="' + esc(trModule(m)) + ' · OWASP detayı">'
+        + (has ? '🛡' : '—') + '<strong>' + esc(trModule(m)) + '</strong>'
+        + '<span style="font-size:0.68rem;color:var(--text-muted);display:block;margin-top:3px">' + (has ? cnt + ' senaryo' : 'yok') + '</span></div>';
+    }).join('');
+    return '<div class="card cov-owasp-wrap"><div class="section-title">OWASP Kapsam Haritası</div>'
+      + '<p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:12px">' + covered + '/' + EXPECTED_UI_MODULES.length + ' arayüz modülünde güvenlik testi · modüle tıklayın</p>'
+      + '<div class="cov-owasp-split"><div class="cov-owasp-modules">' + modulesHtml + '</div>'
+      + renderOwaspDetailPanel(selectedOwaspModule, tests) + '</div></div>';
+  }
+  function renderScenarioTargetCard(m, byModule, tests) {
+    const target = MODULE_SCENARIO_TARGETS[m];
+    if (!target) return '';
+    const info = byModule[m] || { total: 0, pass: 0, fail: 0, skipped: 0, tech: {} };
+    const uniqueCnt = countUniqueCaseIds(tests, m);
+    const ran = uniqueCnt > 0 ? uniqueCnt : info.total;
+    const passPct = info.total ? Number(pct(info.pass, info.total)) : 0;
+    const tone = targetCardTone(passPct);
+    const techChips = Object.keys(info.tech || {}).sort().map((k) =>
+      '<span class="cov-tech-chip">' + esc(techChipAbbr(k)) + ': ' + info.tech[k] + '</span>'
+    ).join('');
+    const risk = MODULE_RISK_TIER[m] || '';
+    const riskChip = risk ? '<span class="cov-tech-chip" style="margin-left:6px;text-transform:capitalize" title="Risk / karmaşıklık seviyesi">' + esc(risk) + ' risk</span>' : '';
+    return '<div class="cov-target-card cov-target-card--' + tone + ' clickable drill-module" data-module="' + esc(m) + '" title="Modül detayı">'
+      + '<div class="cov-target-card-name">' + esc(trModule(m)) + riskChip + '</div>'
+      + '<div class="cov-target-big">' + ran + '/' + target + '</div>'
+      + '<div class="cov-target-stats"><b class="pass">' + (info.pass || 0) + ' geçti</b> · '
+      + '<b class="fail">' + (info.fail || 0) + ' başarısız</b> · ' + (info.skipped || 0) + ' atlandı</div>'
+      + (techChips ? '<div class="cov-tech-chips">' + techChips + '</div>' : '')
+      + '</div>';
+  }
+  function renderScenarioTargets(byModule, tests, layer) {
+    const modList = modulesForLayer(layer || covFilter);
+    const cards = modList.map((m) => renderScenarioTargetCard(m, byModule, tests)).filter(Boolean).join('');
+    return '<div class="card cov-targets-wrap"><div class="section-title">Senaryo Hedefleri</div>'
+      + '<p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:12px">' + esc(LAYER_LABELS[layer || covFilter]) + ' · hedef = risk bazlı senaryo sayısı · renk = başarı oranı</p>'
+      + '<div class="cov-target-cards-grid">' + (cards || '<div class="empty" style="grid-column:1/-1">Hedef tanımı yok.</div>') + '</div></div>';
+  }
+  function bindCoverageOwaspInteractions() {
+    document.querySelectorAll('[data-owasp-module]').forEach((el) => {
+      el.onclick = (e) => {
+        e.stopPropagation();
+        selectedOwaspModule = el.dataset.owaspModule;
+        const run = currentRun();
+        const tests = run ? run.tests || [] : [];
+        const byModule = {};
+        tests.forEach((t) => {
+          const mod = normalizeModuleName(t.module);
+          if (!byModule[mod]) byModule[mod] = { total: 0, pass: 0, fail: 0, skipped: 0, tech: {}, std: {} };
+          byModule[mod].total++;
+          if (t.status === 'passed') byModule[mod].pass++;
+          else if (t.status === 'failed') byModule[mod].fail++;
+          else if (t.status === 'skipped') byModule[mod].skipped++;
+          byModule[mod].tech[t.technique || '—'] = (byModule[mod].tech[t.technique || '—'] || 0) + 1;
+          byModule[mod].std[t.standard || '—'] = (byModule[mod].std[t.standard || '—'] || 0) + 1;
+        });
+        const wrap = document.querySelector('.cov-owasp-split');
+        if (wrap) {
+          const detailEl = wrap.querySelector('.cov-owasp-detail-panel');
+          if (detailEl) detailEl.outerHTML = renderOwaspDetailPanel(selectedOwaspModule, tests);
+          document.querySelectorAll('[data-owasp-module]').forEach((card) => {
+            card.classList.toggle('active', card.dataset.owaspModule === selectedOwaspModule);
+          });
+        } else {
+          renderCoverage();
+        }
+        bindDrillInteractions();
+        refreshIcons();
+      };
+    });
+  }
+  function modulesForLayer(layer) {
+    if (layer === 'ui') return EXPECTED_UI_MODULES;
+    if (layer === 'api') return EXPECTED_API_MODULES;
+    if (layer === 'db') return EXPECTED_DB_MODULES;
+    if (layer === 'e2e') return EXPECTED_E2E_MODULES;
+    return [];
+  }
+  function renderMissingModuleAlertAll(byModule) {
+    const layers = ['ui', 'api', 'db', 'e2e'];
+    const parts = [];
+    layers.forEach((layer) => {
+      const stats = layerCoverageStats(byModule, layer);
+      if (stats.missing.length) {
+        parts.push('<strong>' + esc(LAYER_LABELS[layer]) + ':</strong> ' + trModulesList(stats.missing));
+      }
+    });
+    if (!parts.length) return '';
+    return '<div class="card cov-alert-panel cov-full-width"><strong>⚠ Eksik modül</strong><p style="margin-top:6px;font-size:0.85rem">'
+      + parts.join('<br/>') + '</p></div>';
+  }
+  function getTrendRuns() {
+    return (data.runs || []).slice(0, 5).reverse();
+  }
+  function collectTrendUiModules(runs) {
+    const stats = {};
+    runs.forEach((r) => {
+      const seen = new Set();
+      (r.tests || []).forEach((t) => {
+        const m = normalizeModuleName(t.module);
+        if (moduleLayerByName(m) !== 'ui') return;
+        if (!stats[m]) stats[m] = { tests: 0, runs: 0 };
+        stats[m].tests += 1;
+        seen.add(m);
+      });
+      seen.forEach((m) => { stats[m].runs += 1; });
+    });
+    return Object.keys(stats)
+      .sort((a, b) => stats[b].runs - stats[a].runs || stats[b].tests - stats[a].tests)
+      .slice(0, 8);
+  }
+  function modulePassRateInRun(run, mod) {
+    const modTests = (run.tests || []).filter((t) => normalizeModuleName(t.module) === mod);
+    if (!modTests.length) return null;
+    const pass = modTests.filter((t) => t.status === 'passed').length;
+    return Number(pct(pass, modTests.length));
+  }
+  function renderModuleTrendPanel() {
+    const runs = getTrendRuns();
+    if (runs.length < 2) return '';
+    const maxTotal = Math.max(...runs.map((r) => r.total || 0));
+    const hasPartial = runs.some((r) => (r.total || 0) < maxTotal * 0.6);
+    const warn = hasPartial
+      ? '<div class="cov-trend-warn">⚠ Bazı koşumlar tek modül (ör. Şifremi Unuttum) içeriyor. Çubuk yalnızca o koşumda çalışan modüllerde görünür; tam regresyon koşumlarıyla karşılaştırın.</div>'
+      : '';
+    return '<div class="card cov-full-width"><div class="section-title">Modül Trendi (Son 5 Koşum)</div>'
+      + '<p style="font-size:0.8rem;color:var(--text-muted)">Arayüz modüllerinin koşumlar arası geçme oranı · eksik modül = o koşumda test yok</p>'
+      + warn
+      + '<div class="cov-trend-box"><canvas id="chart-cov-module-trend"></canvas></div>'
+      + '<p class="cov-trend-note">Grafik kronolojik sıralıdır (soldan sağa eski → yeni). Modül rengi legend ile eşleşir.</p></div>';
+  }
+  function buildModuleTrendChart() {
+    const runs = getTrendRuns();
+    if (runs.length < 2) return;
+    const mods = collectTrendUiModules(runs);
+    if (!mods.length) return;
+    const labels = runs.map((r, i) => {
+      const d = String(r.date || '').trim();
+      const uniq = d.slice(11, 16) || d.slice(5, 10) || '';
+      const scope = (r.total || 0) + ' test';
+      return ['Koşum ' + (i + 1) + (uniq ? ' · ' + uniq : ''), scope];
+    });
+    const colors = ['#6366F1', '#0EA5E9', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#14B8A6'];
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const gridColor = isDark ? '#334155' : '#f1f5f9';
+    const datasets = mods.map((mod, idx) => {
+      const color = colors[idx % colors.length];
+      return {
+        label: trModule(mod),
+        data: runs.map((r) => modulePassRateInRun(r, mod)),
+        backgroundColor: color + 'CC',
+        borderColor: color,
+        borderWidth: 1.5,
+        borderRadius: 5,
+        maxBarThickness: 22,
+        minBarLength: 2
+      };
+    });
+    createChart('chart-cov-module-trend', {
+      type: 'bar',
+      data: { labels, datasets },
+      options: {
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { position: 'bottom', labels: { boxWidth: 12, padding: 14, font: { size: 11 } } },
+          tooltip: {
+            filter: (item) => item.parsed.y != null,
+            callbacks: {
+              title: (items) => {
+                const run = runs[items[0].dataIndex];
+                return (run && run.date ? run.date : 'Koşum') + ' · ' + (run && run.total ? run.total + ' test' : '');
+              },
+              label: (ctx) => ctx.dataset.label + ': %' + Math.round(ctx.parsed.y)
+            }
+          }
+        },
+        scales: {
+          y: {
+            min: 0,
+            max: 100,
+            ticks: { callback: (v) => v + '%', font: { size: 11 } },
+            grid: { color: gridColor }
+          },
+          x: {
+            ticks: { font: { size: 10 }, maxRotation: 0, autoSkip: false },
+            grid: { display: false }
+          }
+        }
+      }
+    });
+  }
+  function renderDbCoveragePanel() {
+    if (!dbSnapshot || !dbSnapshot.sqlAvailable) {
+      return '<div class="cov-section"><div class="cov-section-head">SQL Server · Canlı DB</div><div class="card"><div class="warn-banner">Snapshot yok. Test koşumu sonrası db-snapshot.json oluşur.</div></div></div>';
+    }
+    const mods = (dbSnapshot.moduleStats || []).slice().sort((a, b) => (b.total || 0) - (a.total || 0));
+    const modRows = mods.slice(0, 12).map((m) => {
+      const passPct = pct(m.passed || 0, m.total || 0);
+      return '<div class="db-mod-row"><span><strong>' + esc(trModule(m.module)) + '</strong> · ' + (m.total || 0) + ' kayıt</span><span class="status-pill ' + (Number(passPct) >= 80 ? 'passed' : 'failed') + '">%' + passPct + ' · ' + (m.failed || 0) + ' başarısız</span></div>';
+    }).join('') || '<div class="empty">Modül istatistiği yok.</div>';
+    const fails = (dbSnapshot.recentFailed || []).slice(0, 5).map((f) =>
+      '<div class="list-item"><span>' + esc(f.caseId || '—') + ' · ' + esc(trModule(f.module)) + '</span><span style="color:var(--text-muted)">' + esc(f.runDate || '—') + '</span></div>'
+    ).join('');
+    return '<div class="cov-section"><div class="cov-section-head">SQL Server · Canlı DB</div><div class="card db-cov-panel"><h3><span class="badge layer-badge layer-badge-db">SQL Server</span> Canlı DB Özeti</h3>'
+      + '<div class="db-cov-meta">Dışa aktarım: ' + esc(dbSnapshot.exportedAt || '—')
+      + ' · test kayıtları: ' + (dbSnapshot.testResultsCount || 0)
+      + ' · başarısız kayıtlar: ' + (dbSnapshot.failedTestsCount || 0)
+      + ' · siparişler: ' + (dbSnapshot.ordersCount || 0) + '</div>'
+      + '<div class="db-cov-grid"><div class="metric-card"><div class="label">Test Kayıtları</div><div class="value" style="font-size:1.2rem">' + (dbSnapshot.testResultsCount || 0) + '</div></div>'
+      + '<div class="metric-card"><div class="label">Başarısız Kayıtlar</div><div class="value" style="font-size:1.2rem;color:var(--error)">' + (dbSnapshot.failedTestsCount || 0) + '</div></div>'
+      + '<div class="metric-card"><div class="label">Siparişler</div><div class="value" style="font-size:1.2rem;color:var(--primary)">' + (dbSnapshot.ordersCount || 0) + '</div></div></div>'
+      + '<div class="section"><h4>Modül Bazlı (test_results — tüm zamanlar)</h4>' + modRows + '</div>'
+      + (fails ? '<div class="section" style="margin-top:12px"><h4>Son Başarısız Kayıtlar (Veritabanı)</h4>' + fails + '</div>' : '')
+      + '</div></div>';
+  }
+  function renderLayerExtras(byModule, tests) {
+    if (covFilter === 'ui') {
+      return '<div class="cov-section"><div class="cov-section-head">Arayüz · Güvenlik & Hedefler</div>'
+        + '<div class="cov-insights-row">' + renderOwaspCoverageMap(byModule, tests) + renderScenarioTargets(byModule, tests, 'ui') + '</div>'
+        + '<div style="margin-top:16px">' + renderCoverageChecklist(byModule, 'ui') + '</div>'
+        + renderModuleTrendPanel()
+        + '</div>';
+    }
+    if (covFilter === 'db') {
+      return '<div class="cov-section"><div class="cov-section-head">Veritabanı · Senaryo Hedefleri</div>'
+        + renderScenarioTargets(byModule, tests, 'db')
+        + '</div>'
+        + renderDbCoveragePanel();
+    }
+    if (covFilter === 'api' || covFilter === 'e2e') {
+      return '<div class="cov-section"><div class="cov-section-head">' + esc(LAYER_LABELS[covFilter]) + ' · Senaryo Hedefleri</div>'
+        + renderScenarioTargets(byModule, tests, covFilter)
+        + '</div>';
+    }
+    return '';
+  }
+  function renderCoverageFilterChips(byModule) {
+    const counts = { ui: 0, api: 0, db: 0, e2e: 0 };
+    Object.keys(byModule).forEach((m) => { counts[moduleLayerByName(m)]++; });
+    const chips = [
+      { id: 'ui', label: 'Arayüz Modülleri' },
+      { id: 'api', label: 'API Modülleri' },
+      { id: 'db', label: 'Veritabanı Modülleri' },
+      { id: 'e2e', label: 'Uçtan Uca Modülleri' }
+    ];
+    return '<div class="cov-filters">' + chips.map((c) =>
+      '<button type="button" class="filter-chip filter-chip-' + c.id + (covFilter === c.id ? ' active' : '') + '" data-cov-filter="' + c.id + '">'
+      + esc(c.label) + ' (' + counts[c.id] + ')</button>'
+    ).join('') + '</div>';
+  }
+  function renderCoverageSummary(byModule) {
+    const layers = ['ui', 'api', 'db', 'e2e'];
+    return '<div class="cov-summary">' + layers.map((layer) => {
+      const stats = layerCoverageStats(byModule, layer);
+      const passPct = pct(stats.pass, stats.total);
+      const extraNote = stats.extra.length ? ' · +' + stats.extra.length + ' ek' : '';
+      return '<div class="card metric-card"><div class="label">' + esc(LAYER_LABELS[layer]) + '</div>'
+        + '<div class="value" style="font-size:1.25rem;color:var(--primary)">' + stats.ran.length + '/' + stats.expected.length + ' kapsanan</div>'
+        + '<div class="metric-sub">' + stats.total + ' senaryo · %' + passPct + ' başarı · ' + stats.fail + ' başarısız · ' + stats.missing.length + ' eksik' + extraNote + '</div></div>';
+    }).join('') + '</div>';
+  }
+  function renderCoverage() {
+    const run = currentRun(), tests = run ? run.tests || [] : [], byModule = {};
+    tests.forEach(t => {
+      const m = normalizeModuleName(t.module);
+      if (!byModule[m]) byModule[m] = { total: 0, pass: 0, fail: 0, skipped: 0, tech: {}, std: {} };
+      byModule[m].total++;
+      if (t.status === 'passed') byModule[m].pass++;
+      else if (t.status === 'failed') byModule[m].fail++;
+      else if (t.status === 'skipped') byModule[m].skipped++;
+      byModule[m].tech[t.technique || '—'] = (byModule[m].tech[t.technique || '—'] || 0) + 1;
+      byModule[m].std[t.standard || '—'] = (byModule[m].std[t.standard || '—'] || 0) + 1;
+    });
+    const layerStats = layerCoverageStats(byModule, covFilter);
+    const layerModules = Object.keys(byModule).filter((m) => moduleLayerByName(m) === covFilter).sort();
+    const missingModules = layerStats.missing;
+    const extraModules = layerStats.extra;
+    const cards = layerModules.map((m) => {
+      const info = byModule[m], passPct = Number(pct(info.pass, info.total));
+      const layer = moduleLayerByName(m);
+      const layerBadge = layer === 'api' ? '<span class="badge layer-badge layer-badge-api">API</span>'
+        : layer === 'db' ? '<span class="badge layer-badge layer-badge-db">Veritabanı</span>'
+        : layer === 'e2e' ? '<span class="badge layer-badge" style="background:#EDE9FE;color:#6D28D9">Uçtan Uca</span>'
+        : '<span class="badge layer-badge layer-badge-ui">Arayüz</span>';
+      const techHtml = Object.keys(info.tech).map((k) => '<div style="display:flex;justify-content:space-between;font-size:0.78rem;margin-bottom:4px"><span title="' + esc(techHelp(k)) + '">' + esc(trTechnique(k)) + '</span><strong>' + info.tech[k] + ' senaryo</strong></div>').join('');
+      const stdHtml = Object.keys(info.std).map((k) => {
+        const u = String(k).toUpperCase();
+        const lbl = u === 'OWASP' ? 'OWASP Güvenlik' : u === 'ISTQB' ? 'ISTQB Standardı' : k;
+        return '<span class="badge ' + (u === 'OWASP' ? 'badge-orange' : 'badge-indigo') + '">' + esc(lbl) + ': ' + info.std[k] + '</span>';
+      }).join(' ');
+      const warnings = [];
+      if (layer === 'ui' && !info.std.OWASP) warnings.push('Güvenlik testi yok');
+      if (layer === 'ui' && !Object.keys(info.tech).includes('boundary-value')) warnings.push('Sınır değer testi yok');
+      if (info.fail > 0) warnings.push(info.fail + ' başarısız senaryo');
+      const target = MODULE_SCENARIO_TARGETS[m];
+      const uniqueCnt = countUniqueCaseIds(tests, m);
+      const targetLine = target ? '<p style="font-size:0.78rem;color:var(--text-muted);margin-top:6px">Hedef: ' + uniqueCnt + '/' + target + ' senaryo' + (uniqueCnt >= target ? ' ✅' : '') + '</p>' : '';
+      return '<div class="card cov-card clickable drill-module" data-module="' + esc(m) + '" title="Modül detayı için tıkla"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div style="display:flex;gap:8px;align-items:center"><h3>' + esc(trModule(m)) + '</h3>' + layerBadge + '</div><span class="status-pill ' + (passPct >= 80 ? 'passed' : 'failed') + '">%' + passPct.toFixed(0) + ' başarı</span></div><p style="color:var(--text-muted);font-size:0.8rem;margin-bottom:12px">' + info.total + ' senaryo · ' + info.pass + ' geçti · ' + info.fail + ' başarısız</p>' + targetLine + '<div class="progress-bar-bg"><div style="width:' + passPct + '%;background:' + (passPct >= 80 ? 'var(--success)' : 'var(--warning)') + '"></div></div><div class="section" style="margin-top:14px"><h4>Test Teknikleri Dağılımı</h4>' + techHtml + '</div><div class="section"><h4>Test Standardı</h4>' + stdHtml + '</div>' + warnings.map(w => '<div class="warn-banner">' + esc(w) + '</div>').join('') + '</div>';
+    }).join('');
+    const missingBanner = missingModules.length
+      ? '<div class="card cov-full-width"><div class="warn-banner">Bu katmanda hiç çalışmamış modüller (' + esc(LAYER_LABELS[covFilter]) + '): ' + trModulesList(missingModules) + '</div></div>'
+      : '';
+    const extraBanner = extraModules.length
+      ? '<div class="card cov-full-width"><div class="warn-banner" style="border-color:#BFDBFE;background:#EFF6FF;color:#1D4ED8">Tanım dışı ek modüller: ' + trModulesList(extraModules) + '</div></div>'
+      : '';
+    const emptyLayer = !layerModules.length && !missingModules.length
+      ? '<div class="empty">Bu katmanda modül verisi yok.</div>' : '';
+    $('cov-root').innerHTML = renderCoverageSummary(byModule)
+      + renderMissingModuleAlertAll(byModule)
+      + renderCoverageFilterChips(byModule)
+      + missingBanner + extraBanner + emptyLayer
+      + '<div class="cov-grid">' + cards + '</div>'
+      + renderLayerExtras(byModule, tests);
+    if (covFilter === 'ui') buildModuleTrendChart();
+    document.querySelectorAll('[data-cov-filter]').forEach((btn) => {
+      btn.onclick = () => { covFilter = btn.dataset.covFilter || 'ui'; renderCoverage(); refreshIcons(); };
+    });
+    bindCoverageOwaspInteractions();
+  }
+  function openDrawer(t) {
+    $('drawer-title').textContent = (t.caseId || 'Senaryo') + ' · ' + (t.name || 'Test');
+    $('drawer-body').innerHTML = '<p><strong>Açıklama:</strong> ' + esc(t.description || '—') + '</p>'
+      + '<p style="margin-top:8px"><strong>Modül:</strong> ' + badgeModule(t.module) + '</p>'
+      + '<p style="margin-top:8px"><strong>Durum:</strong> ' + badgeStatus(t.status) + '</p>'
+      + '<p style="margin-top:8px"><strong>Test Tekniği:</strong> <span class="badge badge-indigo" title="' + esc(techHelp(t.technique)) + '">' + esc(trTechnique(t.technique)) + '</span></p>'
+      + '<p style="margin-top:8px"><strong>Test Türü:</strong> ' + badgeType(t.testType) + '</p>'
+      + '<p style="margin-top:8px"><strong>Seviye:</strong> <span class="badge">' + esc(trTestLevel(t.testLevel)) + '</span></p>'
+      + '<p style="margin-top:8px"><strong>Standart:</strong> ' + badgeStandard(t.standard, t.reference) + '</p>'
+      + '<p style="margin-top:8px"><strong>Süre:</strong> ' + esc(t.duration || '—') + '</p>'
+      + '<p style="margin-top:12px"><strong>Son 5 koşum:</strong></p><div class="timeline">' + buildTimeline(t.name) + '</div>'
+      + '<p style="margin-top:12px"><strong>Hata:</strong></p><pre class="error-log" style="margin-top:6px">' + esc(t.errorMessage || '—') + '</pre>';
+    $('drawer').classList.add('open'); $('drawer-overlay').classList.add('open'); refreshIcons();
+  }
+  function closeDrawer() { $('drawer').classList.remove('open'); $('drawer-overlay').classList.remove('open'); }
+  function populateRunSelect() {
+    const sel = $('run-select'), runs = data.runs || [], agg = buildAggregatedRun();
+    if (!isAllRunsView() && Number(selectedRun) >= runs.length) selectedRun = 'all';
+    sel.innerHTML = '<option value="all">📊 Tüm Zamanlar · ' + agg.total + ' test · ' + runs.length + ' koşum</option>' + runs.map((r, i) => '<option value="' + i + '">' + esc(r.date || ('Koşum ' + (i + 1))) + ' · ' + esc(r.duration || '—') + ' · ' + (r.passed || 0) + '/' + (r.total || 0) + '</option>').join('');
+    sel.value = isAllRunsView() ? 'all' : String(selectedRun);
+  }
+  function renderGlobalSearch() {
+    const q = $('palette-input').value.toLowerCase().trim(), all = [];
+    (data.runs || []).forEach((r, ri) => (r.tests || []).forEach(t => all.push({ runIdx: ri, test: t })));
+    const hits = all.filter(x => { const t = x.test; return q ? [t.caseId, t.name, t.module, t.technique, t.description].join(' ').toLowerCase().includes(q) : true; }).slice(0, 30);
+    $('palette-results').innerHTML = hits.map((h) => '<div class="palette-item" data-run="' + h.runIdx + '" data-name="' + esc(h.test.name) + '"><strong>' + esc(h.test.caseId || '—') + '</strong> · ' + esc(h.test.name) + '<br/><span style="color:var(--text-muted)">' + esc(trModule(h.test.module)) + '</span></div>').join('') || '<div class="palette-item">Sonuç yok.</div>';
+    document.querySelectorAll('.palette-item[data-run]').forEach((item) => item.onclick = () => { selectedRun = Number(item.dataset.run || 0); populateRunSelect(); showView('scenarios'); $('sc-search').value = item.dataset.name || ''; renderAll(); $('palette').classList.remove('open'); });
+  }
+  function renderAll() { destroyCharts(); populateRunSelect(); loadReportedErrorsFromStorage(); updateReportedNavBadge(); renderHome(); renderHistory(); renderScenarios(); renderFails(); renderSelfHeal(); renderCoverage(); renderReportedErrors(); bindDrillInteractions(); bindHistoryTimelineInteractions(); refreshIcons(); }
+  async function loadData() {
+    $('loaded-at').textContent = 'Yükleniyor...';
+    $('loading').style.display = 'grid';
+    $('banner').style.display = 'none';
+    try {
+      const [r, dbR, jiraCfgR, jiraRepR] = await Promise.all([
+        fetch('results.json', { cache: 'no-store' }),
+        fetch('db-snapshot.json', { cache: 'no-store' }).catch(() => null),
+        fetch('jira-config.json', { cache: 'no-store' }).catch(() => null),
+        fetch('jira-reports.json', { cache: 'no-store' }).catch(() => null)
+      ]);
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      data = await r.json();
+      if (!data.runs) data.runs = [];
+      if (dbR && dbR.ok) dbSnapshot = await dbR.json(); else dbSnapshot = null;
+      if (jiraCfgR && jiraCfgR.ok) jiraConfig = await jiraCfgR.json(); else jiraConfig = null;
+      if (jiraRepR && jiraRepR.ok) jiraReports = await jiraRepR.json(); else jiraReports = [];
+      loadReportedErrorsFromStorage();
+      mergeServerJiraReports();
+      updateReportedNavBadge();
+      $('loaded-at').textContent = 'Yüklendi: ' + new Date().toLocaleString('tr-TR');
+    } catch (e) {
+      data = SAMPLE;
+      $('banner').style.display = 'block';
+      $('banner').textContent = 'results.json okunamadı, örnek veri gösteriliyor. target/test-history içinde npx serve . ile aç.';
+      $('loaded-at').textContent = 'Örnek veri';
+    } finally {
+      $('loading').style.display = 'none';
+      renderAll();
+    }
+  }
+  $('nav').addEventListener('click', (e) => { const b = e.target.closest('.nav-item[data-view]'); if (!b) return; showView(b.dataset.view); });
+  $('run-select').addEventListener('change', (e) => { const v = e.target.value; selectedRun = v === 'all' ? 'all' : Number(v); renderAll(); });
+  ['sc-search', 'sc-module', 'sc-type', 'sc-level', 'sc-standard', 'sc-status'].forEach((id) => $(id).addEventListener(id === 'sc-search' ? 'input' : 'change', renderScenarios));
+  $('btn-refresh').addEventListener('click', loadData);
+  $('btn-theme').addEventListener('click', () => saveTheme());
+  applyTheme();
+  $('btn-csv').addEventListener('click', () => {
+    const list = filteredScenarios.length ? filteredScenarios : ((currentRun() && currentRun().tests) || []);
+    const headers = ['Senaryo Kodu', 'Test Adı', 'Açıklama', 'Modül', 'Test Tekniği', 'Test Türü', 'Test Seviyesi', 'Standart', 'Referans', 'Sonuç', 'Süre'];
+    const rows = list.map(t => [
+      t.caseId || '', t.name || '', t.description || '', trModule(t.module), trTechnique(t.technique),
+      trTestType(t.testType), trTestLevel(t.testLevel),
+      String(t.standard || '').toUpperCase() === 'OWASP' ? 'OWASP Güvenlik' : String(t.standard || '').toUpperCase() === 'ISTQB' ? 'ISTQB Standardı' : (t.standard || ''),
+      t.reference || '',
+      t.status === 'passed' ? 'Geçti' : t.status === 'failed' ? 'Başarısız' : t.status === 'skipped' ? 'Atlandı' : (t.status || ''),
+      t.duration || ''
+    ]);
+    const csv = [headers.join(',')].concat(rows.map(r => r.map(v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"').join(','))).join('\n');
+    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'test-senaryolari.csv';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 900);
+  });
+  $('btn-search').addEventListener('click', () => { $('palette').classList.add('open'); $('palette-input').focus(); renderGlobalSearch(); });
+  $('palette-input').addEventListener('input', renderGlobalSearch);
+  $('palette').addEventListener('click', (e) => { if (e.target === $('palette')) $('palette').classList.remove('open'); });
+  document.addEventListener('keydown', (e) => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); $('palette').classList.add('open'); $('palette-input').focus(); renderGlobalSearch(); } if (e.key === 'Escape') { $('palette').classList.remove('open'); closeDrawer(); closeDrillModal(); closeJiraModal(); } });
+  $('drawer-close').onclick = closeDrawer; $('drawer-overlay').onclick = closeDrawer;
+  $('drill-modal-close').onclick = closeDrillModal;
+  $('drill-modal-overlay').addEventListener('click', (e) => { if (e.target === $('drill-modal-overlay')) closeDrillModal(); });
+  $('jira-modal-close').onclick = closeJiraModal;
+  $('jira-modal-overlay').addEventListener('click', (e) => { if (e.target === $('jira-modal-overlay')) closeJiraModal(); });
+  $('jf-copy').onclick = copyJiraReportText;
+  $('jf-save-reported').onclick = saveReportedFromModal;
+  $('jf-download-log').onclick = downloadReportLog;
+  $('jf-download-zip').onclick = downloadReportZip;
+  refreshIcons();
+  loadData();
+})();
+  </script>
+</body>
+</html>

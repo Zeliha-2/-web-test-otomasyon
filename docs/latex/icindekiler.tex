@@ -1,0 +1,95 @@
+% Manuel içindekiler — tahmini sayfa numaraları (içerik uzunluğuna göre güncelle)
+% Otomatik \tableofcontents ile birlikte kullanılabilir veya yorum satırına alınabilir.
+
+\chapter*{İçindekiler (Tahmini Sayfa Numaraları)}
+\addcontentsline{toc}{chapter}{İçindekiler (Tahmini Sayfa Numaraları)}
+
+\newcommand{\tocentry}[2]{%
+  \noindent\parbox[t]{0.82\textwidth}{#1}\hfill\parbox[t]{0.12\textwidth}{\raggedleft #2}\par\vspace{0.35em}}
+\newcommand{\tocsub}[2]{%
+  \noindent\hspace{1.5em}\parbox[t]{0.78\textwidth}{#1}\hfill\parbox[t]{0.12\textwidth}{\raggedleft #2}\par\vspace{0.25em}}
+\newcommand{\tocsubsub}[2]{%
+  \noindent\hspace{3em}\parbox[t]{0.74\textwidth}{#1}\hfill\parbox[t]{0.12\textwidth}{\raggedleft #2}\par\vspace{0.2em}}
+
+\tocentry{\textbf{Önsöz}}{iii}
+\tocentry{\textbf{Kısaltmalar ve Semboller}}{iv}
+\par\vspace{0.5em}
+
+\tocentry{\textbf{1. Giriş ve Motivasyon}}{1}
+\tocsub{1.1. Problemin Tanımı}{1}
+\tocsub{1.2. Projenin Amacı ve Kapsamı}{2}
+\tocsub{1.3. Hedeflenen Katmanlar (UI, API, DB, E2E)}{3}
+\tocsub{1.4. Raporun Organizasyonu}{4}
+
+\tocentry{\textbf{2. Kullanılan Teknolojiler}}{5}
+\tocsub{2.1. Java 17 ve Maven}{5}
+\tocsub{2.2. Selenium WebDriver 4}{6}
+\tocsub{2.3. TestNG ve ExtentReports}{7}
+\tocsub{2.4. RestAssured (API Katmanı)}{8}
+\tocsub{2.5. JDBC — H2 ve Microsoft SQL Server}{9}
+\tocsub{2.6. Jackson (JSON Data-Driven)}{10}
+\tocsub{2.7. Groq LLM ve Flask ML Servisi}{11}
+
+\tocentry{\textbf{3. Sistem Mimarisi}}{13}
+\tocsub{3.1. Genel Mimari Görünüm}{13}
+\tocsub{3.2. Page Object Model (POM)}{15}
+\tocsub{3.3. ConfigManager ve Ortam Yönetimi}{16}
+\tocsub{3.4. TestNG Listener ve Raporlama Hattı}{17}
+\tocsub{3.5. DashboardResultsListener ve test-history}{18}
+\tocsub{3.6. Üç Katman + E2E Entegrasyon Akışı}{20}
+
+\tocentry{\textbf{4. Uygulanan Test Yaklaşımı}}{22}
+\tocsub{4.1. Data-Driven Test Tasarımı (JSON Senaryolar)}{22}
+\tocsub{4.2. Risk Bazlı Senaryo Hedefleri}{24}
+\tocsub{4.3. Test Teknikleri (EP, BVA, Negatif, Güvenlik)}{25}
+\tocsub{4.4. OWASP ve ISTQB Standart Eşlemesi}{26}
+\tocsub{4.5. UI Modül Kapsamı (~202 senaryo)}{27}
+\tocsub{4.6. API, DB ve E2E Senaryo Kapsamı}{29}
+
+\tocentry{\textbf{5. Self-Healing Mekanizması}}{31}
+\tocsub{5.1. Motivasyon ve Problem}{31}
+\tocsub{5.2. SelfHealingElementFinder Tasarımı}{32}
+\tocsub{5.3. Yedek Locator Zinciri}{33}
+\tocsub{5.4. Telemetri ve Dashboard Entegrasyonu}{34}
+\tocsub{5.5. Örnek Kullanım Senaryosu}{35}
+
+\tocentry{\textbf{6. Yapay Zeka Destekli Hata Analizi}}{37}
+\tocsub{6.1. AiFailureAnalyzer Mimarisi}{37}
+\tocsub{6.2. Groq LLM ile Kök Neden Analizi}{38}
+\tocsub{6.3. Flask ML Modeli (Flaky/Stabil Tahmin)}{39}
+\tocsub{6.4. FailureLogWriter — Teknik Hata Logları}{40}
+\tocsub{6.5. Türkçe Analiz Çıktı Formatı}{41}
+
+\tocentry{\textbf{7. QA Command Center Dashboard}}{43}
+\tocsub{7.1. Dashboard Mimarisi (Tek HTML + Chart.js)}{43}
+\tocsub{7.2. Genel Bakış ve Metrik Kartları}{44}
+\tocsub{7.3. Test Geçmişi ve Modül Trendi}{45}
+\tocsub{7.4. Hata Analizi ve AI Notları}{46}
+\tocsub{7.5. Modül Kapsamı ve OWASP Haritası}{47}
+\tocsub{7.6. Raporlanan Hatalar (Master-Detail)}{48}
+\tocsub{7.7. results.json Veri Şeması}{49}
+
+\tocentry{\textbf{8. Jira Hata Raporlama Akışı}}{51}
+\tocsub{8.1. JiraBugReportBuilder}{51}
+\tocsub{8.2. Türkçe Rapor Şablonu}{52}
+\tocsub{8.3. Ekran Görüntüsü ve Log Ekleri}{53}
+\tocsub{8.4. localStorage ve jira-reports.json}{54}
+
+\tocentry{\textbf{9. Mevcut Durum ve Sonuçlar}}{55}
+\tocsub{9.1. Toplam Test Kapsamı (~273 senaryo)}{55}
+\tocsub{9.2. Modül Bazlı Sonuç Özeti}{56}
+\tocsub{9.3. Bilinçli Güvenlik Test Fail'leri}{57}
+\tocsub{9.4. Performans ve Paralel Koşum (TestNG)}{58}
+\tocsub{9.5. Karşılaşılan Zorluklar ve Çözümler}{59}
+\tocsub{9.6. Proje Değerlendirmesi}{60}
+
+\tocentry{\textbf{10. Gelecek Planlar}}{62}
+\tocsub{10.1. CI/CD (GitHub Actions)}{62}
+\tocsub{10.2. Jira REST API Entegrasyonu}{63}
+\tocsub{10.3. Dashboard Dağıtım Otomasyonu}{63}
+\tocsub{10.4. Test Verisi ve Flaky Test Yönetimi}{64}
+
+\par\vspace{0.8em}
+\tocentry{\textbf{Ek A: Test Modül Listesi}}{65}
+\tocentry{\textbf{Ek B: Örnek Konfigürasyon}}{67}
+\tocentry{\textbf{Kaynakça}}{69}

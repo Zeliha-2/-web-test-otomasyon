@@ -1,0 +1,157 @@
+% KULLANILAN TEKNOLOJİLER — [H] ile sabit konum, gereksiz boşluk yok
+% Preamble'da gerekli: \usepackage{float} \usepackage{placeins}
+
+\section{KULLANILAN TEKNOLOJİLER}
+
+Framework'ün teknoloji yığını belirlenirken kurumsal ekosistemle uyumluluk, uzun vadeli bakım kolaylığı ve bileşenler arası entegrasyon kabiliyeti ön planda tutulmuştur. Tablo~\ref{tab:teknolojiler}'de kullanılan teknolojiler ve seçim gerekçeleri özetlenmektedir.
+
+\begin{table}[H]
+\centering
+\caption{Kullanılan Teknolojiler ve Seçim Gerekçeleri}
+\label{tab:teknolojiler}
+\small
+\begin{tabular}{|l|l|p{5.8cm}|}
+\hline
+\textbf{Teknoloji} & \textbf{Kategori} & \textbf{Seçim Gerekçesi} \\
+\hline
+Java 17 & Programlama Dili & Kurumsal ekosistem uyumu, güçlü tip sistemi \\
+\hline
+Maven & Build Aracı & Bağımlılık yönetimi, CI/CD entegrasyonu \\
+\hline
+Selenium WebDriver 4 & UI Otomasyonu & Cross-browser desteği, sektör standardı \\
+\hline
+TestNG & Test Framework & DataProvider, suite XML, test gruplama \\
+\hline
+RestAssured & API Otomasyonu & HTTP doğrulama, JSON path, Java entegrasyonu \\
+\hline
+JDBC (H2 / SQL Server) & DB Doğrulama & In-memory ve gerçek DB senaryoları \\
+\hline
+ExtentReports & Raporlama & HTML rapor, screenshot, detaylı loglama \\
+\hline
+Jackson & Veri İşleme & JSON-Java nesne dönüşümü \\
+\hline
+WebDriverManager & Sürücü Yönetimi & Otomatik ChromeDriver kurulumu \\
+\hline
+Groq LLM & Yapay Zeka & Hızlı inference, OpenAI uyumlu API \\
+\hline
+Flask + scikit-learn & ML Servisi & Flaky/stabil test tahmini (opsiyonel) \\
+\hline
+Chart.js & Dashboard & Test geçmişi ve modül trendi görselleştirme \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Java ve Maven}
+Java, kurumsal test ekosisteminin temel dili olması nedeniyle tercih edilmiştir. Selenium, TestNG ve RestAssured gibi araçlar Java ile en olgun entegrasyonu sunmaktadır. Maven ise bağımlılıkları \texttt{pom.xml} üzerinden merkezi olarak yönetmekte ve tek komutla (\texttt{mvn clean test}) tüm suite'in çalıştırılmasını sağlamaktadır.
+
+\subsection{TestNG ve Selenium WebDriver}
+TestNG, JUnit'e kıyasla veri odaklı testler için çok daha güçlü altyapı sunmaktadır. Tablo~\ref{tab:testng_junit}'de iki framework karşılaştırılmaktadır.
+
+\begin{table}[H]
+\centering
+\caption{TestNG ve JUnit Karşılaştırması}
+\label{tab:testng_junit}
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Özellik} & \textbf{TestNG} & \textbf{JUnit} \\
+\hline
+DataProvider & \checkmark & Sınırlı \\
+\hline
+Suite XML & \checkmark & \texttimes \\
+\hline
+Test Gruplama & \checkmark & Sınırlı \\
+\hline
+Paralel Çalıştırma & \checkmark & \checkmark \\
+\hline
+Bağımlılık Yönetimi & \checkmark & \texttimes \\
+\hline
+\end{tabular}
+\end{table}
+
+Selenium WebDriver cross-browser desteği, açık kaynak lisansı ve Java ekosistemiyle doğal entegrasyonu nedeniyle UI otomasyon aracı olarak seçilmiştir. \texttt{ui-regression.xml} suite dosyasında \texttt{parallel="classes"} ile sınıf düzeyinde paralel koşum desteklenmektedir.
+
+\FloatBarrier
+
+\subsection{RestAssured ve JDBC}
+API katmanında RestAssured kütüphanesi \texttt{reqres.in} üzerinde HTTP durum kodu, yanıt süresi ve JSON path doğrulamalarını gerçekleştirmektedir. DB katmanında H2 in-memory veritabanı hızlı senaryo koşumu için; Microsoft SQL Server gerçek ortam simülasyonu ve E2E sipariş doğrulaması için kullanılmaktadır.
+
+\subsection{Page Object Model}
+Page Object Model (POM), her sayfanın element tanımlarını ve aksiyonlarını ayrı bir sınıfta kapsüller. Şekil~\ref{fig:pom}'de POM katmanlarının ilişkisi gösterilmektedir.
+
+\begin{figure}[H]
+\centering
+\small
+\begin{verbatim}
+┌─────────────────────────────────────┐
+│         TEST KATMANI                │
+│   LoginUiTest.runLoginScenario()    │
+└──────────────┬──────────────────────┘
+               │ çağırır
+┌──────────────▼──────────────────────┐
+│         PAGE KATMANI                │
+│   LoginPage.login(email, password)  │
+└──────────────┬──────────────────────┘
+               │ element bulur
+┌──────────────▼──────────────────────┐
+│      SELF-HEALING KATMANI           │
+│   SelfHealingElementFinder.find()   │
+└─────────────────────────────────────┘
+\end{verbatim}
+\caption{Page Object Model Katman İlişkisi}
+\label{fig:pom}
+\end{figure}
+
+\subsection{Veri Odaklı Test Yaklaşımı}
+Test verileri JSON dosyalarında tutulmaktadır. Bu yaklaşımın avantajları şunlardır:
+\begin{itemize}
+    \item Test kodu ile test verisi birbirinden tamamen ayrıştırılmıştır
+    \item Yeni senaryo eklemek için yalnızca JSON dosyası güncellenir
+    \item Git üzerinde veri değişiklikleri bağımsız izlenebilir
+    \item Jackson kütüphanesi JSON alanlarını otomatik olarak Java nesnelerine dönüştürür
+\end{itemize}
+
+\subsection{Standartlar}
+Test senaryoları iki uluslararası standart baz alınarak tasarlanmıştır:
+
+\begin{table}[H]
+\centering
+\caption{Uygulanan Standartlar ve Kapsam}
+\label{tab:standartlar}
+\begin{tabular}{|l|l|p{4.8cm}|}
+\hline
+\textbf{Standart} & \textbf{Kaynak} & \textbf{Uygulama Alanı} \\
+\hline
+ISTQB & istqb.org & Eşdeğerlik bölümlemesi, sınır değer analizi, negatif test, durum geçiş testi \\
+\hline
+OWASP & owasp.org & Authentication, input validation, güvenlik senaryoları \\
+\hline
+\end{tabular}
+\end{table}
+
+\FloatBarrier
+
+\subsection{Groq LLM ve Failure Analysis}
+Test hatalarının kök neden analizini otomatikleştirmek için Groq LLM servisi tercih edilmiştir. \texttt{AiFailureAnalyzer} sınıfı fail anında hata mesajı, modül metadata'sı ve self-healing geçmişini Groq API'ye ileterek Türkçe kök neden analizi üretmektedir. Tablo~\ref{tab:llm}'de alternatif LLM çözümleri karşılaştırılmaktadır.
+
+\begin{table}[H]
+\centering
+\caption{LLM Çözümleri Karşılaştırması}
+\label{tab:llm}
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Özellik} & \textbf{Groq} & \textbf{Claude API} & \textbf{GPT-4} \\
+\hline
+Ücretsiz Katman & \checkmark & \texttimes & \texttimes \\
+\hline
+Hızlı Inference & \checkmark & \checkmark & \checkmark \\
+\hline
+OpenAI Uyumlu API & \checkmark & \texttimes & \texttimes \\
+\hline
+Kurulum Kolaylığı & Kolay & Kolay & Kolay \\
+\hline
+Türkçe Analiz Desteği & \checkmark & \checkmark & \checkmark \\
+\hline
+\end{tabular}
+\end{table}
+
+\noindent Opsiyonel olarak \texttt{ai-analysis/} dizinindeki Flask servisi, geçmiş test verilerinden eğitilmiş ML modeli ile flaky/stabil test tahminini desteklemektedir.

@@ -1,0 +1,54 @@
+[
+  {
+    "caseId": "E2E-001",
+    "description": "Logged-in checkout on storefront → reqres order sync API → SQL Server orders table",
+    "priority": "P0",
+    "technique": "state-transition",
+    "testType": "e2e",
+    "testLevel": "system-test",
+    "standard": "ISTQB",
+    "reference": "https://www.istqb.org",
+    "productNameContains": "iMac",
+    "expectedApiStatus": 201,
+    "expectedDbStatus": "ORDER_SYNCED"
+  },
+  {
+    "caseId": "E2E-RB-01",
+    "description": "E2E: HTC checkout → API → SQL doğrulama",
+    "priority": "P0",
+    "technique": "state-transition",
+    "testType": "e2e",
+    "testLevel": "system-test",
+    "standard": "ISTQB",
+    "reference": "https://www.istqb.org",
+    "productNameContains": "HTC",
+    "expectedApiStatus": 201,
+    "expectedDbStatus": "ORDER_SYNCED"
+  },
+  {
+    "caseId": "E2E-RB-02",
+    "description": "E2E: MacBook checkout → API → SQL doğrulama",
+    "priority": "P1",
+    "technique": "equivalence-partitioning",
+    "testType": "e2e",
+    "testLevel": "system-test",
+    "standard": "ISTQB",
+    "reference": "https://www.istqb.org",
+    "productNameContains": "MacBook",
+    "expectedApiStatus": 201,
+    "expectedDbStatus": "ORDER_SYNCED"
+  },
+  {
+    "caseId": "E2E-RB-03",
+    "description": "E2E: Canon checkout → API → SQL doğrulama",
+    "priority": "P1",
+    "technique": "boundary-value",
+    "testType": "e2e",
+    "testLevel": "system-test",
+    "standard": "ISTQB",
+    "reference": "https://www.istqb.org",
+    "productNameContains": "Canon",
+    "expectedApiStatus": 201,
+    "expectedDbStatus": "ORDER_SYNCED"
+  }
+]

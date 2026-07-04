@@ -1,23 +1,19 @@
 package com.automation.listeners;
 
-import com.automation.base.DriverFactory;
-import com.automation.utils.AiFailureAnalyzer;
+import com.automation.utils.ScreenshotCapture;
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.lang.reflect.Method;
 import java.util.Locale;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
+import org.testng.IInvokedMethod;
+import org.testng.IInvokedMethodListener;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
 
-public class TestListener implements ITestListener {
+public class TestListener implements ITestListener, IInvokedMethodListener {
     static {
         // Extent Spark FreeMarker şablonları bazı locale'lerde (ör. tr_TR) yanlış dosya adı üretebiliyor.
         Locale.setDefault(Locale.ENGLISH);
@@ -41,21 +37,47 @@ public class TestListener implements ITestListener {
 
     @Override
     public void onTestSuccess(ITestResult result) {
-        TEST.get().pass("Test passed");
+        ExtentTest extentTest = TEST.get();
+        if (extentTest != null) {
+            extentTest.pass("Test passed");
+        }
+    }
+
+    @Override
+    public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {
+        // no-op
+    }
+
+    @Override
+    public void afterInvocation(IInvokedMethod method, ITestResult result) {
+        if (!method.isTestMethod() || result.isSuccess()) {
+            return;
+        }
+        Object existing = result.getAttribute("dashboardScreenshotPath");
+        if (existing != null && !existing.toString().isBlank()) {
+            return;
+        }
+        String screenshotPath = ScreenshotCapture.capture(screenshotLabel(result));
+        result.setAttribute("dashboardScreenshotPath", screenshotPath == null ? "" : screenshotPath);
     }
 
     @Override
     public void onTestFailure(ITestResult result) {
-        String screenshotPath = takeScreenshot(
-                result.getTestClass().getRealClass().getSimpleName() + "_" + result.getMethod().getMethodName());
         Throwable throwable = result.getThrowable();
         String summary = throwable == null ? "Unknown failure" : throwable.getMessage();
-        String aiAnalysis = AiFailureAnalyzer.analyze(summary);
 
-        TEST.get().fail(summary);
-        TEST.get().info(aiAnalysis);
-        if (screenshotPath != null) {
-            TEST.get().addScreenCaptureFromPath(screenshotPath);
+        Object shot = result.getAttribute("dashboardScreenshotPath");
+        String screenshotPath = shot == null ? null : shot.toString();
+        if (screenshotPath != null && screenshotPath.isBlank()) {
+            screenshotPath = null;
+        }
+
+        ExtentTest extentTest = TEST.get();
+        if (extentTest != null) {
+            extentTest.fail(summary);
+            if (screenshotPath != null) {
+                extentTest.addScreenCaptureFromPath(screenshotPath);
+            }
         }
     }
 
@@ -80,19 +102,9 @@ public class TestListener implements ITestListener {
         return extent;
     }
 
-    private String takeScreenshot(String testName) {
-        try {
-            if (!(DriverFactory.getDriver() instanceof TakesScreenshot driver)) {
-                return null;
-            }
-            byte[] file = driver.getScreenshotAs(OutputType.BYTES);
-            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
-            Path path = Path.of("target", "screenshots", testName + "_" + timestamp + ".png");
-            Files.createDirectories(path.getParent());
-            Files.write(path, file);
-            return path.toString();
-        } catch (Exception e) {
-            return null;
-        }
+    private static String screenshotLabel(ITestResult result) {
+        String className = result.getTestClass().getRealClass().getSimpleName();
+        Method m = result.getMethod().getConstructorOrMethod().getMethod();
+        return className + "_" + m.getName();
     }
 }

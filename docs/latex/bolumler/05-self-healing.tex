@@ -1,0 +1,18 @@
+\chapter{Self-Healing Mekanizması}
+
+\section{Motivasyon ve Problem}
+Web uygulamalarında CSS seçicileri, ID'ler ve DOM yapısı sık değişir. Klasik otomasyon bu değişikliklerde kırılır. Self-healing, birincil locator başarısız olduğunda tanımlı yedek locator listesini sırayla dener.
+
+\section{SelfHealingElementFinder Tasarımı}
+\texttt{SelfHealingElementFinder} sınıfı, page object'lerde element bulma işlemini merkezileştirir. Başarılı yedek locator kullanıldığında telemetri kaydı oluşturulur.
+
+\section{Yedek Locator Zinciri}
+Her element için birden fazla \texttt{By} stratejisi tanımlanır (id, css, xpath, link text vb.). Zincir soldan sağa denenir; ilk görünür ve tıklanabilir element kabul edilir.
+
+\section{Telemetri ve Dashboard Entegrasyonu}
+Self-healing kullanımı \texttt{SelfHealingTelemetry} ile izlenir. Dashboard test kartlarında ``Otomatik Onarım Devrede'' rozeti gösterilir; \texttt{selfHealUsed}, \texttt{selfHealLocator} alanları \texttt{results.json}'a yazılır.
+
+\section{Örnek Kullanım Senaryosu}
+Checkout, Cart ve Search page sınıflarında self-healing aktiftir. Birincil sepet butonu locator'ı değiştiğinde yedek CSS seçicisi devreye girer ve test fail olmadan devam eder.
+
+% TODO: Before/after locator tablosu ve gerçek self-heal log örneği ekle.

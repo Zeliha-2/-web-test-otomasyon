@@ -1,0 +1,28 @@
+\chapter{Yapay Zeka Destekli Hata Analizi}
+
+\section{AiFailureAnalyzer Mimarisi}
+Test fail olduğunda \texttt{AiFailureAnalyzer.analyze()} çağrılır. İki katmanlı analiz uygulanır:
+\begin{enumerate}
+  \item Flask ML servisi: flaky/stabil tahmin (\texttt{/predict} endpoint).
+  \item Groq LLM: Türkçe kök neden, önerilen aksiyon ve risk değerlendirmesi.
+\end{enumerate}
+
+\section{Groq LLM ile Kök Neden Analizi}
+Groq OpenAI uyumlu API üzerinden \texttt{llama-3.1-8b-instant} modeli kullanılır. Analiz çıktısı şu başlıkları içerir:
+\begin{itemize}
+  \item Kök Neden
+  \item URL / Assertion Detayları
+  \item Önerilen Aksiyon
+  \item Risk Değerlendirmesi
+\end{itemize}
+
+\section{Flask ML Modeli (Flaky/Stabil Tahmin)}
+\texttt{ai-analysis/app.py} servisi geçmiş test metadata'sından eğitilmiş \texttt{qa\_model.pkl} modelini sunar. Modül, teknik, standart ve süre bilgileri feature olarak kullanılır.
+
+\section{FailureLogWriter — Teknik Hata Logları}
+Fail anında yalnızca teknik bilgi içeren log dosyası \texttt{target/test-history/logs/} altına yazılır. Stack trace, assertion mesajı ve test metadata'sı içerir.
+
+\section{Türkçe Analiz Çıktı Formatı}
+Dashboard Hata Analizi ve Raporlanan Hatalar bölümlerinde AI notu Türkçe gösterilir. \texttt{[AI-SKIPPED]} etiketi API anahtarı yoksa veya servis kapalıysa kullanılır.
+
+% TODO: Gerçek FPW-EG-01 fail analizi örneğini listing olarak ekle.

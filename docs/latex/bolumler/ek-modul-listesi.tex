@@ -1,0 +1,52 @@
+\begin{table}[H]
+  \centering
+  \caption{UI test modülleri ve test sınıfları}
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    \textbf{Modül} & \textbf{Test Sınıfı} & \textbf{JSON Dosyası} \\
+    \midrule
+    Login & LoginUiTest & login-scenarios.json \\
+    Register & RegisterUiTest & register-scenarios.json \\
+    ForgotPassword & ForgotPasswordUiTest & forgot-password-scenarios.json \\
+    MyAccount & MyAccountUiTest & my-account-scenarios.json \\
+    MyAccountSettings & MyAccountSettingsUiTest & my-account-settings-scenarios.json \\
+    Newsletter & NewsletterUiTest & newsletter-scenarios.json \\
+    WishList & WishListUiTest & wishlist-scenarios.json \\
+    Search & SearchUiTest & search-scenarios.json \\
+    Cart & CartUiTest & cart-scenarios.json \\
+    Checkout & CheckoutUiTest & checkout-scenarios.json \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \caption{API, DB ve E2E test sınıfları}
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    \textbf{Katman} & \textbf{Test Sınıfı} & \textbf{JSON Dosyası} \\
+    \midrule
+    API & ApiTest & api-scenarios.json \\
+    DB (H2) & DbTest & db-scenarios.json \\
+    DB (SQL Server) & SqlServerDbTest & db-sqlserver-scenarios.json \\
+    E2E & E2EOrderFlowTest & e2e-scenarios.json \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \caption{TestNG suite grupları (ui-regression.xml)}
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    \textbf{Grup} & \textbf{İçerik} \\
+    \midrule
+    01-Public-Account-Flows & Login, Register, ForgotPassword \\
+    02-My-Account & MyAccount, MyAccountSettings, Newsletter \\
+    03-Storefront & WishList, Search, Cart, Checkout \\
+    04-API-Layer & ApiTest \\
+    05-DB-Layer & DbTest, SqlServerDbTest \\
+    06-E2E-Cross-Layer & E2EOrderFlowTest \\
+    \bottomrule
+  \end{tabular}
+\end{table}

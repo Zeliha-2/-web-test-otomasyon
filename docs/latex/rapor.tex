@@ -1,0 +1,121 @@
+% AI Destekli 3 Katmanlı Test Otomasyon Framework'ü — Bitirme / Vize Raporu
+% Derleme: pdflatex rapor.tex (iki kez — içindekiler için)
+\documentclass[12pt,a4paper,twoside]{report}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[turkish]{babel}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{placeins}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{amsmath}
+\usepackage{setspace}
+\usepackage{titlesec}
+
+\geometry{margin=2.5cm}
+\onehalfspacing
+\setlength{\textfloatsep}{8pt plus 2pt minus 4pt}
+\setlength{\intextsep}{8pt plus 2pt minus 4pt}
+\setlength{\floatpagefraction}{0.85}
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.85}
+\hypersetup{colorlinks=true, linkcolor=blue, urlcolor=blue, citecolor=blue}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  backgroundcolor=\color{gray!8},
+  keywordstyle=\color{blue},
+  commentstyle=\color{green!50!black}
+}
+
+% --- Kapak bilgileri (üniversite şablonuna göre düzenle) ---
+\newcommand{\raporBaslik}{AI Destekli 3 Katmanlı Web Test Otomasyon Framework'ü}
+\newcommand{\raporAltBaslik}{Self-Healing, Yapay Zeka Destekli Hata Analizi ve QA Command Center Dashboard}
+\newcommand{\ogrenciAd}{Ad Soyad}
+\newcommand{\ogrenciNo}{Öğrenci No}
+\newcommand{\danisman}{Danışman Adı Soyadı}
+\newcommand{\universite}{Üniversite Adı}
+\newcommand{\bolum}{Bölüm Adı}
+\newcommand{\tarih}{Haziran 2026}
+
+\begin{document}
+
+% ===================== KAPAK =====================
+\begin{titlepage}
+  \centering
+  \vspace*{1.5cm}
+  {\Large \universite \par}
+  {\large \bolum \par}
+  \vspace{2cm}
+  {\LARGE\bfseries \raporBaslik \par}
+  \vspace{0.8cm}
+  {\large \raporAltBaslik \par}
+  \vspace{2.5cm}
+  {\large Bitirme Projesi / Vize Raporu \par}
+  \vspace{2cm}
+  \begin{tabular}{rl}
+    Öğrenci  & : \ogrenciAd \\
+    Numara   & : \ogrenciNo \\
+    Danışman & : \danisman \\
+    Tarih    & : \tarih \\
+  \end{tabular}
+  \vfill
+\end{titlepage}
+
+\input{ozet}
+
+\pagenumbering{roman}
+\tableofcontents
+\clearpage
+\listoffigures
+\clearpage
+\listoftables
+\clearpage
+
+% Manuel içindekiler (tahmini sayfa numaraları) — otomatik TOC ile birlikte veya yerine kullanılabilir
+\input{icindekiler}
+\clearpage
+
+\pagenumbering{arabic}
+
+% ===================== BÖLÜMLER =====================
+\include{bolumler/01-giris}
+\include{bolumler/02-teknolojiler}
+\include{bolumler/03-mimari}
+\include{bolumler/04-test-yaklasimi}
+\include{bolumler/05-self-healing}
+\include{bolumler/06-ai-analiz}
+\include{bolumler/07-dashboard}
+\include{bolumler/08-jira-raporlama}
+\include{bolumler/09-sonuclar}
+\include{bolumler/10-gelecek}
+
+% ===================== EKLER =====================
+\appendix
+\chapter{Ek A: Test Modül Listesi}
+\input{bolumler/ek-modul-listesi}
+
+\chapter{Ek B: Örnek Konfigürasyon}
+\begin{lstlisting}[language=bash,caption={config.example.properties özeti}]
+base.url=https://ecommerce-playground.lambdatest.io/...
+api.base.url=https://reqres.in
+ai.provider=groq
+ai.model=llama-3.1-8b-instant
+run.ui.layer=true
+run.api.layer=true
+run.db.layer=true
+run.e2e.layer=true
+\end{lstlisting}
+
+\input{bolumler/17-kaynaklar}
+
+\end{document}

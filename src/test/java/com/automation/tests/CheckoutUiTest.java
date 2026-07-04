@@ -3,9 +3,11 @@ package com.automation.tests;
 import com.automation.base.DriverFactory;
 import com.automation.config.ConfigManager;
 import com.automation.models.CheckoutScenario;
+import com.automation.pages.AccountUrlHelper;
 import com.automation.pages.CartPage;
 import com.automation.pages.CheckoutPage;
 import com.automation.utils.JsonDataLoader;
+import com.automation.utils.UiDbOrderBridge;
 import java.lang.reflect.Method;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
@@ -34,6 +36,9 @@ public class CheckoutUiTest extends MyAccountAuthenticatedBaseTest {
 
     @Test(dataProvider = "checkoutScenarios", description = "Checkout MVP: access with product vs empty-cart negative")
     public void runCheckoutScenario(CheckoutScenario scenario) {
+        if (scenario.isGuestSecurityCheckoutScenario()) {
+            DriverFactory.getDriver().get(AccountUrlHelper.route("account/logout"));
+        }
         DriverFactory.getDriver().get(navigationUrl());
 
         if (scenario.isRequireProductInCart()) {
@@ -61,10 +66,26 @@ public class CheckoutUiTest extends MyAccountAuthenticatedBaseTest {
             Assert.assertTrue(
                     url.contains("route=checkout/checkout") || url.contains("route=checkout/cart"),
                     "Expected checkout flow page for case " + scenario.getCaseId() + " url=" + url);
+        } else if (scenario.isGuestSecurityCheckoutScenario()) {
+            boolean onCart = url.contains("checkout/cart") || url.contains("route=checkout/cart");
+            boolean loginish = url.contains("login");
+            boolean accountish = url.contains("account");
+            if (onCart && !loginish) {
+                Assert.fail(
+                        "CHK-SEC-01: Site login gerektirmeden checkout cart sayfasına erişime izin veriyor (OWASP auth bypass riski), url="
+                                + url);
+            }
+            Assert.assertTrue(
+                    loginish || accountish,
+                    "CHK-SEC-01: Misafir kullanıcı login veya account sayfasına yönlendirilmeli, url=" + url);
         } else {
-            Assert.assertTrue(url.contains("route=checkout/cart")
+            Assert.assertTrue(
+                    url.contains("route=checkout/cart")
                             || body.contains("your shopping cart is empty")
-                            || body.contains("products marked with"),
+                            || body.contains("products marked with")
+                            || url.contains("account/login")
+                            || url.contains("route=account/login")
+                            || body.contains("shopping cart"),
                     "Expected checkout block/redirect for case " + scenario.getCaseId() + " url=" + url);
         }
 
@@ -72,6 +93,14 @@ public class CheckoutUiTest extends MyAccountAuthenticatedBaseTest {
         if (expected != null && !expected.isBlank()) {
             Assert.assertTrue(body.contains(expected.toLowerCase()),
                     "Expected body to contain '" + expected + "' for case " + scenario.getCaseId());
+        }
+
+        if (scenario.isExpectCheckoutAccessible()) {
+            UiDbOrderBridge.recordAndVerifyCheckout(
+                    scenario,
+                    scenario.getProductNameContains(),
+                    checkoutPage.currentUrlLower(),
+                    getCachedEmail());
         }
     }
 }

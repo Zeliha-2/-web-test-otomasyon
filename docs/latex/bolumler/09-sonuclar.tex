@@ -1,0 +1,48 @@
+\chapter{Mevcut Durum ve Sonuçlar}
+
+\section{Toplam Test Kapsamı}
+Proje $\sim$273 data-driven senaryo içermektedir. UI regression suite (\texttt{ui-regression.xml}) 14 test sınıfını 6 TestNG grubunda koşturur.
+
+\section{Modül Bazlı Sonuç Özeti}
+% TODO: Son mvn clean test çıktısından güncel pass/fail sayılarını tabloya yaz.
+
+\begin{table}[H]
+  \centering
+  \caption{Modül bazlı senaryo dağılımı (hedef)}
+  \begin{tabular}{@{}lrr@{}}
+    \toprule
+    \textbf{Modül} & \textbf{Senaryo} & \textbf{Risk} \\
+    \midrule
+    Checkout & 28 & Yüksek \\
+    Login & 24 & Yüksek \\
+    ForgotPassword & 24 & Yüksek \\
+    Register & 22 & Orta-Yüksek \\
+    Cart & 22 & Orta-Yüksek \\
+    MyAccountSettings & 22 & Orta-Yüksek \\
+    MyAccount & 20 & Orta \\
+    Search & 18 & Orta \\
+    WishList & 12 & Düşük \\
+    Newsletter & 10 & Düşük \\
+    Api & 32 & — \\
+    Db & 35 & — \\
+    E2E & 4 & Yüksek \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\section{Bilinçli Güvenlik Test Fail'leri}
+ForgotPassword modülünde OWASP odaklı senaryolar (\texttt{FPW-EG-01}, \texttt{FPW-ST-02}) bilinçli olarak fail tasarlanmıştır. Bu senaryolar gerçek güvenlik açıklarını test etmek içindir; framework hatası değildir.
+
+\section{Performans ve Paralel Koşum}
+TestNG \texttt{parallel="classes"} modu ile 4 thread kullanılır. ThreadLocal WebDriver ile sınıf düzeyinde izolasyon sağlanır.
+
+\section{Karşılaşılan Zorluklar ve Çözümler}
+\begin{itemize}
+  \item \textbf{DOM değişiklikleri:} Self-healing locator zinciri.
+  \item \textbf{Dashboard veri kaybı:} Modül koşumlarında \texttt{mvn clean} kullanılmaması.
+  \item \textbf{Ek dosya yolları:} \texttt{resolveDashboardAsset()} ile path normalizasyonu.
+  \item \textbf{Ürün katalog değişimi:} JSON senaryo güncellemesi (ör. WishList ürün adı).
+\end{itemize}
+
+\section{Proje Değerlendirmesi}
+Proje; üç katmanlı otomasyon, self-healing, AI analiz ve görsel dashboard ile bitirme projesi kapsamını karşılamaktadır. Eksik kalan CI/CD ve Jira REST API entegrasyonu gelecek çalışma olarak planlanmıştır.

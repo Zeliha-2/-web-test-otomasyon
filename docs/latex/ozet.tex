@@ -1,0 +1,43 @@
+% ÖZET ve ABSTRACT — güncel proje durumuna göre (Haziran 2026)
+
+\phantomsection
+\addcontentsline{toc}{section}{ÖZET}
+\begin{center}
+\textbf{\large ÖZET}\\[0.4em]
+\textbf{E-TİCARET UYGULAMALARI İÇİN SELF-HEALING VE YAPAY ZEKA DESTEKLİ\\
+ÜÇ KATMANLI TEST OTOMASYON FRAMEWORK'Ü}
+\end{center}
+
+Bu çalışma kapsamında, e-ticaret web uygulamalarının kalite güvencesini sağlamak amacıyla sürdürülebilir, genişletilebilir ve yapay zeka destekli bir test otomasyon framework'ü geliştirilmiştir. Projenin temel amacı, manuel test süreçlerinin getirdiği zaman ve maliyet yükünü azaltmak; UI değişikliklerine karşı dayanıklı, veri odaklı ve standartlara dayalı bir otomasyon altyapısı kurmaktır.
+
+Framework, Java~17, Selenium WebDriver~4, TestNG, Maven, RestAssured ve JDBC teknolojileri üzerine inşa edilmiştir. Mimari olarak Page Object Model (POM) deseni benimsenmiş; test verileri JSON dosyalarında tutularak TestNG DataProvider mekanizmasıyla teste aktarılmıştır. Bu sayede test kodu ile test verisi birbirinden ayrıştırılmış, bakım maliyeti minimize edilmiştir. Proje yalnızca arayüz katmanıyla sınırlı kalmayıp \textbf{UI, API, veritabanı (DB) ve uçtan uca (E2E)} olmak üzere dört test katmanını tek çatı altında birleştirmektedir.
+
+Projenin teknik ayırt ediciliği üç bileşende yoğunlaşmaktadır. Birincisi, UI değişikliklerine karşı dayanıklılık sağlayan \textbf{self-healing} mekanizmasıdır. Her element için öncelikli locator listesi tanımlanmış; birincil locator başarısız olduğunda sistem otomatik olarak yedek locator'ları denemekte ve kullanım istatistiklerini raporlamaktadır. İkincisi, test hatalarının kök neden analizini otomatikleştiren \textbf{LLM tabanlı failure analysis} bileşenidir. Test başarısız olduğunda hata mesajı, modül metadata'sı, self-healing geçmişi ve ekran görüntüsü otomatik toplanarak Groq LLM servisine iletilmekte; model Türkçe kök neden, önerilen aksiyon ve risk değerlendirmesi üretmektedir. Opsiyonel Flask tabanlı makine öğrenmesi servisi ise flaky/stabil test tahminini desteklemektedir. Üçüncüsü, koşum sonuçlarını görselleştiren \textbf{QA Command Center} web dashboard'udur; test geçmişi, modül trendi, OWASP eşlemesi, AI analiz notları ve Jira formatında hata raporlama akışını sunmaktadır.
+
+Test senaryoları ISTQB test tasarım teknikleri (eşdeğerlik bölümlemesi, sınır değer analizi, negatif test, durum geçiş testi, güvenlik testi) ve OWASP güvenlik standartları baz alınarak tasarlanmıştır. Modül karmaşıklığı ve iş kritikliğine göre risk bazlı senaryo hedefleri belirlenmiştir. Framework kapsamında Login, Register, Forgot Password, My Account, My Account Settings, Cart, Checkout, Search, WishList ve Newsletter UI modülleri; RestAssured ile API katmanı; H2 ve Microsoft SQL Server ile DB katmanı; UI--API--DB entegrasyonunu kapsayan E2E sipariş akışı test edilmiştir. Toplam \textbf{273 data-driven test senaryosu} uygulanmıştır. Test sonuçları, self-healing telemetrisi, teknik hata logları, LLM analizleri ve ekran görüntüleri \texttt{target/test-history} dizininde toplanarak dashboard üzerinden görselleştirilmektedir.
+
+\vspace{2cm}
+\textbf{Anahtar Kelimeler:} Test Otomasyonu, Selenium, Self-Healing, Büyük Dil Modeli (LLM), ISTQB, OWASP, Page Object Model, Data-Driven Test, Üç Katmanlı Test, Web Dashboard, Java
+
+\newpage
+
+\phantomsection
+\addcontentsline{toc}{section}{ABSTRACT}
+\begin{center}
+\textbf{\large ABSTRACT}\\[0.4em]
+\textbf{A SELF-HEALING AND AI-POWERED THREE-LAYER\\
+TEST AUTOMATION FRAMEWORK FOR E-COMMERCE APPLICATIONS}
+\end{center}
+
+In this study, a sustainable, extensible and AI-powered test automation framework has been developed to ensure the quality assurance of e-commerce web applications. The primary objective of the project is to reduce the time and cost burden of manual testing processes and to establish an automation infrastructure that is resilient to UI changes, data-driven and standards-based.
+
+The framework is built on Java~17, Selenium WebDriver~4, TestNG, Maven, RestAssured and JDBC technologies. The Page Object Model (POM) pattern has been adopted as the architectural approach; test data is stored in JSON files and transferred to tests via the TestNG DataProvider mechanism. This approach separates test code from test data, minimizing maintenance costs. The project extends beyond the UI layer by integrating four test layers under a single framework: \textbf{UI, API, database (DB) and end-to-end (E2E)}.
+
+The technical distinction of the project focuses on three components. The first is the \textbf{self-healing} mechanism that provides resilience against UI changes. A prioritized locator list is defined for each element; when the primary locator fails, the system automatically tries fallback locators and records usage telemetry. The second is the \textbf{LLM-based failure analysis} component that automates root cause analysis of test failures. When a test fails, the error message, module metadata, self-healing history and screenshot are automatically collected and sent to the Groq LLM service, which generates root cause analysis, recommended actions and risk assessment in Turkish. An optional Flask-based machine learning service supports flaky/stable test prediction. The third is the \textbf{QA Command Center} web dashboard, which provides test history, module trends, OWASP mapping, AI analysis notes and a Jira-style bug reporting workflow.
+
+Test scenarios have been designed based on ISTQB test design techniques (equivalence partitioning, boundary value analysis, negative testing, state transition testing, security testing) and OWASP security standards. Risk-based scenario targets have been defined according to module complexity and business criticality. Within the framework, Login, Register, Forgot Password, My Account, My Account Settings, Cart, Checkout, Search, WishList and Newsletter UI modules; the API layer with RestAssured; the DB layer with H2 and Microsoft SQL Server; and the E2E order flow integrating UI--API--DB have been tested. A total of \textbf{273 data-driven test scenarios} have been implemented. Test results, self-healing telemetry, technical failure logs, LLM analyses and screenshots are collected under \texttt{target/test-history} and visualized through the dashboard.
+
+\vspace{2cm}
+\textbf{Keywords:} Test Automation, Selenium, Self-Healing, Large Language Model (LLM), ISTQB, OWASP, Page Object Model, Data-Driven Testing, Three-Layer Testing, Web Dashboard, Java
+
+\pagebreak{}

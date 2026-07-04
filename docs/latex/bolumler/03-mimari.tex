@@ -1,0 +1,37 @@
+\chapter{Sistem Mimarisi}
+
+\section{Genel Mimari Görünüm}
+Framework dört ana bileşenden oluşur: test katmanları (UI/API/DB/E2E), yardımcı servisler (self-healing, AI), dinleyiciler (listener) ve dashboard veri hattı.
+
+\begin{figure}[H]
+  \centering
+  \fbox{\parbox{0.88\textwidth}{\centering\vspace{2cm}
+    \textbf{[Şekil: Mimari diyagram]}\\[0.5em]
+    TestNG $\rightarrow$ BaseTest $\rightarrow$ Page/API/DB $\rightarrow$ Listener $\rightarrow$ test-history\\
+    \small Dashboard HTML $\leftarrow$ results.json + screenshots + logs
+  \vspace{2cm}}}
+  \caption{Genel sistem mimarisi (placeholder — draw.io / TikZ ile güncelle)}
+  \label{fig:mimari}
+\end{figure}
+
+\section{Page Object Model (POM)}
+Her UI modülü için ayrı page sınıfı (\texttt{LoginPage}, \texttt{CheckoutPage} vb.) tanımlanmıştır. Test sınıfları yalnızca iş akışını orchestrate eder; DOM etkileşimleri page katmanındadır.
+
+\section{ConfigManager ve Ortam Yönetimi}
+\texttt{config.properties} dosyası URL, kimlik bilgisi ve AI anahtarlarını tutar. \texttt{ConfigManager} ortam değişkeni override destekler (\texttt{AI\_API\_KEY}, \texttt{BASE\_URL} vb.).
+
+\section{TestNG Listener ve Raporlama Hattı}
+\texttt{TestListener} ExtentReports ve ekran görüntüsü yakalamayı yönetir. \texttt{DashboardResultsListener} her test sonucunu \texttt{results.json} formatına yazar.
+
+\section{DashboardResultsListener ve test-history}
+Koşum sonrası şu dosyalar üretilir:
+\begin{itemize}
+  \item \texttt{target/test-history/results.json}
+  \item \texttt{target/test-history/screenshots/*.png}
+  \item \texttt{target/test-history/logs/*.txt}
+\end{itemize}
+
+\section{Üç Katman + E2E Entegrasyon Akışı}
+E2E senaryolarda UI üzerinden checkout tamamlanır, API ile senkronizasyon doğrulanır, SQL Server'da sipariş kaydı sorgulanır (\texttt{E2EOrderFlowTest}).
+
+% TODO: Sequence diagram ekle (checkout E2E akışı).

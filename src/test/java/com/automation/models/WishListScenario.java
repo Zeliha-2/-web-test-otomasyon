@@ -12,6 +12,9 @@ public class WishListScenario {
     private String productNameContains;
     private String expectedAlertContains;
     private String expectedWishListPageContains;
+    private Boolean guestWishlistAccess;
+    private Boolean expectWishlistAddFailure;
+    private Integer wishlistAddRepeatCount;
 
     public String getCaseId() {
         return caseId;
@@ -55,5 +58,17 @@ public class WishListScenario {
 
     public String getExpectedWishListPageContains() {
         return expectedWishListPageContains;
+    }
+
+    public Boolean getGuestWishlistAccess() {
+        return guestWishlistAccess;
+    }
+
+    public Boolean getExpectWishlistAddFailure() {
+        return expectWishlistAddFailure;
+    }
+
+    public Integer getWishlistAddRepeatCount() {
+        return wishlistAddRepeatCount;
     }
 }

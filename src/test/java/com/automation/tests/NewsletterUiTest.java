@@ -2,8 +2,11 @@ package com.automation.tests; // Test sınıfı paketi
 
 import com.automation.models.NewsletterScenario; // JSON senaryo modeli
 import com.automation.pages.AccountNewsletterPage; // Newsletter page sınıfı
+import com.automation.pages.AccountUrlHelper;
+import com.automation.base.DriverFactory;
 import com.automation.utils.JsonDataLoader; // JSON okuma utility'si
 import java.lang.reflect.Method; // DataProvider imzası için Method
+import org.openqa.selenium.By;
 import org.testng.Assert; // Assertionlar için
 import org.testng.annotations.DataProvider; // TestNG DataProvider annotation
 import org.testng.annotations.Test; // TestNG Test annotation
@@ -26,6 +29,40 @@ public class NewsletterUiTest extends MyAccountAuthenticatedBaseTest { // Login 
     @Test(dataProvider = "newsletterScenarios", description = "My Account newsletter subscribe/unsubscribe") // Data-driven test
     public void runNewsletterScenario(NewsletterScenario scenario) { // Her JSON kaydı için çalışır
         AccountNewsletterPage page = new AccountNewsletterPage(); // Newsletter page nesnesi oluştur
+
+        if (scenario.isGuestLoginRedirectNewsletterScenario()) {
+            DriverFactory.getDriver().get(AccountUrlHelper.route("account/logout"));
+            DriverFactory.getDriver().get(AccountUrlHelper.route("account/newsletter"));
+            String u = page.currentUrlLower();
+            String body = DriverFactory.getDriver().findElement(By.tagName("body")).getText().toLowerCase();
+            String needle = scenario.getExpectedSuccessContains() == null
+                    ? "login"
+                    : scenario.getExpectedSuccessContains().toLowerCase();
+            Assert.assertTrue(
+                    u.contains("account/login") || u.contains("route=account/login")
+                            || body.contains("returning customer") || body.contains("please login")
+                            || (!needle.isBlank() && body.contains(needle)),
+                    "Guest should be blocked or redirected to login for case " + scenario.getCaseId() + " url=" + u);
+            return;
+        }
+
+        if (Boolean.TRUE.equals(scenario.getToggleSubscriptionTwice())) {
+            page.open();
+            page.setSubscription(Boolean.TRUE.equals(scenario.getSubscribe()));
+            page.open();
+            page.setSubscription(!Boolean.TRUE.equals(scenario.getSubscribe()));
+            String feedback = page.getVisibleFeedback().toLowerCase();
+            String expected = scenario.getExpectedSuccessContains() == null
+                    ? ""
+                    : scenario.getExpectedSuccessContains().toLowerCase();
+            Assert.assertTrue(
+                    (!expected.isBlank() && feedback.contains(expected))
+                            || page.currentUrlLower().contains("route=account/newsletter")
+                            || page.currentUrlLower().contains("route=account/account"),
+                    "Newsletter double-toggle feedback not found for case " + scenario.getCaseId() + " feedback=" + feedback);
+            return;
+        }
+
         page.open(); // Newsletter sayfasını aç
         page.setSubscription(Boolean.TRUE.equals(scenario.getSubscribe())); // Yes/No seçimini uygula ve kaydet
 

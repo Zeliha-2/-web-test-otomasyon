@@ -10,6 +10,8 @@ public class SearchScenario {
     private String standard;
     private String reference;
     private String query;
+    private String secondQuery;
+    private String secondExpectedBodyContains;
     private boolean expectSearchRoute;
     private boolean expectProductResults;
     private String expectedBodyContains;
@@ -48,6 +50,14 @@ public class SearchScenario {
 
     public String getQuery() {
         return query;
+    }
+
+    public String getSecondQuery() {
+        return secondQuery;
+    }
+
+    public String getSecondExpectedBodyContains() {
+        return secondExpectedBodyContains;
     }
 
     public boolean isExpectSearchRoute() {

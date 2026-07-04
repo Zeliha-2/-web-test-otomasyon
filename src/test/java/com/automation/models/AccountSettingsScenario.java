@@ -18,6 +18,8 @@ public class AccountSettingsScenario {
 
     private String newPassword;
     private String confirmNewPassword;
+    /** change-password akışında gerçek şifre yerine kullanılacak mevcut şifre (negatif test). */
+    private String currentPasswordOverride;
 
     private String addressFirstName;
     private String addressLastName;
@@ -81,6 +83,10 @@ public class AccountSettingsScenario {
 
     public String getConfirmNewPassword() {
         return confirmNewPassword;
+    }
+
+    public String getCurrentPasswordOverride() {
+        return currentPasswordOverride;
     }
 
     public String getAddressFirstName() {

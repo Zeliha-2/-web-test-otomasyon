@@ -19,23 +19,11 @@ public class WishListPage {
     }
 
     public void addProductToWishListByNameFragment(String nameFragment) {
-        int sec = ConfigManager.getInt("explicit.wait.seconds", 8);
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(sec));
-        wait.until(d -> !d.findElements(By.cssSelector("div.product-thumb")).isEmpty());
-
-        String frag = nameFragment == null ? "" : nameFragment.toLowerCase();
-        List<WebElement> thumbs = driver.findElements(By.cssSelector("div.product-thumb"));
-        WebElement target = null;
-        for (WebElement t : thumbs) {
-            try {
-                if (t.isDisplayed() && t.getText().toLowerCase().contains(frag)) {
-                    target = t;
-                    break;
-                }
-            } catch (Exception ignored) {
-                // stale; skip
-            }
+        String frag = normalizeFragment(nameFragment);
+        if (frag == null) {
+            throw new org.openqa.selenium.NoSuchElementException("No product thumb matching: " + nameFragment);
         }
+        WebElement target = findProductThumb(frag);
         if (target == null) {
             throw new org.openqa.selenium.NoSuchElementException("No product thumb matching: " + nameFragment);
         }
@@ -57,6 +45,21 @@ public class WishListPage {
         }
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block:'center'});", btn);
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btn);
+    }
+
+    /**
+     * @return ürün bulunup wishlist kontrolü tıklandıysa true; ürün yoksa false
+     */
+    public boolean tryAddProductToWishListByNameFragment(String nameFragment) {
+        if (nameFragment == null || nameFragment.isBlank()) {
+            return false;
+        }
+        try {
+            addProductToWishListByNameFragment(nameFragment);
+            return true;
+        } catch (org.openqa.selenium.NoSuchElementException e) {
+            return false;
+        }
     }
 
     public String waitForAlertText() {
@@ -113,5 +116,42 @@ public class WishListPage {
     public String visibleBodyText() {
         WebElement body = driver.findElement(By.tagName("body"));
         return body.getText();
+    }
+
+    private static String normalizeFragment(String nameFragment) {
+        if (nameFragment == null || nameFragment.isBlank()) {
+            return null;
+        }
+        return nameFragment.trim().toLowerCase();
+    }
+
+    private WebElement findProductThumb(String frag) {
+        int sec = ConfigManager.getInt("explicit.wait.seconds", 8);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(sec));
+        wait.until(d -> !d.findElements(By.cssSelector("div.product-thumb")).isEmpty());
+
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        js.executeScript("window.scrollTo(0, 0);");
+
+        for (int pass = 0; pass < 14; pass++) {
+            List<WebElement> thumbs = driver.findElements(By.cssSelector("div.product-thumb"));
+            for (WebElement t : thumbs) {
+                try {
+                    if (t.isDisplayed() && t.getText().toLowerCase().contains(frag)) {
+                        return t;
+                    }
+                } catch (Exception ignored) {
+                    // stale
+                }
+            }
+            js.executeScript("window.scrollBy(0, Math.max(window.innerHeight || 600, 500));");
+            try {
+                Thread.sleep(250);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
+        return null;
     }
 }

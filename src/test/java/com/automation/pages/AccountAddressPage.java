@@ -82,20 +82,32 @@ public class AccountAddressPage {
                 By.xpath(".//label[contains(normalize-space(.),'Country')]/following::select[1]"),
                 By.xpath(".//select[contains(@id,'country') or contains(@name,'country')]")
         ));
-        // JS-based selection avoids stale issues in dynamic OpenCart dropdowns.
+        WebDriverWait countryWait = new WebDriverWait(driver, Duration.ofSeconds(Math.max(sec, 12)));
+        countryWait.until(d -> {
+            WebElement c = visibleFieldAny(form, List.of(
+                    By.id("input-country"), By.name("country_id"),
+                    By.xpath(".//select[contains(@id,'country') or contains(@name,'country')]")));
+            return new Select(c).getOptions().size() > 1;
+        });
         ((JavascriptExecutor) driver).executeScript(
                 "var s=arguments[0];"
                         + "for (var i=0;i<s.options.length;i++){"
                         + " var t=(s.options[i].text||'').toLowerCase();"
-                        + " if(t.includes('turkey')||t.includes('united states')){ s.selectedIndex=i; break; }"
-                        + "}"
+                        + " if(t.includes('turkey')||t.includes('united states')||t.includes('united kingdom')){"
+                        + "   s.selectedIndex=i; break; }}"
                         + "if(!s.value || s.value==='0'){"
                         + " for (var j=0;j<s.options.length;j++){ var v=s.options[j].value;"
-                        + "   if(v && v!=='0'){ s.selectedIndex=j; break; }"
-                        + " }"
+                        + "   if(v && v!=='0'){ s.selectedIndex=j; break; } }"
                         + "}"
                         + "s.dispatchEvent(new Event('change',{bubbles:true}));",
                 countryEl);
+        countryWait.until(d -> {
+            WebElement c = visibleFieldAny(form, List.of(
+                    By.id("input-country"), By.name("country_id"),
+                    By.xpath(".//select[contains(@id,'country') or contains(@name,'country')]")));
+            String v = c.getAttribute("value");
+            return v != null && !v.isBlank() && !"0".equals(v);
+        });
 
         WebDriverWait zoneWait = new WebDriverWait(driver, Duration.ofSeconds(Math.max(sec, 15)));
         zoneWait.until(d -> {
@@ -108,8 +120,7 @@ public class AccountAddressPage {
             if (!"select".equalsIgnoreCase(zel.getTagName())) {
                 return false;
             }
-            Select z = new Select(zel);
-            return z.getOptions().size() > 1;
+            return new Select(zel).getOptions().size() > 1;
         });
         WebElement zoneEl = visibleFieldAny(form, List.of(
                 By.id("input-zone"),

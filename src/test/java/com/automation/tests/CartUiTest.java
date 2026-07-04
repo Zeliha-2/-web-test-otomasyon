@@ -34,13 +34,40 @@ public class CartUiTest extends BaseTest {
     @Test(dataProvider = "cartScenarios", description = "Add to cart from home and verify cart page")
     public void runCartScenario(CartScenario scenario) {
         CartPage page = new CartPage();
+        String action = scenario.getCartAction() == null ? "" : scenario.getCartAction().trim().toLowerCase();
+
+        if ("empty_cart".equals(action)) {
+            boolean added = page.addProductToCartByNameFragment(scenario.getProductNameContains());
+            Assert.assertTrue(added, "Expected product in cart before emptying for case " + scenario.getCaseId());
+            page.openCartPage();
+            page.removeAllLinesFromCart();
+            page.openCartPage();
+            String body = page.visibleBodyTextLower();
+            Assert.assertTrue(
+                    body.contains("empty") || body.contains("no products"),
+                    "Cart should be empty after removal for case " + scenario.getCaseId());
+            return;
+        }
+
+        if ("zero_quantity_add".equals(action)) {
+            int qty = scenario.getCartQuantity() == null ? 0 : scenario.getCartQuantity();
+            boolean added = page.addProductToCartFromDetailWithQuantity(scenario.getProductNameContains(), qty);
+            if (scenario.isExpectAddSuccess()) {
+                Assert.assertTrue(added, "Expected add success for case " + scenario.getCaseId());
+            } else {
+                Assert.assertFalse(added, "Expected zero-qty add to fail for case " + scenario.getCaseId());
+            }
+            return;
+        }
+
         boolean added = page.addProductToCartByNameFragment(scenario.getProductNameContains());
 
         if (scenario.isExpectAddSuccess()) {
             Assert.assertTrue(added, "Expected add-to-cart success for case " + scenario.getCaseId());
             String alert = page.waitForCartAlertText().toLowerCase();
             if (!alert.isBlank()) {
-                Assert.assertTrue(alert.contains("success") || alert.contains("cart"),
+                Assert.assertTrue(
+                        alert.contains("success") || alert.contains("cart"),
                         "Expected cart success-like feedback for case " + scenario.getCaseId() + " alert=" + alert);
             }
         } else {
@@ -50,10 +77,12 @@ public class CartUiTest extends BaseTest {
         page.openCartPage();
         String expectedInCart = scenario.getExpectedCartContains();
         if (expectedInCart != null && !expectedInCart.isBlank()) {
-            Assert.assertTrue(page.cartContains(expectedInCart),
+            Assert.assertTrue(
+                    page.cartContains(expectedInCart),
                     "Cart page should mention '" + expectedInCart + "' for case " + scenario.getCaseId());
         } else if (!scenario.isExpectAddSuccess()) {
-            Assert.assertTrue(page.visibleBodyTextLower().contains("shopping cart")
+            Assert.assertTrue(
+                    page.visibleBodyTextLower().contains("shopping cart")
                             || page.visibleBodyTextLower().contains("your shopping cart is empty"),
                     "Expected cart page empty/normal state for negative case " + scenario.getCaseId());
         }

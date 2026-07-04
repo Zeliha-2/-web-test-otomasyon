@@ -1,0 +1,21 @@
+\chapter{Jira Hata Raporlama Akışı}
+
+\section{JiraBugReportBuilder}
+Java tarafında \texttt{JiraBugReportBuilder} fail anında Türkçe Jira raporu üretir. Özet, test adımları, beklenen/gerçekleşen sonuç ve teknik metadata içerir.
+
+\section{Türkçe Rapor Şablonu}
+Dashboard Jira modal formu şu alanları sunar:
+\begin{itemize}
+  \item Proje anahtarı (varsayılan: \texttt{LTPLAY})
+  \item Öncelik, önem, kanal, QA süreci
+  \item Test adımları, beklenen sonuç, gerçekleşen sonuç
+  \item Açıklama ve teknik hata detayı
+\end{itemize}
+
+\section{Ekran Görüntüsü ve Log Ekleri}
+Fail anında screenshot \texttt{screenshots/} altına kopyalanır. \texttt{FailureLogWriter} teknik log üretir. Dashboard ``Ekleri İndir (.zip)'' ile her iki dosyayı birlikte indirmeyi destekler.
+
+\section{localStorage ve jira-reports.json}
+``Hatayı Raporla'' ile kayıt \texttt{qa-dashboard-reported-errors} localStorage anahtarına yazılır. Sunucu tarafı entegrasyon için \texttt{jira-reports.json} opsiyonel olarak kullanılabilir.
+
+% TODO: Örnek Jira rapor metnini Ek C olarak ekle.

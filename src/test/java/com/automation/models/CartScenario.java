@@ -10,6 +10,9 @@ public class CartScenario {
     private String standard;
     private String reference;
     private String productNameContains;
+    /** Örn. zero_quantity_add, empty_cart; null veya boş = mevcut ana sayfadan sepete ekleme. */
+    private String cartAction;
+    private Integer cartQuantity;
     private boolean expectAddSuccess;
     private String expectedCartContains;
 
@@ -47,6 +50,14 @@ public class CartScenario {
 
     public String getProductNameContains() {
         return productNameContains;
+    }
+
+    public String getCartAction() {
+        return cartAction;
+    }
+
+    public Integer getCartQuantity() {
+        return cartQuantity;
     }
 
     public boolean isExpectAddSuccess() {

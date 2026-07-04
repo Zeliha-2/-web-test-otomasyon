@@ -2,10 +2,9 @@ package com.automation.tests;
 
 
 
+import com.automation.base.DriverFactory;
 import com.automation.models.MyAccountScenario;
-
 import com.automation.pages.MyAccountPage;
-
 import com.automation.utils.JsonDataLoader;
 
 import java.lang.reflect.Method;
@@ -50,7 +49,12 @@ public class MyAccountUiTest extends MyAccountAuthenticatedBaseTest {
 
         MyAccountPage page = new MyAccountPage();
 
-        page.openSidebarLink(scenario.getSidebarLinkText());
+        String direct = scenario.getInvalidRouteUrl();
+        if (direct != null && !direct.isBlank()) {
+            DriverFactory.getDriver().get(direct);
+        } else {
+            page.openSidebarLink(scenario.getSidebarLinkText());
+        }
 
 
 

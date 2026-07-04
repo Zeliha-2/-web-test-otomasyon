@@ -13,6 +13,9 @@ public class CheckoutScenario {
     private String productNameContains;
     private boolean expectCheckoutAccessible;
     private String expectedBodyContains;
+    /** UI checkout sonrası SQL Server TestDb'ye sipariş yaz/oku (UiDbOrderBridge). */
+    private boolean persistOrderToDb;
+    private String expectedDbStatus;
 
     public String getCaseId() {
         return caseId;
@@ -60,5 +63,21 @@ public class CheckoutScenario {
 
     public String getExpectedBodyContains() {
         return expectedBodyContains;
+    }
+
+    public boolean isPersistOrderToDb() {
+        return persistOrderToDb;
+    }
+
+    public String getExpectedDbStatus() {
+        if (expectedDbStatus == null || expectedDbStatus.isBlank()) {
+            return "CHECKOUT_STARTED";
+        }
+        return expectedDbStatus;
+    }
+
+    /** OWASP misafir checkout: CHK-SEC-01 — JSON'a ek alan koymadan caseId ile tanınır. */
+    public boolean isGuestSecurityCheckoutScenario() {
+        return "CHK-SEC-01".equals(caseId);
     }
 }

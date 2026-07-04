@@ -60,5 +60,24 @@ public class SearchUiTest extends BaseTest {
             Assert.assertTrue(u.contains("ecommerce-playground"),
                     "Expected to remain on store domain for case " + scenario.getCaseId());
         }
+
+        String second = scenario.getSecondQuery();
+        if (second != null && !second.isBlank()) {
+            searchPage.searchFromHeader(second);
+            if (scenario.isExpectSearchRoute()) {
+                Assert.assertTrue(searchPage.currentUrlIndicatesSearch(),
+                        "Expected search URL after second query for case " + scenario.getCaseId());
+            }
+            if (scenario.isExpectProductResults()) {
+                Assert.assertTrue(searchPage.countProductThumbs() > 0,
+                        "Expected products after second query for case " + scenario.getCaseId());
+            }
+            String secondNeedle = scenario.getSecondExpectedBodyContains();
+            if (secondNeedle != null && !secondNeedle.isBlank()) {
+                Assert.assertTrue(
+                        searchPage.pageSourceLowercase().contains(secondNeedle.toLowerCase()),
+                        "Second search page should mention '" + secondNeedle + "' for case " + scenario.getCaseId());
+            }
+        }
     }
 }
